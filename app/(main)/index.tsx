@@ -52,24 +52,24 @@ export default function HomeScreen() {
       >
         <BottomSheetView>
           <View style={{ alignItems: 'center', gap: 20, justifyContent: 'center', flexDirection: 'row' }}>
-            <ControlIcon type={controlType.Lock}/>
-            <ControlIcon type={controlType.Charging}/>
-            <ControlIcon type={controlType.Controls}/>
-            <ControlIcon type={controlType.Climate}/>
-            <ControlIcon type={controlType.Messages}/>
+            <ControlIcon type={controlType.Lock} />
+            <ControlIcon type={controlType.Charging} />
+            <ControlIcon type={controlType.Controls} />
+            <ControlIcon type={controlType.Climate} />
+            <ControlIcon type={controlType.Messages} />
           </View>
           <View style={{ alignItems: 'center', marginTop: 10 }}>
             <ProgressBar progress={0.75} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
             <Text style={{ marginTop: 5 }}>SOC: 76%  Range: 365km</Text>
           </View>
           <View style={{ alignItems: 'center', marginTop: 20 }}>
-            <ControlButton type={controlType.Controls}/>
-            <ControlButton type={controlType.Climate}/>
-            <ControlButton type={controlType.Charging}/>
-            <ControlButton type={controlType.Location}/>
-            <ControlButton type={controlType.Messages}/>
-            <ControlButton type={controlType.Settings}/>
-            <ControlButton type={controlType.Developer}/>
+            <ControlButton type={controlType.Controls} />
+            <ControlButton type={controlType.Climate} />
+            <ControlButton type={controlType.Charging} />
+            <ControlButton type={controlType.Location} />
+            <ControlButton type={controlType.Messages} />
+            <ControlButton type={controlType.Settings} />
+            <ControlButton type={controlType.Developer} />
           </View>
           <View style={{ alignItems: 'left', marginLeft: 50, marginTop: 10 }}>
             <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
