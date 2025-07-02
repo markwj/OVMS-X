@@ -30,7 +30,7 @@ export function ControlIcon({ type }) {
       );
     case controlType.Location:
       return (
-        <IconButton icon='map-marker' onPress={() => { router.push('/(subscreens)/location'); }} />
+        <IconButton icon='map-marker' onPress={() => { router.push('/(main)/location'); }} />
       );
     case controlType.Messages:
       return (

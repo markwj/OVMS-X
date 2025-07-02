@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Image, View, Pressable, ScrollView, StyleSheet } from "react-native";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { Text, Card } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector, useAppDispatch } from '@/hooks/store';
@@ -31,12 +31,22 @@ function VehicleList() {
 
 export function VehicleSelector() {
   const vehicleList = useAppSelector((state) => state.vehicles.vehicles);
+  const router = useRouter();
+
+  const handleAddNewVehicle = () => {
+    // Close the drawer first by going back
+    router.back();
+    // Then navigate to the new vehicle screen
+    setTimeout(() => {
+      router.push('/(main)/newvehicle');
+    }, 100);
+  };
 
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <ScrollView>
         <VehicleList />
-        <Pressable onPress={() => { router.push('/(subscreens)/newvehicle') }}>
+        <Pressable onPress={handleAddNewVehicle}>
           <Card style={styles.container}>
             <Card.Content>
               <Text>Add a new vehicle</Text>

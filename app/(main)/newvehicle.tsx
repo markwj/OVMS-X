@@ -27,8 +27,7 @@ export default function NewVehicle() {
       </ScrollView>
       <Stack.Screen
         options={{
-          headerShown: true,
-          title: 'New Vehicle',
+          headerShown: true
         }}
       />
     </>

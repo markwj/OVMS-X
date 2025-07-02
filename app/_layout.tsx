@@ -60,25 +60,6 @@ export default function RootLayout() {
                 drawerContent={(props) => {
                   return <VehicleSelector />
                 }}>
-                <Drawer.Screen
-                  name="index"
-                  options={{
-                    headerShown: true,
-                    headerRight: () => <IconButton size={24} icon='chat-outline' onPress={() => { }} />,
-                    title: 'EV914'
-                  }} />
-                <Drawer.Screen
-                  name="location"
-                  options={{
-                    headerShown: true,
-                    title: 'Location'
-                  }} />
-                <Drawer.Screen
-                  name="newvehicle"
-                  options={{
-                    headerShown: true,
-                    title: 'New Vehicle'
-                  }} />
               </Drawer>
             </PersistGate>
           </PaperProvider>

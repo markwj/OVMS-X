@@ -8,7 +8,7 @@ import {
 import { useTheme, Text, Button, IconButton, Icon, ProgressBar, Appbar } from 'react-native-paper';
 import BottomSheet, { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect, router, useNavigation } from "expo-router";
+import { Stack, Redirect, router, useNavigation } from "expo-router";
 import { Formik } from 'formik';
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 
@@ -20,6 +20,7 @@ export default function HomeScreen() {
   const carImage = require('@/assets/ovms/carimages/car_roadster_racinggreen.png');
 
   return (
+    <>
     <View style={{ flex: 1, justifyContent: "stretch", alignItems: "center" }}>
       <View style={{ flex: 1, flexDirection: 'row', width: '100%', position: 'absolute', left: 0, top: 20 }}>
         <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
@@ -79,5 +80,11 @@ export default function HomeScreen() {
         </BottomSheetView>
       </BottomSheet>
     </View >
+          <Stack.Screen
+          options={{
+            headerTitle: 'Vehicle',
+            headerShown: false,
+          }} />
+</>  
   );
 }

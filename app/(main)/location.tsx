@@ -1,9 +1,9 @@
 import React from "react";
-import { useTheme } from 'react-native-paper';
-import { View } from 'react-native';
-import { Stack } from "expo-router";
+import { useTheme, Text } from 'react-native-paper';
+import { View, TouchableOpacity } from 'react-native';
+import { Stack, useRouter } from "expo-router";
 //import { ClusteredMapView } from 'react-native-maps-super-cluster';
-import { Marker } from "react-native-maps";
+//import { Marker } from "react-native-maps";
 
 const INITIAL_REGION = {
   latitude: 52.5,
@@ -13,16 +13,14 @@ const INITIAL_REGION = {
 };
 
 export default function LocationScreen() {
-  const theme = useTheme();
-
   return (
     <>
-      <View>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Location</Text>
       </View>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: 'Location',
         }} />
     </>
   );
