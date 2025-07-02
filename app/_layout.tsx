@@ -51,7 +51,7 @@ export default function RootLayout() {
               <Drawer
                 defaultStatus="closed"
                 screenOptions={{
-                  title: "Vehicle",
+                  title: "EV914",
                   drawerType: isLargeScreen ? 'permanent' : 'slide',
                   drawerStyle: isLargeScreen ? null : { width: '50%' },
                   drawerStatusBarAnimation: 'slide',
