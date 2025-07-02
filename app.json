@@ -20,7 +20,10 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.openvehicles.ovmsx"
+      "package": "com.openvehicles.ovmsx",
+      "buildProperties": {
+        "minSdkVersion": 46
+      }
     },
     "web": {
       "bundler": "metro",

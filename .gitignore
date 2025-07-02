@@ -42,3 +42,4 @@ build-*
 credentials
 credentials.json
 .vscode
+package-lock.json
