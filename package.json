@@ -14,7 +14,9 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "listUnknownPackages": false,
-        "exclude": [ "redux-persist" ]
+        "exclude": [
+          "redux-persist"
+        ]
       }
     }
   },
@@ -49,7 +51,7 @@
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "~1.11.0",
     "react-native-gifted-chat": "^2.6.4",
-    "react-native-maps-super-cluster": "^1.6.0",
+    "react-native-maps": "^1.18.0",
     "react-native-mmkv": "^3.2.0",
     "react-native-paper": "^5.12.5",
     "react-native-reanimated": "~3.17.4",

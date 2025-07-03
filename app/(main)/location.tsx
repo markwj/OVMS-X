@@ -1,9 +1,6 @@
 import React from "react";
-import { useTheme, Text } from 'react-native-paper';
-import { View, TouchableOpacity } from 'react-native';
-import { Stack, useRouter } from "expo-router";
-//import { ClusteredMapView } from 'react-native-maps-super-cluster';
-//import { Marker } from "react-native-maps";
+import { View, StyleSheet, Dimensions } from 'react-native';
+import MapView, { Marker } from "react-native-maps";
 
 const INITIAL_REGION = {
   latitude: 52.5,
@@ -13,9 +10,32 @@ const INITIAL_REGION = {
 };
 
 export default function LocationScreen() {
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Location</Text>
+    <View style={styles.container}>
+      <MapView
+       initialRegion={INITIAL_REGION}
+       style={{ flex: 1 }}>
+        <Marker coordinate={{ latitude: 52.4, longitude: 18.7 }} />
+        <Marker coordinate={{ latitude: 52.1, longitude: 18.4 }} />
+        <Marker coordinate={{ latitude: 52.6, longitude: 18.3 }} />
+        <Marker coordinate={{ latitude: 51.6, longitude: 18.0 }} />
+        <Marker coordinate={{ latitude: 53.1, longitude: 18.8 }} />
+        <Marker coordinate={{ latitude: 52.9, longitude: 19.4 }} />
+        <Marker coordinate={{ latitude: 52.2, longitude: 21 }} />
+        <Marker coordinate={{ latitude: 52.4, longitude: 21 }} />
+        <Marker coordinate={{ latitude: 51.8, longitude: 20 }} />
+      </MapView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+});
