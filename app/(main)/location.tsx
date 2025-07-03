@@ -14,14 +14,8 @@ const INITIAL_REGION = {
 
 export default function LocationScreen() {
   return (
-    <>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Location</Text>
-      </View>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-        }} />
-    </>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Location</Text>
+    </View>
   );
 }

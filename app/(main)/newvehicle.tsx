@@ -12,25 +12,18 @@ export default function NewVehicle() {
   const theme = useTheme();
 
   return (
-    <>
-      <ScrollView style={{ height: '100%' }}>
-        <Card style={styles.container}>
-          <Card.Content>
-            <Text>OVMS v2 API</Text>
-          </Card.Content>
-        </Card>
-        <Card style={styles.container}>
-          <Card.Content>
-            <Text>TESLA API</Text>
-          </Card.Content>
-        </Card>
-      </ScrollView>
-      <Stack.Screen
-        options={{
-          headerShown: true
-        }}
-      />
-    </>
+    <ScrollView style={{ height: '100%' }}>
+      <Card style={styles.container}>
+        <Card.Content>
+          <Text>OVMS v2 API</Text>
+        </Card.Content>
+      </Card>
+      <Card style={styles.container}>
+        <Card.Content>
+          <Text>TESLA API</Text>
+        </Card.Content>
+      </Card>
+    </ScrollView>
   );
 }
 
