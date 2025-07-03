@@ -14,19 +14,19 @@ export enum controlType {
   Developer
 }
 
-export function ControlIcon({ type }) {
+export function ControlIcon({ type } : { type : controlType }): React.JSX.Element | null {
   switch (type) {
     case controlType.Controls:
       return (
-        <IconButton icon='car' onPress={() => { }} />
+        <IconButton icon='car' onPress={() => { router.push('/(main)/controls'); }} />
       );
     case controlType.Climate:
       return (
-        <IconButton icon='air-conditioner' onPress={() => { }} />
+        <IconButton icon='air-conditioner' onPress={() => { router.push('/(main)/climate'); }} />
       );
     case controlType.Charging:
       return (
-        <IconButton icon='ev-plug-type2' onPress={() => { }} />
+        <IconButton icon='ev-plug-type2' onPress={() => { router.push('/(main)/charging'); }} />
       );
     case controlType.Location:
       return (
@@ -34,7 +34,7 @@ export function ControlIcon({ type }) {
       );
     case controlType.Messages:
       return (
-        <IconButton icon='chat' onPress={() => { }} />
+        <IconButton icon='chat' onPress={() => { router.push('/(main)/messages'); }} />
       );
     case controlType.Energy:
       return (
@@ -46,17 +46,17 @@ export function ControlIcon({ type }) {
       );
     case controlType.Settings:
       return (
-        <IconButton icon='hammer-wrench' onPress={() => { }} />
+        <IconButton icon='hammer-wrench' onPress={() => {router.push('/(main)/settings'); }} />
       );
     case controlType.Developer:
       return (
-        <IconButton icon='developer-board' onPress={() => { }} />
+        <IconButton icon='developer-board' onPress={() => { router.push('/(main)/developer'); }} />
       );
   }
   return null;
 }
 
-export function ControlButton({ type }) {
+export function ControlButton({ type } : { type : controlType }): React.JSX.Element | null {
   switch (type) {
     case controlType.Controls:
       return (
@@ -64,7 +64,7 @@ export function ControlButton({ type }) {
           icon='car'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { }}
+          onPress={() => { router.push('/(main)/controls'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
           Controls
         </Button>
@@ -75,7 +75,7 @@ export function ControlButton({ type }) {
           icon='air-conditioner'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { }}
+          onPress={() => { router.push('/(main)/climate'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
           Climate
         </Button>
@@ -86,7 +86,7 @@ export function ControlButton({ type }) {
           icon='ev-plug-type2'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { }}
+          onPress={() => { router.push('/(main)/charging'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
           Charging
         </Button>
@@ -108,7 +108,7 @@ export function ControlButton({ type }) {
           icon='chat'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { }}
+          onPress={() => { router.push('/(main)/messages'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
           Messages
         </Button>
@@ -141,7 +141,7 @@ export function ControlButton({ type }) {
           icon='hammer-wrench'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { }}
+          onPress={() => { router.push('/(main)/settings'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
           Settings
         </Button>
@@ -152,7 +152,7 @@ export function ControlButton({ type }) {
           icon='developer-board'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { }}
+          onPress={() => { router.push('/(main)/developer'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
           Developer
         </Button>
