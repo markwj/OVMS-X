@@ -42,6 +42,12 @@ export default function SubscreenStack() {
         }}
       />
       <Stack.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+        }}
+      />
+      <Stack.Screen
         name="developer"
         options={{
           title: 'Developer',
