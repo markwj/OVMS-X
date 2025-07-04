@@ -1,31 +1,12 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from 'react-native';
-import MapView, { Marker } from "react-native-maps";
+import { Map } from "@/components/ui/Map";
 
-const INITIAL_REGION = {
-  latitude: 52.5,
-  longitude: 19.2,
-  latitudeDelta: 8.5,
-  longitudeDelta: 8.5,
-};
 
 export default function LocationScreen() {
-
   return (
     <View style={styles.container}>
-      <MapView
-       initialRegion={INITIAL_REGION}
-       style={{ flex: 1 }}>
-        <Marker coordinate={{ latitude: 52.4, longitude: 18.7 }} />
-        <Marker coordinate={{ latitude: 52.1, longitude: 18.4 }} />
-        <Marker coordinate={{ latitude: 52.6, longitude: 18.3 }} />
-        <Marker coordinate={{ latitude: 51.6, longitude: 18.0 }} />
-        <Marker coordinate={{ latitude: 53.1, longitude: 18.8 }} />
-        <Marker coordinate={{ latitude: 52.9, longitude: 19.4 }} />
-        <Marker coordinate={{ latitude: 52.2, longitude: 21 }} />
-        <Marker coordinate={{ latitude: 52.4, longitude: 21 }} />
-        <Marker coordinate={{ latitude: 51.8, longitude: 20 }} />
-      </MapView>
+      <Map />
     </View>
   );
 }
