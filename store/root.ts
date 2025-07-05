@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import spinnerReducer from '@/store/spinnerSlice';
 import vehiclesReducer from '@/store/vehiclesSlice';
+import metricsReducer from '@/store/metricsSlice';
 import {
   persistStore, persistReducer,
   FLUSH,
@@ -21,7 +22,8 @@ const vehiclesPersistConfig = {
 export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
-    //vehicles: vehiclesReducer,
+    metrics: metricsReducer,
+    //@ts-ignore
     vehicles: persistReducer(vehiclesPersistConfig, vehiclesReducer),
   },
 
