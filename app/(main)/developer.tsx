@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Button, Text, ScrollView } from 'react-native';
 import { DataTable } from "react-native-paper";
-import { Metric, metricsAllKeysSelector, metricsSlice, metricsAllValuesSelector, getMetricsListSelector } from "@/store/metricsSlice";
+import { metricsAllKeysSelector, metricsSlice, metricsAllValuesSelector, getMetricsListSelector } from "@/store/metricsSlice";
+import { Metric } from "@/components/vehicle/metrics";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function DeveloperScreen() {

@@ -1,65 +1,8 @@
 import { createReducer, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
+import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
 
-export enum MetricDefined {
-  NEVER = "never",
-  FIRST = "first",
-  DEFINED = "defined"
-}
-
-export enum MetricType {
-  UNDEFINED = 0,
-  BOOL = 1,
-  STRING = 2,
-  NUMBER = 3
-}
-
-export class Metric {
-  value: string | null = null
-
-  standard? : boolean;
-
-  type: MetricType = MetricType.UNDEFINED
-  unit: string | null = null
-  precision: number | null = null
-
-  staleSeconds: number | null = null
-  defined: MetricDefined = MetricDefined.NEVER
-  lastModified: Date | null = null
-}
-
-function ConstructNewMetric(standard : boolean, options? : {value? : string, type? : string, unit? : string, precision? : number, staleSeconds? : number, currentTime? : Date}) {
-  let newMetric = new Metric();
-  newMetric.standard = standard;
-  newMetric.staleSeconds = options?.staleSeconds ?? null
-  newMetric.unit = options?.unit ?? null
-  newMetric.precision = options?.precision ?? null
-  newMetric.value = options?.value ?? null
-  if(newMetric.value != null) {
-    newMetric.defined = MetricDefined.FIRST;
-    newMetric.lastModified = options?.currentTime ?? null;
-  } else {
-    newMetric.defined = MetricDefined.NEVER;
-  }
-
-  switch(options?.type) {
-    case "bool":
-      newMetric.type = MetricType.BOOL
-      break
-    case "string":
-      newMetric.type = MetricType.STRING
-      break
-    case "number":
-      newMetric.type = MetricType.NUMBER
-      break
-    default:
-      newMetric.type = MetricType.UNDEFINED
-      break
-  }
-
-  return newMetric;
-}
 
 export interface Metrics {
   metricsList: {}
@@ -76,7 +19,7 @@ export const metricsSlice = createSlice({
     resetToStandardMetrics: (state: Metrics) => {
       metricsSlice.actions.deleteAll()
       STANDARD_METRICS.forEach((metric) => { 
-        (state.metricsList as any)[metric.key] = JSON.stringify(ConstructNewMetric(true, metric));
+        (state.metricsList as any)[metric.key] = JSON.stringify(new Metric({...metric, standard: true}));
       })
     },
     deleteAll: (state: Metrics) => {
@@ -103,9 +46,9 @@ export const metricsSlice = createSlice({
       metric.lastModified = "undefined";
       (state.metricsList as any)[key.payload] = JSON.stringify(metric);
     },
-    createMetric: (state: Metrics, payload: PayloadAction<{ standard: boolean, key: string, unit?: string, staleSeconds?: number }>) => {
+    createMetric: (state: Metrics, payload: PayloadAction<any>) => {
       const params = payload.payload;
-      (state.metricsList as any)[params.key] = JSON.stringify(ConstructNewMetric(true, params));
+      (state.metricsList as any)[params.key] = JSON.stringify(new Metric(params));
     },
     setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime : Date }>) => { //Need to pass the current time to maintain purity
       const params = payload.payload;
