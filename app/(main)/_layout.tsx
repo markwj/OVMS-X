@@ -4,8 +4,26 @@ import { useTranslation } from 'react-i18next';
 
 export default function SubscreenStack() {
   const { t } = useTranslation();
+  
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: '600',
+        },
+        headerShadowVisible: false,
+        headerTitleAlign: 'center',
+        headerLargeTitle: false,
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          title: t('Vehicle'),
+          headerShown: false,
+        }}
+      />
       <Stack.Screen
         name="newvehicle"
         options={{
