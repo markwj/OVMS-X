@@ -7,20 +7,22 @@ import {
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme, Text, Card } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 export default function NewVehicle() {
   const theme = useTheme();
-
+  const { t } = useTranslation();
+  
   return (
     <ScrollView style={{ height: '100%' }}>
       <Card style={styles.container}>
         <Card.Content>
-          <Text>OVMS v2 API</Text>
+          <Text>{t('OVMS v2 API')}</Text>
         </Card.Content>
       </Card>
       <Card style={styles.container}>
         <Card.Content>
-          <Text>TESLA API</Text>
+          <Text>{t('TESLA API')}</Text>
         </Card.Content>
       </Card>
     </ScrollView>

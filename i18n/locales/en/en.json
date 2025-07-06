@@ -16,5 +16,7 @@
   "Vehicle": "Vehicle",
   "VIN": "VIN",
   "SOC": "SOC",
-  "Range": "Range"
+  "Range": "Range",
+  "OVMS v2 API": "OVMS v2 API",
+  "TESLA API": "TESLA API"
 }
