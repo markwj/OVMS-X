@@ -68,7 +68,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/(main)/controls'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Controls')}
         </Button>
       );
@@ -79,7 +79,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/(main)/climate'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Climate')}
         </Button>
       );
@@ -90,7 +90,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/(main)/charging'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Charging')}
         </Button>
       );
@@ -101,7 +101,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/location'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Location')}
         </Button>
       );
@@ -112,7 +112,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/(main)/messages'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Messages')}
         </Button>
       );
@@ -123,7 +123,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Controls')}
         </Button>
       );
@@ -134,7 +134,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Security')}
         </Button>
       );
@@ -145,7 +145,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/(main)/settings'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           {t('Settings')}
         </Button>
       );
@@ -156,7 +156,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           mode='contained-tonal'
           dark={true}
           onPress={() => { router.push('/(main)/developer'); }}
-          style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
+          style={{ width: '80%', marginBottom: 10 }}>
           Developer
         </Button>
       );
