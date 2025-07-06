@@ -31,6 +31,18 @@ export default function SubscreenStack() {
         }}
       />
       <Stack.Screen
+        name="newvehicle/ovmsv2"
+        options={{
+          title: t('OVMS v2 API'),
+        }}
+      />
+      <Stack.Screen
+        name="newvehicle/tesla"
+        options={{
+          title: t('TESLA API'),
+        }}
+      />
+      <Stack.Screen
         name="controls"
         options={{
           title: t('Controls'),
