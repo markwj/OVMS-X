@@ -13,7 +13,7 @@ function VehicleList() {
   } else {
     return (
       <>
-        {vehicleList.map((vehicle, index) => (
+        {vehicleList.map((vehicle: any, index: number) => (
           <Pressable
             key={"vehicle-" + vehicle.vin}
             onPress={() => { console.log('press', vehicle) }}>
