@@ -1,0 +1,20 @@
+{
+  "Name": "Name",
+  "Value": "Value",
+  "New Vehicle": "New Vehicle",
+  "Controls": "Controls",
+  "Climate": "Climate",
+  "Charging": "Charging",
+  "Location": "Location",
+  "Messages": "Messages",
+  "Settings": "Settings",
+  "Developer": "Developer",
+  "This screen doesn't exist.": "This screen doesn't exist.",
+  "Return to home screen": "Return to home screen",
+  "Sorry, maps are not available on web": "Sorry, maps are not available on web",
+  "Awake, online": "Awake, online",
+  "Vehicle": "Vehicle",
+  "VIN": "VIN",
+  "SOC": "SOC",
+  "Range": "Range"
+}

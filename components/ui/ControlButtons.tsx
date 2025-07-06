@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button, IconButton } from 'react-native-paper';
 import { router } from "expo-router";
+import { useTranslation } from 'react-i18next';
 
 export enum controlType {
   Controls = 1,
@@ -15,6 +16,7 @@ export enum controlType {
 }
 
 export function ControlIcon({ type } : { type : controlType }): React.JSX.Element | null {
+  const { t } = useTranslation();
   switch (type) {
     case controlType.Controls:
       return (
@@ -57,6 +59,7 @@ export function ControlIcon({ type } : { type : controlType }): React.JSX.Elemen
 }
 
 export function ControlButton({ type } : { type : controlType }): React.JSX.Element | null {
+  const { t } = useTranslation();
   switch (type) {
     case controlType.Controls:
       return (
@@ -66,7 +69,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { router.push('/(main)/controls'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Controls
+          {t('Controls')}
         </Button>
       );
     case controlType.Climate:
@@ -77,7 +80,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { router.push('/(main)/climate'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Climate
+          {t('Climate')}
         </Button>
       );
     case controlType.Charging:
@@ -88,7 +91,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { router.push('/(main)/charging'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Charging
+          {t('Charging')}
         </Button>
       );
     case controlType.Location:
@@ -99,7 +102,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { router.push('/location'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Location
+          {t('Location')}
         </Button>
       );
     case controlType.Messages:
@@ -110,7 +113,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { router.push('/(main)/messages'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Messages
+          {t('Messages')}
         </Button>
       );
     case controlType.Energy:
@@ -121,7 +124,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Controls
+          {t('Controls')}
         </Button>
       );
     case controlType.Lock:
@@ -132,7 +135,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Security
+          {t('Security')}
         </Button>
       );
     case controlType.Settings:
@@ -143,7 +146,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           dark={true}
           onPress={() => { router.push('/(main)/settings'); }}
           style={{ alignItems: 'center', width: '80%', marginBottom: 10 }}>
-          Settings
+          {t('Settings')}
         </Button>
       );
     case controlType.Developer:

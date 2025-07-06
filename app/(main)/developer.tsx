@@ -4,9 +4,11 @@ import { DataTable } from "react-native-paper";
 import { metricsAllKeysSelector, metricsSlice, metricsAllValuesSelector, getMetricsListSelector } from "@/store/metricsSlice";
 import { Metric } from "@/components/vehicle/metrics";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from 'react-i18next';
 
 export default function DeveloperScreen() {
   const dispatch = useDispatch()
+  const { t } = useTranslation();
 
   let keys = useSelector(metricsAllKeysSelector)
   let values = useSelector(metricsAllValuesSelector)
@@ -16,8 +18,8 @@ export default function DeveloperScreen() {
       <Button title="generate standard metrics" onPress={() => dispatch(metricsSlice.actions.resetToStandardMetrics())}></Button>
       <DataTable style={styles.table}>
         <DataTable.Header style={styles.headerRow}>
-          <DataTable.Title style={{...styles.metricText, flex:2}}>Name</DataTable.Title>
-          <DataTable.Title style={styles.headerText}>Value</DataTable.Title>
+          <DataTable.Title style={{...styles.metricText, flex:2}}>{t('Name')}</DataTable.Title>
+          <DataTable.Title style={styles.headerText}>{t('Value')}</DataTable.Title>
         </DataTable.Header>
         {keys.map((key, index) => GenerateMetricEntry(key, (values as any)[index]))}
       </DataTable>

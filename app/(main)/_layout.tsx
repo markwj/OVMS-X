@@ -1,56 +1,57 @@
 import React from "react";
 import { Stack } from "expo-router";
+import { useTranslation } from 'react-i18next';
 
 export default function SubscreenStack() {
-
+  const { t } = useTranslation();
   return (
     <Stack>
       <Stack.Screen
         name="newvehicle"
         options={{
-          title: 'New Vehicle',
+          title: t('New Vehicle'),
         }}
       />
       <Stack.Screen
         name="controls"
         options={{
-          title: 'Controls',
+          title: t('Controls'),
         }}
       />
       <Stack.Screen
         name="climate"
         options={{
-          title: 'Climate',
+          title: t('Climate'),
         }}
       />
       <Stack.Screen
         name="charging"
         options={{
-          title: 'Charging',
+          title: t('Charging'),
         }}
       />
       <Stack.Screen
         name="location"
         options={{
-          title: 'Location',
+          title: t('Location'),
         }}
       />
       <Stack.Screen
         name="messages"
         options={{
-          title: 'Messages',
+          title: t('Messages'),
         }}
       />
       <Stack.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t('Settings'),
         }}
       />
       <Stack.Screen
         name="developer"
         options={{
-          title: 'Developer',
+          title: t('Developer'),
         }}
       />
     </Stack>

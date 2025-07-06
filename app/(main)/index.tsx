@@ -11,10 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, Redirect, router, useNavigation } from "expo-router";
 import { Formik } from 'formik';
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
+import { useTranslation } from 'react-i18next';
 
 export default function HomeScreen() {
   const theme = useTheme();
-
+  const { t } = useTranslation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
   const carImage = require('@/assets/ovms/carimages/car_roadster_racinggreen.png');
@@ -31,7 +32,7 @@ export default function HomeScreen() {
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
             <Icon source='antenna' size={20} />
-            <Text style={{ marginTop: 10 }}>Awake, online</Text>
+            <Text style={{ marginTop: 10 }}>{t('Awake, online')}</Text>
           </View>
         </View>
         <View style={{ flex: 1, width: '80%' }}>
@@ -61,7 +62,7 @@ export default function HomeScreen() {
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
               <ProgressBar progress={0.75} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
-              <Text style={{ marginTop: 5 }}>SOC: 76%  Range: 365km</Text>
+              <Text style={{ marginTop: 5 }}>{t('SOC')}: 76%  {t('Range')}: 365km</Text>
             </View>
             <View style={{ alignItems: 'center', marginTop: 20 }}>
               <ControlButton type={controlType.Controls} />
@@ -75,14 +76,14 @@ export default function HomeScreen() {
             <View style={{ alignItems: 'left', marginLeft: 50, marginTop: 10 }}>
               <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
               <Text variant='labelMedium'>17,528 km</Text>
-              <Text variant='labelMedium'>VIN LRW3F7EK5PC839304</Text>
+              <Text variant='labelMedium'>{t('VIN')} LRW3F7EK5PC839304</Text>
             </View>
           </BottomSheetView>
         </BottomSheet>
       </View >
       <Stack.Screen
         options={{
-          headerTitle: 'Vehicle',
+          headerTitle: t('Vehicle'),
           headerShown: false,
         }} />
     </>

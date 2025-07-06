@@ -18,9 +18,12 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { VehicleSelector } from '@/components/ui/VehicleSelector';
 import { Drawer } from 'expo-router/drawer';
 import { useWindowDimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import '@/i18n';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const { t } = useTranslation();
 
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavigationDarkTheme,
