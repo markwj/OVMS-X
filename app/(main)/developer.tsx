@@ -1,61 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Button, Text, ScrollView } from 'react-native';
-import { DataTable } from "react-native-paper";
-import { metricsAllKeysSelector, metricsSlice, metricsAllValuesSelector, getMetricsListSelector } from "@/store/metricsSlice";
-import { Metric } from "@/components/vehicle/metrics";
+import { ScrollView } from 'react-native';
+import { metricsAllKeysSelector, metricsSlice, metricsAllValuesSelector } from "@/store/metricsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
+import MetricTable from "@/components/ui/MetricTable";
+import { Menu, Button, Icon, Portal, Dialog, Text } from "react-native-paper";
+import { useNavigation } from "expo-router";
 
+//@ts-ignore
 export default function DeveloperScreen() {
   const dispatch = useDispatch()
+  const navigation = useNavigation();
   const { t } = useTranslation();
+
+  const [visible, setVisible] = useState(false);
+
+  const closeMenu = () => setVisible(false);
 
   let keys = useSelector(metricsAllKeysSelector)
   let values = useSelector(metricsAllValuesSelector)
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <Button onPress={() => setVisible(true)} children={<Icon size={20} source={"cog"} />} />
+    })
+  }, [navigation])
+
   return (
     <ScrollView>
-      <Button title="generate standard metrics" onPress={() => dispatch(metricsSlice.actions.resetToStandardMetrics())}></Button>
-      <DataTable style={styles.table}>
-        <DataTable.Header style={styles.headerRow}>
-          <DataTable.Title style={{...styles.metricText, flex:2}}>{t('Name')}</DataTable.Title>
-          <DataTable.Title style={styles.headerText}>{t('Value')}</DataTable.Title>
-        </DataTable.Header>
-        {keys.map((key, index) => GenerateMetricEntry(key, (values as any)[index]))}
-      </DataTable>
+      <Menu
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        anchor={<MetricTable metrics={values} metricKeys={keys} />}
+      >
+        <Menu.Item leadingIcon="refresh" onPress={() => {dispatch(metricsSlice.actions.resetToStandardMetrics()); closeMenu();}} title={t("Reset to standard metrics")} />
+        <Menu.Item leadingIcon="eraser" onPress={() => {dispatch(metricsSlice.actions.clearAll()); closeMenu(); }} title={t("Clear all metrics")} />
+        <Menu.Item leadingIcon="delete" onPress={() => {dispatch(metricsSlice.actions.deleteAll()); closeMenu(); }} title={t("Delete all metrics")} />
+      </Menu>
     </ScrollView>
   );
 }
-
-function GenerateMetricEntry(metricName: string, metric: Metric) {
-  return (
-    <DataTable.Row key={metricName} style={styles.metricRow} onPress={() => OnMetricEntryPress(metricName, metric)}>
-      <DataTable.Cell style={{...styles.metricText, flex:2}}>{metricName}</DataTable.Cell>
-      <DataTable.Cell style={styles.metricText}>{metric.value != null ? metric.value + " " +(metric.unit ?? "") : "undefined"}</DataTable.Cell>
-    </DataTable.Row>
-  )
-}
-
-function OnMetricEntryPress(metricName : string, metric : Metric) {
-  alert(metricName)
-}
-
-const styles = StyleSheet.create({
-  table: {
-    paddingBottom: 50
-  },
-  headerRow: {
-    flex: 1,
-  },
-  headerText: {
-    flex: 1,
-    color: 'white',
-  },
-  metricRow: {
-    flex: 1,
-  },
-  metricText: {
-    flex: 1,
-    color: 'white',
-  },
-});

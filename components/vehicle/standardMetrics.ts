@@ -254,8 +254,8 @@ export const STANDARD_METRICS = [
   { key: "v.pos.gpsspeed", unit: "km/h", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
   { key: "v.pos.odometer", unit: "km", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
   { key: "v.pos.trip", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
-  { key: "v.pos.valet.latitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER },
-  { key: "v.pos.valet.longitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER },
+  { key: "v.pos.valet.latitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER, precision: 6 },
+  { key: "v.pos.valet.longitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER, precision: 6 },
   { key: "v.pos.valet.distance", unit: "m", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
 
   //

@@ -32,25 +32,25 @@ export const metricsSlice = createSlice({
     clearAll: (state: Metrics) => {
       for (const key of Object.keys(state.metricsList)) {
         const metric = JSON.parse((state.metricsList as any)[key] as string);
-        metric.value = "undefined";
+        metric.value = null;
         metric.defined = MetricDefined.NEVER;
-        metric.lastModified = "undefined";
+        metric.lastModified = null;
         (state.metricsList as any)[key] = JSON.stringify(metric);
       }
     },
     clearOne: (state: Metrics, key: PayloadAction<string>) => {
       if (!Object.keys(state.metricsList).includes(key.payload)) { return; }
       const metric = JSON.parse((state.metricsList as any)[key.payload] as string);
-      metric.value = "undefined";
+      metric.value = null;
       metric.defined = MetricDefined.NEVER;
-      metric.lastModified = "undefined";
+      metric.lastModified = null;
       (state.metricsList as any)[key.payload] = JSON.stringify(metric);
     },
     createMetric: (state: Metrics, payload: PayloadAction<any>) => {
       const params = payload.payload;
       (state.metricsList as any)[params.key] = JSON.stringify(new Metric(params));
     },
-    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime : Date }>) => { //Need to pass the current time to maintain purity
+    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime : number }>) => { //Need to pass the current time to maintain purity
       const params = payload.payload;
       if (!Object.keys(state.metricsList).includes(params.key)) { return; }
       const metric = JSON.parse((state.metricsList as any)[params.key]);
@@ -80,8 +80,8 @@ export const generateGetMetricUnitSelector = (key : string) => {
   return createSelector(generateGetMetricSelector(key), (metric) => metric.unit)
 }
 
-export const generateMetricIsStaleSelector = (key : string, currentTime : Date) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => ((metric.lastModified as Date).getSeconds() + metric.staleSeconds) < (currentTime).getSeconds())
+export const generateMetricIsStaleSelector = (key : string, currentTime : number) => {
+  return createSelector(generateGetMetricSelector(key), (metric) => (metric.lastModified + metric.staleSeconds) < currentTime)
 }
 
 export const generateMetricIsDefinedSelector = (key : string) => {

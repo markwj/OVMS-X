@@ -18,5 +18,8 @@
   "SOC": "SOC",
   "Range": "Range",
   "OVMS v2 API": "OVMS v2 API",
-  "TESLA API": "TESLA API"
+  "TESLA API": "TESLA API",
+  "Reset to standard metrics": "Reset to standard metrics",
+  "Clear all metrics": "Clear all metrics",
+  "Delete all metrics": "Delete all metrics"
 }

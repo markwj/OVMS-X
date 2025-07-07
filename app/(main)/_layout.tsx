@@ -84,6 +84,12 @@ export default function SubscreenStack() {
           title: t('Developer'),
         }}
       />
+      <Stack.Screen
+        name="developer/aboutMetric"
+        options={{
+          title: 'About Metric',
+        }}
+      />
     </Stack>
   );
 }

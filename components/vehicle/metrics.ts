@@ -6,10 +6,10 @@ export enum MetricDefined {
 }
 
 export enum MetricType {
-  UNDEFINED = 0,
-  BOOL = 1,
-  STRING = 2,
-  NUMBER = 3
+  UNDEFINED = "undefined",
+  BOOL = "bool",
+  STRING = "string",
+  NUMBER = "number"
 }
 
 export class Metric {
@@ -23,7 +23,7 @@ export class Metric {
 
   staleSeconds: number | null = null
   defined: MetricDefined = MetricDefined.NEVER
-  lastModified: Date | null = null
+  lastModified: number | null = null
 
   trueStatement? : string = ""
   falseStatement? : string = ""
@@ -34,8 +34,9 @@ export class Metric {
     this.unit = options?.unit ?? null
     this.precision = options?.precision ?? null
     this.value = options?.value ?? null
-    this.trueStatement = options?.trueStatement ?? null
-    this.falseStatement = options?.falseStatement ?? null
+    this.type = options?.type ?? MetricType.UNDEFINED
+    this.trueStatement = options?.trueStatement ?? "true"
+    this.falseStatement = options?.falseStatement ?? "false"
     
     if(this.value != null) {
       this.defined = MetricDefined.FIRST;
