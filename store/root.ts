@@ -23,6 +23,7 @@ export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
     metrics: metricsReducer,
+    //messages : messagesReducer,
     //@ts-ignore
     vehicles: persistReducer(vehiclesPersistConfig, vehiclesReducer),
   },

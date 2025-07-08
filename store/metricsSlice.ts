@@ -1,4 +1,4 @@
-import { createReducer, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
 import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
@@ -18,8 +18,8 @@ export const metricsSlice = createSlice({
   reducers: {
     resetToStandardMetrics: (state: Metrics) => {
       metricsSlice.actions.deleteAll()
-      STANDARD_METRICS.forEach((metric) => { 
-        (state.metricsList as any)[metric.key] = JSON.stringify(new Metric({...metric, standard: true}));
+      STANDARD_METRICS.forEach((metric) => {
+        (state.metricsList as any)[metric.key] = JSON.stringify(new Metric({ ...metric, standard: true }));
       })
     },
     deleteAll: (state: Metrics) => {
@@ -32,29 +32,47 @@ export const metricsSlice = createSlice({
     clearAll: (state: Metrics) => {
       for (const key of Object.keys(state.metricsList)) {
         const metric = JSON.parse((state.metricsList as any)[key] as string);
-        metric.value = "undefined";
+        metric.value = null;
         metric.defined = MetricDefined.NEVER;
-        metric.lastModified = "undefined";
+        metric.lastModified = null;
         (state.metricsList as any)[key] = JSON.stringify(metric);
       }
     },
     clearOne: (state: Metrics, key: PayloadAction<string>) => {
       if (!Object.keys(state.metricsList).includes(key.payload)) { return; }
       const metric = JSON.parse((state.metricsList as any)[key.payload] as string);
-      metric.value = "undefined";
+      metric.value = null;
       metric.defined = MetricDefined.NEVER;
-      metric.lastModified = "undefined";
+      metric.lastModified = null;
       (state.metricsList as any)[key.payload] = JSON.stringify(metric);
     },
     createMetric: (state: Metrics, payload: PayloadAction<any>) => {
       const params = payload.payload;
       (state.metricsList as any)[params.key] = JSON.stringify(new Metric(params));
     },
-    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime : Date }>) => { //Need to pass the current time to maintain purity
+    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime: string }>) => { //Need to pass the current time to maintain purity
       const params = payload.payload;
       if (!Object.keys(state.metricsList).includes(params.key)) { return; }
       const metric = JSON.parse((state.metricsList as any)[params.key]);
-      metric.value = params.value;
+
+      switch (metric.type) {
+        case MetricType.BOOL:
+          if ([1, "yes", metric.trueStatement].includes(params.value)) {
+            metric.value = "yes"
+          } else {
+            metric.value = "no"
+          }
+          break
+        case MetricType.NUMBER:
+          let v = +params.value;
+          if (isNaN(v)) { metric.value = "NaN"; break; }
+          if (metric.precision != null) { v = +v.toFixed(metric.precision); }
+          metric.value = v
+          break
+        default:
+          metric.value = params.value
+      }
+
       metric.defined = metric.defined != MetricDefined.NEVER ? MetricDefined.DEFINED : MetricDefined.FIRST
       metric.lastModified = params.currentTime;
       (state.metricsList as any)[params.key] = JSON.stringify(metric);
@@ -62,33 +80,33 @@ export const metricsSlice = createSlice({
   }
 })
 
-export const getMetricsListSelector = (state : RootState) => state.metrics.metricsList;
+export const getMetricsListSelector = (state: RootState) => state.metrics.metricsList;
 export const metricsAllKeysSelector = createSelector(getMetricsListSelector, (metricsList) => Object.keys(metricsList))
 export const metricsAllSerialisedValuesSelector = createSelector(getMetricsListSelector, (metricsList) => Object.values(metricsList))
 export const metricsAllValuesSelector = createSelector(metricsAllSerialisedValuesSelector, (metricsList) => metricsList.map((stringMetric) => JSON.parse(stringMetric as string)))
 
 
-export const generateGetMetricSelector = (key : string) => {
+export const generateGetMetricSelector = (key: string) => {
   return createSelector(getMetricsListSelector, (metricsList) => JSON.parse((metricsList as any)[key]))
 }
 
-export const generateGetMetricValueSelector = (key : string) => {
+export const generateGetMetricValueSelector = (key: string) => {
   return createSelector(generateGetMetricSelector(key), (metric) => metric.value)
 }
 
-export const generateGetMetricUnitSelector = (key : string) => {
+export const generateGetMetricUnitSelector = (key: string) => {
   return createSelector(generateGetMetricSelector(key), (metric) => metric.unit)
 }
 
-export const generateMetricIsStaleSelector = (key : string, currentTime : Date) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => ((metric.lastModified as Date).getSeconds() + metric.staleSeconds) < (currentTime).getSeconds())
+export const generateMetricIsStaleSelector = (key: string, currentTime: string) => {
+  return createSelector(generateGetMetricSelector(key), (metric) => (new Date(metric.lastModified).getTime() / 1000 + metric.staleSeconds) < new Date(currentTime).getTime() / 1000)
 }
 
-export const generateMetricIsDefinedSelector = (key : string) => {
+export const generateMetricIsDefinedSelector = (key: string) => {
   return createSelector(generateGetMetricSelector(key), (metric) => metric.defined)
 }
 
-export const generateGetMetricLastModifiedSelector = (key : string) => {
+export const generateGetMetricLastModifiedSelector = (key: string) => {
   return createSelector(generateGetMetricSelector(key), (metric) => metric.lastModified)
 }
 

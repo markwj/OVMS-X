@@ -19,7 +19,7 @@ export const STANDARD_METRICS = [
   { key: "m.tasks", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER, precision: 0 },
   { key: "m.freeram", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER, precision: 0 },
   { key: "m.monotonic", unit: "seconds", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER, precision: 0 },
-  { key: "m.timeutc", unit: "utc", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
+  { key: "m.timeutc", unit: "utc", staleSeconds: SM_STALE_MIN, type: MetricType.STRING },
 
   { key: "m.net.type", staleSeconds: SM_STALE_MAX, type: MetricType.STRING },
   { key: "m.net.sq", unit: "dbm", staleSeconds: SM_STALE_MAX, type: MetricType.NUMBER, precision: 0 },
@@ -129,7 +129,7 @@ export const STANDARD_METRICS = [
   { key: "v.charge.kwh_grid_total", unit: "kWh", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
   { key: "v.charge.mode", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
   { key: "v.charge.timermode", staleSeconds: SM_STALE_MID, type: MetricType.BOOL },
-  { key: "v.charge.timerstart", unit: "utc", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER, precision: 0 },
+  { key: "v.charge.timerstart", unit: "utc", staleSeconds: SM_STALE_MID, type: MetricType.STRING, precision: 0 },
   { key: "v.charge.state", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
   { key: "v.charge.substate", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
   { key: "v.charge.type", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
@@ -162,7 +162,7 @@ export const STANDARD_METRICS = [
   { key: "v.gen.kwh_grid_total", unit: "kWh", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
   { key: "v.gen.mode", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
   { key: "v.gen.timermode", staleSeconds: SM_STALE_MID, type: MetricType.BOOL },
-  { key: "v.gen.timerstart", unit: "utc", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER, precision: 0 },
+  { key: "v.gen.timerstart", unit: "utc", staleSeconds: SM_STALE_MID, type: MetricType.STRING, precision: 0 },
   { key: "v.gen.state", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
   { key: "v.gen.substate", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
   { key: "v.gen.type", staleSeconds: SM_STALE_MID, type: MetricType.STRING },
@@ -254,8 +254,8 @@ export const STANDARD_METRICS = [
   { key: "v.pos.gpsspeed", unit: "km/h", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
   { key: "v.pos.odometer", unit: "km", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
   { key: "v.pos.trip", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
-  { key: "v.pos.valet.latitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER },
-  { key: "v.pos.valet.longitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER },
+  { key: "v.pos.valet.latitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER, precision: 6 },
+  { key: "v.pos.valet.longitude", staleSeconds: SM_STALE_NONE, type: MetricType.NUMBER, precision: 6 },
   { key: "v.pos.valet.distance", unit: "m", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
 
   //
