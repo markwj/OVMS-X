@@ -71,7 +71,7 @@ export default function NewVehicleOVMSv2() {
 
         <ScrollView style={styles.scrollview}>
 
-          <Text>Server</Text>
+          <Text>{t('Server')}</Text>
           <Controller
             control={control}
             name="server"
@@ -91,10 +91,10 @@ export default function NewVehicleOVMSv2() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
-                label="Server URL"
+                label={t('Server URL')}
                 readOnly={selectedServer !== 'other'}
                 onChangeText={onChange}
-                placeholder="Enter server URL"
+                placeholder={t('Enter server URL')}
               />
             )}
           />
@@ -113,9 +113,9 @@ export default function NewVehicleOVMSv2() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
-                label="Secure Secure Websocket Port"
+                label={t('Secure Websocket Port')}
                 onChangeText={onChange}
-                placeholder="Port"
+                placeholder={t('Port')}
                 keyboardType="numeric"
                 autoComplete="off"
                 clearButtonMode="always"
@@ -139,9 +139,9 @@ export default function NewVehicleOVMSv2() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
-                label="Username"
+                label={t('Username')}
                 onChangeText={onChange}
-                placeholder="Username"
+                placeholder={t('Username')}
                 autoComplete="username"
                 clearButtonMode="always"
                 inputMode="text"
@@ -164,9 +164,9 @@ export default function NewVehicleOVMSv2() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
-                label="Password"
+                label={t('Password')}
                 onChangeText={onChange}
-                placeholder="Password"
+                placeholder={t('Password')}
                 secureTextEntry={!passwordVisible}
                 right={<TextInput.Icon
                   icon={passwordVisible ? "eye-off" : "eye"}
@@ -192,9 +192,9 @@ export default function NewVehicleOVMSv2() {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 value={value}
-                label="Vehicle ID (or blank for all)"
+                label={t('Vehicle ID (or blank for all)')}
                 onChangeText={onChange}
-                placeholder="Vehicle ID"
+                placeholder={t('Vehicle ID')}
                 clearButtonMode="always"
                 inputMode="text"
                 autoCapitalize="none"/>

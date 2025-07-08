@@ -32,5 +32,14 @@
   "Standard?": "Standard?",
   "Time to stale": "Time to stale",
   "Actual value": "Actual value",
-  "Add Vehicles": "Add Vehicles"
+  "Add Vehicles": "Add Vehicles",
+  "Server": "Server",
+  "Server URL": "Server URL",
+  "Secure Websocket Port": "Secure Websocket Port",
+  "Username": "Username",
+  "Password": "Password",
+  "Vehicle ID (or blank for all)": "Vehicle ID (or blank for all)",
+  "Vehicle ID": "Vehicle ID",
+  "Enter server URL": "Enter server URL",
+  "Port": "Port"
 }
