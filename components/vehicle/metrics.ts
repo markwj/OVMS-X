@@ -23,7 +23,7 @@ export class Metric {
 
   staleSeconds: number | null = null
   defined: MetricDefined = MetricDefined.NEVER
-  lastModified: number | null = null
+  lastModified: string | null = null
 
   trueStatement? : string = ""
   falseStatement? : string = ""

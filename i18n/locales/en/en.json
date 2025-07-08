@@ -9,6 +9,7 @@
   "Messages": "Messages",
   "Settings": "Settings",
   "Developer": "Developer",
+  "Submit": "Submit",
   "This screen doesn't exist.": "This screen doesn't exist.",
   "Return to home screen": "Return to home screen",
   "Sorry, maps are not available on web": "Sorry, maps are not available on web",
@@ -21,5 +22,13 @@
   "TESLA API": "TESLA API",
   "Reset to standard metrics": "Reset to standard metrics",
   "Clear all metrics": "Clear all metrics",
-  "Delete all metrics": "Delete all metrics"
+  "Delete all metrics": "Delete all metrics",
+  "Type": "Type",
+  "Precision": "Precision",
+  "Defined": "Defined",
+  "Last Modified": "Last Modified",
+  "Stale?": "Stale?",
+  "Standard?": "Standard?",
+  "Time to stale": "Time to stale",
+  "Actual value": "Actual value"
 }
