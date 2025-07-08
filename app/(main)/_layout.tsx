@@ -79,9 +79,9 @@ export default function SubscreenStack() {
         }}
       />
       <Stack.Screen
-        name="developer/developer"
+        name="developer/metrics"
         options={{
-          title: t('Developer'),
+          title: t('Metrics'),
         }}
       />
       <Stack.Screen

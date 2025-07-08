@@ -102,7 +102,7 @@ export default function AboutMetricScreen() {
         </DataTable.Row>
 
         <DataTable.Row key = {"submit"} style={{...styles.metricRow, alignItems: 'center'}}>
-          <Button onPress={handleSubmit(onSubmit)}>{t("Submit")}</Button>
+          <Button onPress={handleSubmit(onSubmit)}>{t("Apply Changes")}</Button>
         </DataTable.Row>
 
       </DataTable>

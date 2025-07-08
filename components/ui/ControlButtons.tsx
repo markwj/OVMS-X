@@ -52,7 +52,7 @@ export function ControlIcon({ type } : { type : controlType }): React.JSX.Elemen
       );
     case controlType.Developer:
       return (
-        <IconButton icon='developer-board' onPress={() => { router.push('/(main)/developer/developer'); }} />
+        <IconButton icon='developer-board' onPress={() => { router.push('/(main)/developer/metrics'); }} />
       );
   }
   return null;
@@ -155,7 +155,7 @@ export function ControlButton({ type } : { type : controlType }): React.JSX.Elem
           icon='developer-board'
           mode='contained-tonal'
           dark={true}
-          onPress={() => { router.push('/(main)/developer/developer'); }}
+          onPress={() => { router.push('/(main)/developer/metrics'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           Developer
         </Button>
