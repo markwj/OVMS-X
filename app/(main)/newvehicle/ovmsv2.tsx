@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useGetMessagesQuery, closeWebSocket } from "@/store/ovmsv2wsApi";
+import { useDispatch } from "react-redux";
+import { vehiclesSlice } from "@/store/vehiclesSlice";
+
 interface FormData {
   server: string;
   serverurl: string;
@@ -24,6 +27,8 @@ const SERVER_BUTTONS = [
 export default function NewVehicleOVMSv2() {
   const height = useHeaderHeight()
   const { t } = useTranslation();
+  const dispatch = useDispatch()
+
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [shouldConnect, setShouldConnect] = useState(false);
@@ -91,8 +96,6 @@ export default function NewVehicleOVMSv2() {
     setIsLoading(true);
     try {
       console.log('Form data:', data);
-      // Enable the query to establish the WebSocket connection
-      setShouldConnect(true);
     } catch (error) {
       console.error('Error:', error);
     } finally {

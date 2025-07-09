@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import spinnerReducer from '@/store/spinnerSlice';
 import vehiclesReducer from '@/store/vehiclesSlice';
 import metricsReducer from '@/store/metricsSlice';
+import messagesReducer from '@/store/messagesSlice';
 import { ovmsv2wsApi } from '@/store/ovmsv2wsApi';
 import {
   persistStore, persistReducer,
@@ -20,12 +21,19 @@ const vehiclesPersistConfig = {
   storage: securePersistStorage,
 }
 
+const messagesPersistConfig = {
+  key: 'messages',
+  version: 1,
+  storage: securePersistStorage,
+}
+
 export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
     metrics: metricsReducer,
     [ovmsv2wsApi.reducerPath]: ovmsv2wsApi.reducer,
-    //messages : messagesReducer,
+    //@ts-ignore
+    messages : persistReducer(messagesPersistConfig, messagesReducer),
     //@ts-ignore
     vehicles: persistReducer(vehiclesPersistConfig, vehiclesReducer),
   },
