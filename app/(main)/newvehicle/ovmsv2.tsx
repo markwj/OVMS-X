@@ -96,6 +96,8 @@ export default function NewVehicleOVMSv2() {
     setIsLoading(true);
     try {
       console.log('Form data:', data);
+      // Enable the query to establish the WebSocket connection
+      setShouldConnect(true);
     } catch (error) {
       console.error('Error:', error);
     } finally {
