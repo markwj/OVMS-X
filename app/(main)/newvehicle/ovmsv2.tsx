@@ -5,7 +5,7 @@ import { Text, TextInput, Button, SegmentedButtons, HelperText } from 'react-nat
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
-
+import { useGetMessagesQuery, closeWebSocket } from "@/store/ovmsv2wsApi";
 interface FormData {
   server: string;
   serverurl: string;
@@ -26,6 +26,7 @@ export default function NewVehicleOVMSv2() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [shouldConnect, setShouldConnect] = useState(false);
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
@@ -37,6 +38,42 @@ export default function NewVehicleOVMSv2() {
       vehicleid: ''
     }
   });
+
+  const {
+    data: messages,
+    error,
+    isFetching,
+    isLoading: isLoadingMessages,
+  } = useGetMessagesQuery(
+    {
+      'serverurl': 'wss://' + watch('serverurl') + ':' + watch('port') + '/apiv2',
+      'username': watch('username'),
+      'password': watch('password'),
+      'vehicleid': (watch('vehicleid') !== '') ? watch('vehicleid') : '*'
+    },
+    { skip: !shouldConnect } // Only execute when shouldConnect is true
+  )
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('[ovmsv2] Query state:', { shouldConnect, isFetching, isLoading: isLoadingMessages, error, messagesCount: messages?.length })
+  }, [shouldConnect, isFetching, isLoadingMessages, error, messages])
+
+    // Check for specific messages and close WebSocket if needed
+  React.useEffect(() => {
+    console.log('[ovmsv2] Messages changed:', messages)
+    if (messages && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1]
+      console.log('[ovmsv2] Checking message:', lastMessage)
+      
+      // Example: Close WebSocket when receiving a specific message type
+      if (lastMessage.type === 'MP-S' && lastMessage.params.includes('1')) {
+        console.log('[ovmsv2] Authentication successful, closing WebSocket')
+        closeWebSocket()
+        // Don't set shouldConnect to false - keep the query active to see messages
+      }
+    }
+  }, [messages])
 
   const selectedServer = watch('server');
 
@@ -54,6 +91,8 @@ export default function NewVehicleOVMSv2() {
     setIsLoading(true);
     try {
       console.log('Form data:', data);
+      // Enable the query to establish the WebSocket connection
+      setShouldConnect(true);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -197,7 +236,7 @@ export default function NewVehicleOVMSv2() {
                 placeholder={t('Vehicle ID')}
                 clearButtonMode="always"
                 inputMode="text"
-                autoCapitalize="none"/>
+                autoCapitalize="none" />
             )}
           />
           {(typeof errors.vehicleid !== 'undefined') &&

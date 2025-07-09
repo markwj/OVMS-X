@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import spinnerReducer from '@/store/spinnerSlice';
 import vehiclesReducer from '@/store/vehiclesSlice';
 import metricsReducer from '@/store/metricsSlice';
+import { ovmsv2wsApi } from '@/store/ovmsv2wsApi';
 import {
   persistStore, persistReducer,
   FLUSH,
@@ -23,6 +24,7 @@ export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
     metrics: metricsReducer,
+    [ovmsv2wsApi.reducerPath]: ovmsv2wsApi.reducer,
     //messages : messagesReducer,
     //@ts-ignore
     vehicles: persistReducer(vehiclesPersistConfig, vehiclesReducer),
@@ -33,7 +35,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    })
+    }).concat(ovmsv2wsApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>
