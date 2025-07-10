@@ -80,34 +80,34 @@ export const metricsSlice = createSlice({
   }
 })
 
-export const getMetricsListSelector = (state: RootState) => state.metrics.metricsList;
+export const getMetricsListSelector = (state: RootState) => state.metrics.metricsList ?? [];
 export const metricsAllKeysSelector = createSelector(getMetricsListSelector, (metricsList) => Object.keys(metricsList))
 export const metricsAllSerialisedValuesSelector = createSelector(getMetricsListSelector, (metricsList) => Object.values(metricsList))
 export const metricsAllValuesSelector = createSelector(metricsAllSerialisedValuesSelector, (metricsList) => metricsList.map((stringMetric) => JSON.parse(stringMetric as string)))
 
 
 export const generateGetMetricSelector = (key: string) => {
-  return createSelector(getMetricsListSelector, (metricsList) => JSON.parse((metricsList as any)[key]))
+  return createSelector(getMetricsListSelector, (metricsList) => JSON.parse((metricsList as any)[key] ?? "{}"))
 }
 
 export const generateGetMetricValueSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric.value)
+  return createSelector(generateGetMetricSelector(key), (metric) => metric?.value)
 }
 
 export const generateGetMetricUnitSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric.unit)
+  return createSelector(generateGetMetricSelector(key), (metric) => metric?.unit)
 }
 
 export const generateMetricIsStaleSelector = (key: string, currentTime: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => (new Date(metric.lastModified).getTime() / 1000 + metric.staleSeconds) < new Date(currentTime).getTime() / 1000)
+  return createSelector(generateGetMetricSelector(key), (metric) => (new Date(metric?.lastModified ?? 0).getTime() / 1000 + (metric?.staleSeconds ?? 0)) < new Date(currentTime).getTime() / 1000)
 }
 
 export const generateMetricIsDefinedSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric.defined)
+  return createSelector(generateGetMetricSelector(key), (metric) => metric?.defined)
 }
 
 export const generateGetMetricLastModifiedSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric.lastModified)
+  return createSelector(generateGetMetricSelector(key), (metric) => metric?.lastModified)
 }
 
 export const { deleteAll, deleteOne, clearAll, clearOne, createMetric, resetToStandardMetrics } = metricsSlice.actions;

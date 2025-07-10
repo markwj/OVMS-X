@@ -1,17 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import {
-  ScrollView,
   View,
   Image,
-  ImageBackground
 } from "react-native";
-import { useTheme, Text, Button, IconButton, Icon, ProgressBar, Appbar } from 'react-native-paper';
-import BottomSheet, { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, Redirect, router, useNavigation } from "expo-router";
-import { Formik } from 'formik';
+import { useTheme, Text, Icon, ProgressBar } from 'react-native-paper';
+import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import { Stack } from "expo-router";
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from "react-redux";
+import { generateGetMetricValueSelector } from "@/store/metricsSlice";
+import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { BatteryIcon } from "@/components/ui/BatteryIcon";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -19,15 +19,20 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
   const carImage = require('@/assets/ovms/carimages/car_roadster_racinggreen.png');
+  
+  const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.bat.range.est"))
+  const vBatSoc = useSelector(generateGetMetricValueSelector("v.bat.soc"))
+  const vPosOdometer = useSelector(generateGetMetricValueSelector("v.pos.odometer"))
+  const selectedVehicle = useSelector(getSelectedVehicle)
 
   return (
     <>
-      <View style={{ flex: 1, justifyContent: "stretch", alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
         <View style={{ flex: 1, flexDirection: 'row', width: '100%', position: 'absolute', left: 0, top: 20 }}>
           <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
-              <Icon source='battery-60' size={20} />
-              <Text style={{ marginStart: 10 }}>365km</Text>
+              <BatteryIcon />
+              <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}km</Text>
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
@@ -61,8 +66,8 @@ export default function HomeScreen() {
               <ControlIcon type={controlType.Messages} />
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
-              <ProgressBar progress={0.75} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
-              <Text style={{ marginTop: 5 }}>{t('SOC')}: 76%  {t('Range')}: 365km</Text>
+              <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
+              <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}km</Text>
             </View>
             <View style={{ alignItems: 'center', marginTop: 20 }}>
               <ControlButton type={controlType.Controls} />
@@ -73,10 +78,10 @@ export default function HomeScreen() {
               <ControlButton type={controlType.Settings} />
               <ControlButton type={controlType.Developer} />
             </View>
-            <View style={{ alignItems: 'left', marginLeft: 50, marginTop: 10 }}>
+            <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
               <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
-              <Text variant='labelMedium'>17,528 km</Text>
-              <Text variant='labelMedium'>{t('VIN')} LRW3F7EK5PC839304</Text>
+              <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}km</Text>
+              <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
             </View>
           </BottomSheetView>
         </BottomSheet>
