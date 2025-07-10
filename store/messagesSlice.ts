@@ -8,7 +8,7 @@ const initialState = {
   messages: [],
 };
 
-const messagesSlice = createSlice({
+export const messagesSlice = createSlice({
   name: 'messages',
   initialState,
   reducers: {
@@ -24,7 +24,7 @@ const messagesSlice = createSlice({
     addAppMessage: (state, action : PayloadAction<{text: string, currentTime : number}>) => {
       let newMessage : IMessage = {
         //@ts-ignore
-        _id: state.messages[0]._id + 1,
+        _id: (state.messages[0]?._id ?? -1) + 1,
         text: action.payload.text,
         createdAt: action.payload.currentTime,
         user: {_id : 1}
@@ -38,7 +38,7 @@ const messagesSlice = createSlice({
     addVehicleMessage: (state, action : PayloadAction<string>) => {
       let newMessage : IMessage = {
         //@ts-ignore
-        _id: state.messages[0]._id + 1,
+        _id: (state.messages[0]?._id ?? -1) + 1,
         text: action.payload,
         createdAt: Date.now(),
         user: {_id : 2}
@@ -48,6 +48,9 @@ const messagesSlice = createSlice({
       if(state.messages.length > MESSAGES_STORE_CAP) {
         state.messages.pop()
       }
+    },
+    wipeMessages: (state) => {
+      state.messages = []
     }
   },
 });
@@ -56,5 +59,5 @@ const messagesSlice = createSlice({
 //@ts-ignore
 export const selectMessages = (state : RootState) => state.messages.messages;
 
-export const { addMessage, addVehicleMessage, addAppMessage } = messagesSlice.actions;
+export const { addMessage, addVehicleMessage, addAppMessage, wipeMessages } = messagesSlice.actions;
 export default messagesSlice.reducer;

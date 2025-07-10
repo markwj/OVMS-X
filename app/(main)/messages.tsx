@@ -4,7 +4,7 @@ import { GiftedChat, IMessage } from 'react-native-gifted-chat'
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { selectMessages, addAppMessage } from "@/store/messagesSlice";
+import { addAppMessage, selectMessages } from "@/store/messagesSlice";
 
 export default function MessagesScreen() {
   const insets = useSafeAreaInsets();

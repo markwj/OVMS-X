@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import MetricTable from "@/components/ui/MetricTable";
 import { Menu, Button, IconButton, Portal, Dialog, Text } from "react-native-paper";
 import { useNavigation } from "expo-router";
+import { messagesSlice } from "@/store/messagesSlice";
 
 //@ts-ignore
 export default function DeveloperScreen() {
@@ -38,6 +39,7 @@ export default function DeveloperScreen() {
 
   return (
     <ScrollView>
+      <Button onPress={() => dispatch(messagesSlice.actions.wipeMessages())}>Wipe messages</Button>
       <MetricTable metrics={values} metricKeys={keys} />
     </ScrollView>
   );
