@@ -8,6 +8,7 @@ export interface Vehicle {
   platformKey : string,
   platformParameters: {},
   name: string,
+  vehicleImage : {}
 }
 
 interface VehiclesState {
