@@ -2,13 +2,19 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root'
 
+export interface VehicleImage {
+  imageName : string | null,
+  tintColor : string | null,
+  customPath : string | null
+}
+
 export interface Vehicle {
   vin : string,
   platform : string,
   platformKey : string,
   platformParameters: {},
   name: string,
-  vehicleImage : {}
+  image: VehicleImage,
 }
 
 interface VehiclesState {

@@ -18,7 +18,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
-  const carImage = require('@/assets/ovms/carimages/roadster_racinggreen.png');
+  const carImage = require('@/assets/carimages/roadster_side_base.png');
   
   const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.bat.range.est"))
   const vBatSoc = useSelector(generateGetMetricValueSelector("v.bat.soc"))
