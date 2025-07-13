@@ -10,8 +10,6 @@ import { useTranslation } from "react-i18next";
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
 
 export default function AboutMetricScreen() {
-  const [refresh, setRefresh] = useState(false) //simply set to update the page
-
   const { metricName } = useLocalSearchParams<{ metricName: string }>();
   const dispatch = useDispatch();
 
@@ -24,7 +22,6 @@ export default function AboutMetricScreen() {
   useEffect(() => {
     navigation.setOptions({
       title: metricName,
-      headerRight: () => <Button onPress={() => setRefresh(!refresh)} children={<Icon size={20} source={"refresh"} />} />
     })
   }, [navigation])
 
