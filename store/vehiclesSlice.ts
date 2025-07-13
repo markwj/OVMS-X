@@ -3,28 +3,28 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root'
 
 export interface VehicleImage {
-  imageName : string | null,
-  tintColor : string | null,
-  customPath : string | null
+  imageName: string | null,
+  tintColor: string | null,
+  customPath: string | null
 }
 
 export interface Vehicle {
   key: string
-  vin : string,
+  vin: string,
   name: string,
-  platform : string,
-  platformKey : string,
+  platform: string,
+  platformKey: string,
   platformParameters: {},
   image: VehicleImage,
 }
 
 interface VehiclesState {
-  selectedVehicleIndex : number,
+  selectedVehicle: string | null
   vehicles: Array<Vehicle>
 }
 
 const initialState: VehiclesState = {
-  selectedVehicleIndex: 0,
+  selectedVehicle: null,
   vehicles: []
 }
 
@@ -32,19 +32,41 @@ export const vehiclesSlice = createSlice({
   name: 'vehicles',
   initialState,
   reducers: {
-    addVehicle: (state, action: PayloadAction<Vehicle>) => { state.vehicles = [...state.vehicles, action.payload] },
-    updateSelectedVehicleIndex: (state, action: PayloadAction<number>) => { state.selectedVehicleIndex = action.payload },
-    updateVehicleVIN: (state, action: PayloadAction<{index : number, newValue : string}>) => { state.vehicles[action.payload.index].vin = action.payload.newValue},
-    updateVehiclePlatform: (state, action: PayloadAction<{index : number, newValue : string}>) => { state.vehicles[action.payload.index].platform = action.payload.newValue},
-    updateVehiclePlatformKey: (state, action: PayloadAction<{index : number, newValue : string}>) => { state.vehicles[action.payload.index].platformKey = action.payload.newValue},
-    updateVehicleName: (state, action: PayloadAction<{index : number, newValue : string}>) => { state.vehicles[action.payload.index].name = action.payload.newValue},
-    removeVehicle: (state, action: PayloadAction<number>) => { state.vehicles.splice(action.payload, 1); state.selectedVehicleIndex = 0 },
-    wipeVehicles: (state) => { state.vehicles = []},
+    addVehicle: (state, action: PayloadAction<Vehicle>) => {
+      const keys = state.vehicles.map((v) => v.key)
+      const vehicleIndex = keys.indexOf(action.payload.key)
+      if (vehicleIndex > -1) {
+        state.vehicles[vehicleIndex] = action.payload
+        return;
+      }
+      state.vehicles = [...state.vehicles, action.payload]
+    },
+    selectVehicle: (state, action: PayloadAction<string>) => {
+      state.selectedVehicle = action.payload
+    },
+    updateVehicleVIN: (state, action: PayloadAction<{ index: number, newValue: string }>) => { state.vehicles[action.payload.index].vin = action.payload.newValue },
+    updateVehicleName: (state, action: PayloadAction<{ index: number, newValue: string }>) => { state.vehicles[action.payload.index].name = action.payload.newValue },
+    updateVehicleImage: (state, action: PayloadAction<{ index: number, newValue: VehicleImage }>) => { state.vehicles[action.payload.index].image = action.payload.newValue },
+    removeVehicle: (state, action: PayloadAction<number>) => { state.vehicles.splice(action.payload, 1) },
+    wipeVehicles: (state) => { state.vehicles = []; state.selectedVehicle = null; },
+    unselectVehicle: (state) => { state.selectedVehicle = null }
   },
 })
 
-export const getSelectedVehicle = (state : RootState) => state.vehicles.vehicles[state.vehicles.selectedVehicleIndex]
-export const getVehicles = (state : RootState) => state.vehicles.vehicles
+function FindVehicle(state: RootState, key: string) {
+  for (let i = 0; i < state.vehicles.vehicles.length; i++) {
+    if (state.vehicles.vehicles[i].key == key) {
+      return state.vehicles.vehicles[i]
+    }
+  }
+  return null
+}
 
-export const { addVehicle, removeVehicle, updateSelectedVehicleIndex, updateVehicleName, updateVehiclePlatform, updateVehiclePlatformKey, updateVehicleVIN } = vehiclesSlice.actions
+export function generateFindVehicleSelector(key: string) {
+  return (state: RootState) => FindVehicle(state, key)
+}
+export const getSelectedVehicle = (state: RootState) => (state.vehicles.selectedVehicle != null ? FindVehicle(state, state.vehicles.selectedVehicle) : null)
+export const getVehicles = (state: RootState) => state.vehicles.vehicles
+
+export const { addVehicle, removeVehicle, selectVehicle, updateVehicleName, updateVehicleVIN, unselectVehicle, wipeVehicles, updateVehicleImage } = vehiclesSlice.actions
 export default vehiclesSlice.reducer
