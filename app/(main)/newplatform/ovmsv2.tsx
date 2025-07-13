@@ -9,6 +9,7 @@ import { useGetMessagesQuery, closeWebSocket } from "@/store/ovmsv2wsApi";
 import { useDispatch } from "react-redux";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { useLazyGetVehiclesQuery } from "@/store/ovmsv2httpApi";
+import { VehicleTypes } from "@/components/ui/VehicleImages";
 
 interface FormData {
   server: string;
@@ -24,6 +25,23 @@ const SERVER_BUTTONS = [
   { value: 'ovms.dexters-web.de', label: 'EU' },
   { value: 'other', label: 'Other' }
 ];
+
+// Function to generate a random color
+const generateRandomColor = (): string => {
+  const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+    '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+    '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2',
+    '#F9E79F', '#ABEBC6', '#FAD7A0', '#AED6F1', '#D5A6BD'
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+// Function to generate a random vehicle type
+const generateRandomVehicleType = (): string => {
+  const vehicleTypeKeys = Object.keys(VehicleTypes);
+  return vehicleTypeKeys[Math.floor(Math.random() * vehicleTypeKeys.length)];
+};
 
 export default function NewPlatformOVMSv2() {
   const height = useHeaderHeight()
@@ -90,8 +108,8 @@ export default function NewPlatformOVMSv2() {
               password: data.password
             },
             image: {
-              imageName: 'roadster',
-              tintColor: '#000000',
+              imageName: generateRandomVehicleType(),
+              tintColor: generateRandomColor(),
               customPath: null
             }
           };
