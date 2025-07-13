@@ -6,9 +6,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle, getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
 import { useTranslation } from "react-i18next";
+import { VehicleSideImage } from "@/components/ui/VehicleImages";
 
 function VehicleList() {
   const vehicleList = useSelector(getVehicles);
+  const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
 
   const onVehiclePress = (index : number) => {
@@ -22,10 +24,17 @@ function VehicleList() {
       <>
         {vehicleList.map((vehicle: Vehicle, index: number) => (
           <Pressable
-            key={`vehicle-${vehicle.platformKey}-${vehicle.name}`}
+            key={`vehicle-${vehicle.key}`}
             onPress={() => { onVehiclePress(index) } }>
-            <Card style={styles.container}>
+            <Card
+            style={styles.container}
+            mode={selectedVehicle.key === vehicle.key ? 'outlined' : 'elevated'}
+            contentStyle={{
+              opacity: selectedVehicle.key === vehicle.key ? 1.0 : 0.5
+            }}
+            elevation={1}>
               <Card.Content>
+                <VehicleSideImage image={vehicle.image} />
                 <Text>{vehicle.name}</Text>
               </Card.Content>
             </Card>

@@ -13,13 +13,40 @@ import Constants from 'expo-constants';
 import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, IconButton, Text, Icon, View } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { store, persistedStore } from '@/store/root';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { VehicleSelector } from '@/components/ui/VehicleSelector';
 import { Drawer } from 'expo-router/drawer';
 import { useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
+import { getSelectedVehicle } from '@/store/vehiclesSlice';
+
+const MainLayout = () => {
+  const dimensions = useWindowDimensions();
+  const isLargeScreen = dimensions.width >= 768;
+  const selectedVehicle = useSelector(getSelectedVehicle);
+
+  return (
+    <>
+    <StatusBar style='auto' hidden={false} />
+    <Drawer
+      defaultStatus="closed"
+      screenOptions={{
+        title: selectedVehicle.name,
+        drawerType: isLargeScreen ? 'permanent' : 'slide',
+        drawerStyle: isLargeScreen ? null : { width: '50%' },
+        drawerStatusBarAnimation: 'slide',
+        keyboardDismissMode: 'on-drag',
+        headerRight: () => <Icon source='antenna' size={20} />
+      }}
+      drawerContent={(props) => {
+        return <VehicleSelector />
+      }}>
+    </Drawer>
+    </>
+      )
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -37,9 +64,6 @@ export default function RootLayout() {
   (colorScheme === 'dark') ? DarkTheme : NavigationDefaultTheme;
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);
 
-  const dimensions = useWindowDimensions();
-  const isLargeScreen = dimensions.width >= 768;
-
   return (
     <GestureHandlerRootView>
       <Provider store={store}>
@@ -50,21 +74,7 @@ export default function RootLayout() {
         }>
           <PaperProvider theme={theme}>
             <PersistGate loading={null} persistor={persistedStore}>
-              <StatusBar style='auto' hidden={false} />
-              <Drawer
-                defaultStatus="closed"
-                screenOptions={{
-                  title: "EV914",
-                  drawerType: isLargeScreen ? 'permanent' : 'slide',
-                  drawerStyle: isLargeScreen ? null : { width: '50%' },
-                  drawerStatusBarAnimation: 'slide',
-                  keyboardDismissMode: 'on-drag',
-                  headerRight: () => <Icon source='antenna' size={20} />
-                }}
-                drawerContent={(props) => {
-                  return <VehicleSelector />
-                }}>
-              </Drawer>
+              <MainLayout />
             </PersistGate>
           </PaperProvider>
         </ThemeProvider>
