@@ -77,8 +77,10 @@ export default function NewPlatformOVMSv2() {
         result.forEach((vehicle: any) => {
           // Transform the API response to match the Vehicle interface
           const newVehicle = {
-            platform: 'ovmsv2api',
+            key: `ovmsv2api:${data.serverurl}:${data.httpsport}:${data.wssport}:${data.username}:${vehicle.id}`,
             name: vehicle.id,
+            vin: '',
+            platform: 'ovmsv2api',
             platformKey: `ovmsv2api:${data.serverurl}:${data.httpsport}:${data.wssport}:${data.username}`,
             platformParameters: {
               server: data.serverurl,
@@ -87,7 +89,6 @@ export default function NewPlatformOVMSv2() {
               username: data.username,
               password: data.password
             },
-            vin: '',
             image: {
               imageName: 'roadster',
               tintColor: '#000000',

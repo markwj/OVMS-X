@@ -9,11 +9,12 @@ export interface VehicleImage {
 }
 
 export interface Vehicle {
+  key: string
   vin : string,
+  name: string,
   platform : string,
   platformKey : string,
   platformParameters: {},
-  name: string,
   image: VehicleImage,
 }
 

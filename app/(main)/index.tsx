@@ -36,8 +36,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
-            <Icon source='antenna' size={20} />
-            <Text style={{ marginTop: 10 }}>{t('Awake, online')}</Text>
+            <Text>{t('Awake, online')}</Text>
           </View>
         </View>
         <View style={{ flex: 1, width: '80%' }}>

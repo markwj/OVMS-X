@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants from 'expo-constants';
-import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, IconButton, Text } from 'react-native-paper';
+import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, IconButton, Text, Icon, View } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { store, persistedStore } from '@/store/root';
 import { Provider } from 'react-redux';
@@ -59,6 +59,7 @@ export default function RootLayout() {
                   drawerStyle: isLargeScreen ? null : { width: '50%' },
                   drawerStatusBarAnimation: 'slide',
                   keyboardDismissMode: 'on-drag',
+                  headerRight: () => <Icon source='antenna' size={20} />
                 }}
                 drawerContent={(props) => {
                   return <VehicleSelector />
