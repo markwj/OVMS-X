@@ -16,9 +16,8 @@ export default function DeveloperScreen() {
   const { t } = useTranslation();
 
   const [visible, setVisible] = useState(false);
-  const openMenu = () => { console.log('openMenu'); setVisible(true); }
-  const closeMenu = () => { console.log('closeMenu'); setVisible(false); }
-  console.log('visible', visible)
+  const openMenu = () => { setVisible(true); }
+  const closeMenu = () => { setVisible(false); }
 
   let keys = useSelector(metricsAllKeysSelector)
   let values = useSelector(metricsAllValuesSelector)

@@ -247,7 +247,7 @@ export const STANDARD_METRICS = [
   { key: "v.pos.latitude", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER, precision: 6 },
   { key: "v.pos.longitude", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER, precision: 6 },
   { key: "v.pos.location", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER },
-  { key: "v.pos.directon", unit: "degrees", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
+  { key: "v.pos.direction", unit: "degrees", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
   { key: "v.pos.altitude", unit: "m", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
   { key: "v.pos.speed", unit: "km/h", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },
   { key: "v.pos.acceleration", unit: "m/s^2", staleSeconds: SM_STALE_MIN, type: MetricType.NUMBER },

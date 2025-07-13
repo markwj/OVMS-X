@@ -12,13 +12,13 @@ import { useSelector } from "react-redux";
 import { generateGetMetricValueSelector } from "@/store/metricsSlice";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
+import { VehicleSideImage } from "@/components/ui/VehicleImages";
 
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
-  const carImage = require('@/assets/carimages/roadster_side_base.png');
   
   const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.bat.range.est"))
   const vBatSoc = useSelector(generateGetMetricValueSelector("v.bat.soc"))
@@ -41,10 +41,9 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={{ flex: 1, width: '80%' }}>
-          <Image
-            source={carImage}
-            resizeMode='contain'
-            style={{ width: '100%' }} />
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', marginTop: 50 }}>
+            {selectedVehicle != null && <VehicleSideImage image={selectedVehicle.image} />}
+          </View>
         </View>
 
         <BottomSheet
