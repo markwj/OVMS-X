@@ -33,7 +33,7 @@ const MainLayout = () => {
     <Drawer
       defaultStatus="closed"
       screenOptions={{
-        title: selectedVehicle.name,
+        title: selectedVehicle?.name ?? '',
         drawerType: isLargeScreen ? 'permanent' : 'slide',
         drawerStyle: isLargeScreen ? null : { width: '50%' },
         drawerStatusBarAnimation: 'slide',

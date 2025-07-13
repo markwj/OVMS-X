@@ -13,8 +13,8 @@ function VehicleList() {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
 
-  const onVehiclePress = (index : number) => {
-    dispatch(vehiclesSlice.actions.updateSelectedVehicleIndex(index))
+  const onVehiclePress = (key : string) => {
+    dispatch(vehiclesSlice.actions.selectVehicle(key))
   }
 
   if (typeof vehicleList === 'undefined') {
@@ -25,14 +25,13 @@ function VehicleList() {
         {vehicleList.map((vehicle: Vehicle, index: number) => (
           <Pressable
             key={`vehicle-${vehicle.key}`}
-            onPress={() => { onVehiclePress(index) } }>
+            onPress={() => { onVehiclePress(vehicle.key) } }>
             <Card
             style={styles.container}
-            mode={selectedVehicle.key === vehicle.key ? 'outlined' : 'elevated'}
+            mode={selectedVehicle?.key === vehicle.key ? 'outlined' : 'elevated'}
             contentStyle={{
-              opacity: selectedVehicle.key === vehicle.key ? 1.0 : 0.5
-            }}
-            elevation={1}>
+              opacity: selectedVehicle?.key === vehicle.key ? 1.0 : 0.5
+            }}>
               <Card.Content>
                 <VehicleSideImage image={vehicle.image} />
                 <Text>{vehicle.name}</Text>
