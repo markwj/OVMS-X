@@ -4,6 +4,7 @@ import vehiclesReducer from '@/store/vehiclesSlice';
 import metricsReducer from '@/store/metricsSlice';
 import messagesReducer from '@/store/messagesSlice';
 import { ovmsv2wsApi } from '@/store/ovmsv2wsApi';
+import { ovmsv2httpApi } from '@/store/ovmsv2httpApi';
 import {
   persistStore, persistReducer,
   FLUSH,
@@ -32,6 +33,7 @@ export const store = configureStore({
     spinner: spinnerReducer,
     metrics: metricsReducer,
     [ovmsv2wsApi.reducerPath]: ovmsv2wsApi.reducer,
+    [ovmsv2httpApi.reducerPath]: ovmsv2httpApi.reducer,
     //@ts-ignore
     messages : persistReducer(messagesPersistConfig, messagesReducer),
     //@ts-ignore
@@ -43,7 +45,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(ovmsv2wsApi.middleware),
+    }).concat(ovmsv2wsApi.middleware).concat(ovmsv2httpApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

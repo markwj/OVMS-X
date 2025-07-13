@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { Text, TextInput, Button, SegmentedButtons, HelperText } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from "react-hook-form";
@@ -8,14 +8,15 @@ import { useHeaderHeight } from '@react-navigation/elements'
 import { useGetMessagesQuery, closeWebSocket } from "@/store/ovmsv2wsApi";
 import { useDispatch } from "react-redux";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
+import { useLazyGetVehiclesQuery } from "@/store/ovmsv2httpApi";
 
 interface FormData {
   server: string;
   serverurl: string;
-  port: string;
+  httpsport: string;
+  wssport: string;
   username: string;
   password: string;
-  vehicleid: string;
 }
 
 const SERVER_BUTTONS = [
@@ -24,61 +25,24 @@ const SERVER_BUTTONS = [
   { value: 'other', label: 'Other' }
 ];
 
-export default function NewVehicleOVMSv2() {
+export default function NewPlatformOVMSv2() {
   const height = useHeaderHeight()
   const { t } = useTranslation();
   const dispatch = useDispatch()
 
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [shouldConnect, setShouldConnect] = useState(false);
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
       server: 'api.openvehicles.com',
       serverurl: 'api.openvehicles.com',
-      port: '6870',
+      httpsport: '6869',
+      wssport: '6870',
       username: '',
-      password: '',
-      vehicleid: ''
+      password: ''
     }
   });
-
-  const {
-    data: messages,
-    error,
-    isFetching,
-    isLoading: isLoadingMessages,
-  } = useGetMessagesQuery(
-    {
-      'serverurl': 'wss://' + watch('serverurl') + ':' + watch('port') + '/apiv2',
-      'username': watch('username'),
-      'password': watch('password'),
-      'vehicleid': (watch('vehicleid') !== '') ? watch('vehicleid') : '*'
-    },
-    { skip: !shouldConnect } // Only execute when shouldConnect is true
-  )
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log('[ovmsv2] Query state:', { shouldConnect, isFetching, isLoading: isLoadingMessages, error, messagesCount: messages?.length })
-  }, [shouldConnect, isFetching, isLoadingMessages, error, messages])
-
-    // Check for specific messages and close WebSocket if needed
-  React.useEffect(() => {
-    console.log('[ovmsv2] Messages changed:', messages)
-    if (messages && messages.length > 0) {
-      const lastMessage = messages[messages.length - 1]
-      console.log('[ovmsv2] Checking message:', lastMessage)
-      
-      // Example: Close WebSocket when receiving a specific message type
-      if (lastMessage.type === 'MP-S' && lastMessage.params.includes('1')) {
-        console.log('[ovmsv2] Authentication successful, closing WebSocket')
-        closeWebSocket()
-        // Don't set shouldConnect to false - keep the query active to see messages
-      }
-    }
-  }, [messages])
 
   const selectedServer = watch('server');
 
@@ -92,14 +56,57 @@ export default function NewVehicleOVMSv2() {
     setValue('server', value);
   };
 
+  const [getVehicles, { data: vehicleRecords, error, isFetching: isFetchingLists, isLoading: isLoadingLists }] = useLazyGetVehiclesQuery();
+
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      console.log('Form data:', data);
-      // Enable the query to establish the WebSocket connection
-      setShouldConnect(true);
+      // Construct the HTTPS URL
+      const httpsUrl = `https://${data.serverurl}:${data.httpsport}/api/vehicles`;
+      
+      // Call the API with the form data
+      const result = await getVehicles({
+        url: httpsUrl,
+        username: data.username,
+        password: data.password
+      }).unwrap();
+      
+      console.log('getVehicles result', result);
+      // Handle the response - add vehicles to the store
+      if (result && Array.isArray(result)) {
+        result.forEach((vehicle: any) => {
+          // Transform the API response to match the Vehicle interface
+          const newVehicle = {
+            platform: 'ovmsv2api',
+            name: vehicle.id,
+            platformKey: `ovmsv2api:${data.serverurl}:${data.httpsport}:${data.wssport}:${data.username}`,
+            platformParameters: {
+              server: data.serverurl,
+              httpsport: data.httpsport,
+              wssport: data.wssport,
+              username: data.username,
+              password: data.password
+            },
+            vin: '',
+            image: {
+              imageName: 'roadster',
+              tintColor: '#000000',
+              customPath: null
+            }
+          };
+          
+          dispatch(vehiclesSlice.actions.addVehicle(newVehicle));
+        });
+      }
+      
+      // Navigate back to main screen after successful addition
+      setTimeout(() => {
+        router.back();
+      }, 1500);
+      
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching vehicles:', error);
+      // Handle error - show error message to user
     } finally {
       setIsLoading(false);
     }
@@ -150,29 +157,61 @@ export default function NewVehicleOVMSv2() {
 
           <View style={styles.gap}></View>
 
-          <Controller
-            control={control}
-            name="port"
-            rules={{ required: 'Required' }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                label={t('Secure Websocket Port')}
-                onChangeText={onChange}
-                placeholder={t('Port')}
-                keyboardType="numeric"
-                autoComplete="off"
-                clearButtonMode="always"
-                inputMode="numeric"
-                autoCapitalize="none"
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+
+            <View style={{ flex: 1, flexGrow: 1 }}>
+              <Controller
+                control={control}
+                name="httpsport"
+                rules={{ required: 'Required' }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    value={value}
+                    label={t('HTTPS Port')}
+                    onChangeText={onChange}
+                    placeholder={t('HTTPS Port')}
+                    keyboardType="numeric"
+                    autoComplete="off"
+                    clearButtonMode="always"
+                    inputMode="numeric"
+                    autoCapitalize="none"
+                  />
+                )}
               />
-            )}
-          />
-          {(typeof errors.port !== 'undefined') &&
-            <HelperText type="error" visible={typeof errors.port !== 'undefined'}>
-              Error: {errors.port?.message}
-            </HelperText>
-          }
+              {(typeof errors.httpsport !== 'undefined') &&
+                <HelperText type="error" visible={typeof errors.httpsport !== 'undefined'}>
+                  Error: {errors.httpsport?.message}
+                </HelperText>
+              }
+            </View>
+
+            <View style={{ flex: 1, flexGrow: 1 }}>
+              <Controller
+                control={control}
+                name="wssport"
+                rules={{ required: 'Required' }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    value={value}
+                    label={t('WSS Port')}
+                    onChangeText={onChange}
+                    placeholder={t('WSS Port')}
+                    keyboardType="numeric"
+                    autoComplete="off"
+                    clearButtonMode="always"
+                    inputMode="numeric"
+                    autoCapitalize="none"
+                  />
+                )}
+              />
+              {(typeof errors.wssport !== 'undefined') &&
+                <HelperText type="error" visible={typeof errors.wssport !== 'undefined'}>
+                  Error: {errors.wssport?.message}
+                </HelperText>
+              }
+            </View>
+
+          </View>
 
           <View style={styles.gap}></View>
 
@@ -230,35 +269,26 @@ export default function NewVehicleOVMSv2() {
 
           <View style={styles.gap}></View>
 
-          <Controller
-            control={control}
-            name="vehicleid"
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                label={t('Vehicle ID (or blank for all)')}
-                onChangeText={onChange}
-                placeholder={t('Vehicle ID')}
-                clearButtonMode="always"
-                inputMode="text"
-                autoCapitalize="none" />
-            )}
-          />
-          {(typeof errors.vehicleid !== 'undefined') &&
-            <HelperText type="error" visible={typeof errors.vehicleid !== 'undefined'}>
-              Error: {errors.vehicleid?.message}
-            </HelperText>
-          }
-
-          <View style={styles.gap}></View>
-
           <Button
             mode="contained"
             onPress={handleSubmit(onSubmit)}
-            loading={isLoading}
+            loading={isLoading || isLoadingLists}
+            disabled={isLoading || isLoadingLists}
           >
             {t('Add Vehicles')}
           </Button>
+
+          {error && (
+            <HelperText type="error" visible={true}>
+              Error: {'status' in error ? `HTTP ${error.status}` : error.message || 'Failed to fetch vehicles'}
+            </HelperText>
+          )}
+
+          {vehicleRecords && vehicleRecords.length > 0 && (
+            <HelperText type="info" visible={true}>
+              Successfully loaded {vehicleRecords.length} vehicle(s)
+            </HelperText>
+          )}
 
         </ScrollView>
 

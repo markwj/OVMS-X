@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme, Text, Card } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
-export default function NewVehicleTesla() {
+export default function NewPlatformTesla() {
   const theme = useTheme();
   const { t } = useTranslation();
   

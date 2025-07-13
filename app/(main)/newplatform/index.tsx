@@ -9,7 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme, Text, Divider, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
-export default function NewVehicle() {
+export default function NewPlatform() {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -20,7 +20,7 @@ export default function NewVehicle() {
         <Button
           mode='contained-tonal'
           dark={true}
-          onPress={() => { router.replace('/(main)/newvehicle/ovmsv2'); }}
+          onPress={() => { router.replace('/(main)/newplatform/ovmsv2'); }}
           style={{ flex: 1, width: '100%', height: 200 }}
           contentStyle={{ width: '100%', height: '100%' }}>
           <Text>{t('OVMS v2 API')}</Text>
@@ -29,7 +29,7 @@ export default function NewVehicle() {
         <Button
           mode='contained-tonal'
           dark={true}
-          onPress={() => { router.replace('/(main)/newvehicle/tesla'); }}
+          onPress={() => { router.replace('/(main)/newplatform/tesla'); }}
           style={{ flex: 1, width: '100%', height: 200 }}
           contentStyle={{ width: '100%', height: '100%' }}>
           <Text>{t('TESLA API')}</Text>
@@ -38,7 +38,7 @@ export default function NewVehicle() {
       </ScrollView>
       <Stack.Screen
         options={{
-          headerTitle: t('New Vehicle'),
+          headerTitle: t('New Platform'),
         }}
       />
     </>

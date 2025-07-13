@@ -5,6 +5,7 @@ import { Text, Card, Button } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle, getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
+import { useTranslation } from "react-i18next";
 
 function VehicleList() {
   const vehicleList = useSelector(getVehicles);
@@ -21,7 +22,7 @@ function VehicleList() {
       <>
         {vehicleList.map((vehicle: Vehicle, index: number) => (
           <Pressable
-            key={"vehicle-" + vehicle.vin}
+            key={`vehicle-${vehicle.platformKey}-${vehicle.name}`}
             onPress={() => { onVehiclePress(index) } }>
             <Card style={styles.container}>
               <Card.Content>
@@ -37,13 +38,14 @@ function VehicleList() {
 
 export function VehicleSelector() {
   const router = useRouter();
+  const { t } = useTranslation();
 
-  const handleAddNewVehicle = () => {
+  const handleAddNewPlatform = () => {
     // Close the drawer first by going back
     router.back();
-    // Then navigate to the new vehicle screen
+    // Then navigate to the new platform screen
     setTimeout(() => {
-      router.push('/(main)/newvehicle');
+      router.push('/(main)/newplatform');
     }, 100);
   };
 
@@ -51,10 +53,10 @@ export function VehicleSelector() {
     <SafeAreaView style={{ height: '100%' }}>
       <ScrollView>
         <VehicleList />
-        <Pressable onPress={handleAddNewVehicle}>
+        <Pressable onPress={handleAddNewPlatform}>
           <Card style={styles.container}>
             <Card.Content>
-              <Text>Add a new vehicle</Text>
+              <Text>{t('Add a new platform')}</Text>
             </Card.Content>
           </Card>
         </Pressable>
