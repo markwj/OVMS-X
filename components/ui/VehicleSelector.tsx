@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Image, View, Pressable, ScrollView, StyleSheet } from "react-native";
 import { router, useRouter } from "expo-router";
-import { Text, Card, Button } from "react-native-paper";
+import { Text, Card, Button, Icon } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle, getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
@@ -13,7 +13,7 @@ function VehicleList() {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
 
-  const onVehiclePress = (key : string) => {
+  const onVehiclePress = (key: string) => {
     dispatch(vehiclesSlice.actions.selectVehicle(key))
   }
 
@@ -25,16 +25,19 @@ function VehicleList() {
         {vehicleList.map((vehicle: Vehicle, index: number) => (
           <Pressable
             key={`vehicle-${vehicle.key}`}
-            onPress={() => { onVehiclePress(vehicle.key) } }>
+            onPress={() => { onVehiclePress(vehicle.key) }}>
             <Card
-            style={styles.container}
-            mode={selectedVehicle?.key === vehicle.key ? 'outlined' : 'elevated'}
-            contentStyle={{
-              opacity: selectedVehicle?.key === vehicle.key ? 1.0 : 0.5
-            }}>
+              style={styles.container}
+              mode={selectedVehicle?.key === vehicle.key ? 'outlined' : 'elevated'}
+              contentStyle={{
+                opacity: selectedVehicle?.key === vehicle.key ? 1.0 : 0.5
+              }}>
               <Card.Content>
                 <VehicleSideImage image={vehicle.image} />
-                <Text>{vehicle.name}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={{ alignSelf: "flex-start" }}>{vehicle.name}</Text>
+                  <View style={{ alignSelf: "flex-end" }}><Icon source='pencil' size={20} /></View>
+                </View>
               </Card.Content>
             </Card>
           </Pressable>
