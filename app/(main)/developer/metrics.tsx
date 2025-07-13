@@ -7,6 +7,7 @@ import MetricTable from "@/components/ui/MetricTable";
 import { Menu, Button, IconButton, Portal, Dialog, Text } from "react-native-paper";
 import { useNavigation } from "expo-router";
 import { messagesSlice } from "@/store/messagesSlice";
+import { vehiclesSlice } from "@/store/vehiclesSlice";
 
 //@ts-ignore
 export default function DeveloperScreen() {
@@ -33,13 +34,14 @@ export default function DeveloperScreen() {
           <Menu.Item leadingIcon="refresh" onPress={() => { dispatch(metricsSlice.actions.resetToStandardMetrics()); closeMenu(); }} title={t("Reset standard metrics")} />
           <Menu.Item leadingIcon="eraser" onPress={() => { dispatch(metricsSlice.actions.clearAll()); closeMenu(); }} title={t("Clear all metrics")} />
           <Menu.Item leadingIcon="delete" onPress={() => { dispatch(metricsSlice.actions.deleteAll()); closeMenu(); }} title={t("Delete all metrics")} />
+          <Menu.Item leadingIcon="delete" onPress={() => { dispatch(messagesSlice.actions.wipeMessages()); closeMenu(); }} title={t("Delete all messages")} />
+          <Menu.Item leadingIcon="delete" onPress={() => { dispatch(vehiclesSlice.actions.wipeVehicles()); closeMenu(); }} title={t("Delete all vehicles")} />
         </Menu>
     })
   }, [navigation, visible])
 
   return (
     <ScrollView>
-      <Button onPress={() => dispatch(messagesSlice.actions.wipeMessages())}>Wipe messages</Button>
       <MetricTable metrics={values} metricKeys={keys} />
     </ScrollView>
   );
