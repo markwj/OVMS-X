@@ -10,7 +10,11 @@ export default function ClimateScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <VehicleTopImage image={vehicle.image} />
+      {vehicle != null &&
+        <View style={{ height: '100%' }}>
+          <VehicleTopImage image={vehicle.image} />
+        </View>
+      }
     </View>
   );
 }
