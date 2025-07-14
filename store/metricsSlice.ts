@@ -2,14 +2,16 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
 import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
-
+import { useDispatch } from 'react-redux';
 
 export interface Metrics {
   metricsList: {}
+  hasStandardMetrics: boolean
 }
 
 const initialMetricsState: Metrics = {
-  metricsList: {}
+  metricsList: {},
+  hasStandardMetrics: false
 }
 
 export const metricsSlice = createSlice({
@@ -21,6 +23,7 @@ export const metricsSlice = createSlice({
       STANDARD_METRICS.forEach((metric) => {
         (state.metricsList as any)[metric.key] = JSON.stringify(new Metric({ ...metric, standard: true }));
       })
+      state.hasStandardMetrics = true
     },
     deleteAll: (state: Metrics) => {
       state.metricsList = {};
@@ -109,6 +112,8 @@ export const generateMetricIsDefinedSelector = (key: string) => {
 export const generateGetMetricLastModifiedSelector = (key: string) => {
   return createSelector(generateGetMetricSelector(key), (metric) => metric?.lastModified)
 }
+
+export const hasStandardMetricsSelector = (state: RootState) => state.metrics.hasStandardMetrics ?? false
 
 export const { deleteAll, deleteOne, clearAll, clearOne, createMetric, resetToStandardMetrics } = metricsSlice.actions;
 export default metricsSlice.reducer;

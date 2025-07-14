@@ -22,11 +22,19 @@ import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/vehiclesSlice';
 import { ConnectionIcon } from '@/components/platforms/connection';
+import { hasStandardMetricsSelector, metricsSlice } from '@/store/metricsSlice';
+import { useDispatch } from 'react-redux';
 
 const MainLayout = () => {
   const dimensions = useWindowDimensions();
   const isLargeScreen = dimensions.width >= 768;
   const selectedVehicle = useSelector(getSelectedVehicle);
+  const hasStandardMetrics = useSelector(hasStandardMetricsSelector);
+  const dispatch = useDispatch();
+
+  if (!hasStandardMetrics) {
+    dispatch(metricsSlice.actions.resetToStandardMetrics());
+  }
 
   return (
     <>

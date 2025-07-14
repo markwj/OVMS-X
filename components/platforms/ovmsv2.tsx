@@ -31,14 +31,14 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
     // Send authentication message when connection opens
     const openListener = () => {
       const authMessage = `MP-A 1 ${selectedVehicle?.platformParameters?.username} ${selectedVehicle?.platformParameters?.password} ${selectedVehicle?.name}`
-      console.log('[connection] Sending auth message:', authMessage)
+      console.log('[connection] tx auth', authMessage)
       connection?.send(authMessage)
     }
         
     const messageListener = (event: MessageEvent) => {
 
       if (event.data.startsWith('MP-S')) {
-        console.log('[connection] successful login',event.data)
+        console.log('[connection] rx LOGIN(RESULT)',event.data)
 
       } else if (event.data.startsWith('F')) {
         const parts = event.data.substring(1).split(',')

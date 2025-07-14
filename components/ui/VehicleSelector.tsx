@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle, getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
 import { useTranslation } from "react-i18next";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
+import { metricsSlice } from "@/store/metricsSlice";
 
 function VehicleList() {
   const vehicleList = useSelector(getVehicles);
@@ -14,6 +15,7 @@ function VehicleList() {
   const dispatch = useDispatch();
 
   const onVehiclePress = (key: string) => {
+    dispatch(metricsSlice.actions.clearAll());
     dispatch(vehiclesSlice.actions.selectVehicle(key))
   }
 
