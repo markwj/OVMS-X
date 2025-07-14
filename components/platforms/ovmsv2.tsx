@@ -122,6 +122,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const dateAndTimeOfLastChargeEnd = parts[41]
 
         dispatch(metricsSlice.actions.setMetric({ key: 'v.b.soc', value: soc }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.soh', value: batterySOH }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.ideal', value: idealRange }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.est', value: estimatedRange }))
 
@@ -150,7 +151,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
 
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.latitude', value: latitude }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.longitude', value: longitude }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.dire', value: carDirection }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.direction', value: carDirection }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.altitude', value: carAltitude }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.gpsspeed', value: gpsSpeed }))
@@ -167,6 +168,15 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const rearLeftWheelPressure = parts[6]
         const rearLeftWheelTemperature = parts[7]
         const staleTpmsIndicator = parts[8]
+
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.p', value: frontLeftWheelPressure }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.p', value: frontRightWheelPressure }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.p', value: rearRightWheelPressure }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.p', value: rearLeftWheelPressure }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature }))
 
       } else if (event.data.startsWith('T')) {
         const parts = event.data.substring(1).split(',')
@@ -223,6 +233,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.12v.voltage', value: vehicle12VLineVoltage }))
 
       } else if (event.data.startsWith('P')) {
         const type = event.data.substring(1,2)
