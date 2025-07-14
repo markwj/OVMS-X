@@ -7,12 +7,12 @@ import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
 
 export function CarMarker() {
-  const vPosLatitude = useSelector(generateGetMetricValueSelector("v.pos.latitude"))
-  const vPosLongitude = useSelector(generateGetMetricValueSelector("v.pos.longitude"))
-  const vPosDirection = useSelector(generateGetMetricValueSelector("v.pos.direction"))
+  const vPosLatitude = useSelector(generateGetMetricValueSelector("v.p.latitude"))
+  const vPosLongitude = useSelector(generateGetMetricValueSelector("v.p.longitude"))
+  const vPosDirection = useSelector(generateGetMetricValueSelector("v.p.direction"))
 
-  const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.bat.range.est"))
-  const vBatRangeIdeal = useSelector(generateGetMetricValueSelector("v.bat.range.ideal"))
+  const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.b.range.est"))
+  const vBatRangeIdeal = useSelector(generateGetMetricValueSelector("v.b.range.ideal"))
 
   const selectedVehicle = useSelector(getSelectedVehicle)
 
@@ -22,7 +22,7 @@ export function CarMarker() {
     <>
       <Marker coordinate={{ latitude: vPosLatitude, longitude: vPosLongitude }}>
         <View style={{ width: 45.4, height: 78.8, transform: [{ rotate: vPosDirection + 'deg' }] }}>
-          <VehicleMapImage image={selectedVehicle.image} />
+          {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
         </View>
       </Marker>
       <Circle center={{
