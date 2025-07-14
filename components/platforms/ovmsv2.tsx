@@ -1,8 +1,9 @@
 import React, { useEffect } from "react"
 import { Icon } from "react-native-paper"
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
-import { metricsSlice} from "@/store/metricsSlice";
+import { getSelectedVehicle, vehiclesSlice } from "@/store/vehiclesSlice";
+import { metricsSlice } from "@/store/metricsSlice";
+import { VehicleConnectionState, connectionSlice, setConnectionState, setLastUpdateTime } from "@/store/connectionSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 import { useInterval } from "@/hooks/useInterval";
 import { messagesSlice } from "@/store/messagesSlice";
@@ -24,12 +25,14 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
     console.log("[connection OVMSv2] start",selectedVehicle?.name)
 
     const serverurl = `wss://${selectedVehicle?.platformParameters?.server}:${selectedVehicle?.platformParameters?.wssport}/apiv2`;
+    dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.CONNECTING))
     connection = new WebSocket(serverurl)
     console.log('[connection OVMSv2] connection',serverurl,connection)        
 
     // Send authentication message when connection opens
     const openListener = () => {
       console.log('[connection OVMSv2] connection opened')
+      dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.AUTHENTICATING))
       const authMessage = `MP-A 1 ${selectedVehicle?.platformParameters?.username} ${selectedVehicle?.platformParameters?.password} ${selectedVehicle?.name}`
       console.log('[connection OVMSv2] tx auth', authMessage)
       connection?.send(authMessage)
@@ -37,12 +40,14 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
   
     const closeListener = () => {
       console.log('[connection OVMSv2] connection closed')
+      dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.DISCONNECTED))
     }
 
     const messageListener = (event: MessageEvent) => {
 
       if (event.data.startsWith('MP-S')) {
         console.log('[connection OVMSv2] rx LOGIN(RESULT)',event.data)
+        dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.CONNECTED))
 
       } else if (event.data.startsWith('F')) {
         const parts = event.data.substring(1).split(',')
@@ -59,11 +64,16 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const cellularConnectionMode = parts[9]
         const cellularConnectionStatus = parts[10]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 's.v.vin', value: vin, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'm.version', value: firmwareVersion, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'm.net.sq', value: networkSignalQuality, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.type', value: vehicleTypeCode, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'm.net.provider', value: networkName, currentTime: GetCurrentUTCTimeStamp() }))
+        dispatch(metricsSlice.actions.setMetric({ key: 's.v.vin', value: vin }))
+        if ((vin != selectedVehicle?.vin) && (selectedVehicle?.key)) {
+          console.log('[connection OVMSv2] update vehicle vin', vin, selectedVehicle?.vin)
+          dispatch(vehiclesSlice.actions.updateVehicleVIN({ key: selectedVehicle?.key, newValue: vin }))
+        }
+        dispatch(metricsSlice.actions.setMetric({ key: 'm.version', value: firmwareVersion }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'm.net.sq', value: networkSignalQuality }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.type', value: vehicleTypeCode }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'm.net.provider', value: networkName }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'm.hardware', value: ovmsHardwareVersion }))
 
       } else if (event.data.startsWith('S')) {
         const parts = event.data.substring(1).split(',')
@@ -111,9 +121,9 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const mainBatteryUsableCapacity = parts[40]
         const dateAndTimeOfLastChargeEnd = parts[41]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.soc', value: soc, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.ideal', value: idealRange, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.est', value: estimatedRange, currentTime: GetCurrentUTCTimeStamp() }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.soc', value: soc }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.ideal', value: idealRange }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.est', value: estimatedRange }))
 
       } else if (event.data.startsWith('L')) {
         const parts = event.data.substring(1).split(',')
@@ -138,12 +148,12 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const gpsSpeed = parts[17]
         const gpsSignalQuality = parts[18]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.latitude', value: latitude, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.longitude', value: longitude, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.dire', value: carDirection, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.altitude', value: carAltitude, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.gpsspeed', value: gpsSpeed, currentTime: GetCurrentUTCTimeStamp() }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.latitude', value: latitude }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.longitude', value: longitude }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.dire', value: carDirection }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.altitude', value: carAltitude }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.gpsspeed', value: gpsSpeed }))
 
       } else if (event.data.startsWith('W')) {
         const parts = event.data.substring(1).split(',')
@@ -161,14 +171,15 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
       } else if (event.data.startsWith('T')) {
         const parts = event.data.substring(1).split(',')
         console.log('[connection OVMSv2] rx TIME', parts)
-        const seconds = parts[0]
+        const seconds = Number(parts[0])
+        dispatch(connectionSlice.actions.setLastUpdateTime((Date.now() / 1000) - seconds))
 
       } else if (event.data.startsWith('Z')) {
         const parts = event.data.substring(1).split(',')
         console.log('[connection OVMSv2] rx PEERS', parts)
         const peerConnectionCount = parts[0]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 's.v2.peers', value: peerConnectionCount, currentTime: GetCurrentUTCTimeStamp() }))
+        dispatch(metricsSlice.actions.setMetric({ key: 's.v2.peers', value: peerConnectionCount }))
 
       } else if (event.data.startsWith('f')) {
         const parts = event.data.substring(1).split(',')
@@ -204,14 +215,14 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const vehicle12VCurrent = parts[19]
         const vehicleCabinTemperature = parts[20]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.odometer', value: carOdometer, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.trip', value: carTripMeter, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.e.cabintemp', value: vehicleCabinTemperature, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.temp', value: batteryTemperature, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature, currentTime: GetCurrentUTCTimeStamp() }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature, currentTime: GetCurrentUTCTimeStamp() }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.odometer', value: carOdometer }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.trip', value: carTripMeter }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.e.cabintemp', value: vehicleCabinTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.temp', value: batteryTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature }))
 
       } else if (event.data.startsWith('P')) {
         const type = event.data.substring(1,2)

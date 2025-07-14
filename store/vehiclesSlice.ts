@@ -8,6 +8,14 @@ export interface VehicleImage {
   customPath: string | null
 }
 
+export enum VehicleConnectionState {
+  DISCONNECTED = 'disconnected',
+  CONNECTING = 'connecting',
+  AUTHENTICATING = 'authenticating',
+  CONNECTED = 'connected',
+  ERROR = 'error'
+}
+
 export interface Vehicle {
   key: string
   vin: string,
@@ -20,11 +28,15 @@ export interface Vehicle {
 
 interface VehiclesState {
   selectedVehicle: string | null
+  connectionState: VehicleConnectionState
+  lastUpdateTime: number
   vehicles: Array<Vehicle>
 }
 
 const initialState: VehiclesState = {
   selectedVehicle: null,
+  connectionState: VehicleConnectionState.DISCONNECTED,
+  lastUpdateTime: 0,
   vehicles: []
 }
 
@@ -32,6 +44,7 @@ export const vehiclesSlice = createSlice({
   name: 'vehicles',
   initialState,
   reducers: {
+
     addVehicle: (state, action: PayloadAction<Vehicle>) => {
       const keys = state.vehicles.map((v) => v.key)
       const vehicleIndex = keys.indexOf(action.payload.key)
@@ -41,15 +54,32 @@ export const vehiclesSlice = createSlice({
       }
       state.vehicles = [...state.vehicles, action.payload]
     },
+
     selectVehicle: (state, action: PayloadAction<string>) => {
       state.selectedVehicle = action.payload
     },
-    updateVehicleVIN: (state, action: PayloadAction<{ index: number, newValue: string }>) => { state.vehicles[action.payload.index].vin = action.payload.newValue },
+
+    setConnectionState: (state, action: PayloadAction<VehicleConnectionState>) => { state.connectionState = action.payload },
+
+    setLastUpdateTime: (state, action: PayloadAction<number>) => { state.lastUpdateTime = action.payload },
+
+    updateVehicleVIN: (state, action: PayloadAction<{ key: string, newValue: string }>) => {
+      const keys = state.vehicles.map((v) => v.key)
+      const vehicleIndex = keys.indexOf(action.payload.key)
+      if (vehicleIndex > -1) {
+        state.vehicles[vehicleIndex].vin = action.payload.newValue
+        return;
+      }
+    },
+
     updateVehicleName: (state, action: PayloadAction<{ index: number, newValue: string }>) => { state.vehicles[action.payload.index].name = action.payload.newValue },
     updateVehicleImage: (state, action: PayloadAction<{ index: number, newValue: VehicleImage }>) => { state.vehicles[action.payload.index].image = action.payload.newValue },
     removeVehicle: (state, action: PayloadAction<number>) => { state.vehicles.splice(action.payload, 1) },
+
     wipeVehicles: (state) => { state.vehicles = []; state.selectedVehicle = null; },
+
     unselectVehicle: (state) => { state.selectedVehicle = null }
+
   },
 })
 
@@ -66,7 +96,10 @@ export function generateFindVehicleSelector(key: string) {
   return (state: RootState) => FindVehicle(state, key)
 }
 export const getSelectedVehicle = (state: RootState) => (state.vehicles.selectedVehicle != null ? FindVehicle(state, state.vehicles.selectedVehicle) : null)
+export const getConnectionState = (state: RootState) => state.vehicles.connectionState
+export const getLastUpdateTime = (state: RootState) => state.vehicles.lastUpdateTime
+
 export const getVehicles = (state: RootState) => state.vehicles.vehicles
 
-export const { addVehicle, removeVehicle, selectVehicle, updateVehicleName, updateVehicleVIN, unselectVehicle, wipeVehicles, updateVehicleImage } = vehiclesSlice.actions
+export const { addVehicle, removeVehicle, selectVehicle, updateVehicleName, updateVehicleVIN, unselectVehicle, wipeVehicles, updateVehicleImage, setConnectionState, setLastUpdateTime } = vehiclesSlice.actions
 export default vehiclesSlice.reducer
