@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
 import { metricsSlice} from "@/store/metricsSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
+import { useInterval } from "@/hooks/useInterval";
 
 let connection: WebSocket | null = null;
 
@@ -11,38 +12,40 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
   
+  useInterval(() => {
+    if (connection && connection.readyState === WebSocket.OPEN) {
+      console.log('[connection OVMSv2] tx ping')
+      connection.send('A')
+    }
+  }, 60000);
+
   useEffect(() => {
-    console.log("[connection] OVMSv2 start",selectedVehicle?.name)
+    console.log("[connection OVMSv2] start",selectedVehicle?.name)
 
     const serverurl = `wss://${selectedVehicle?.platformParameters?.server}:${selectedVehicle?.platformParameters?.wssport}/apiv2`;
     connection = new WebSocket(serverurl)
-    console.log('[connection] OVMSv2 connection',serverurl,connection)        
-
-    const interval = setInterval(() => {
-      if (connection && connection.readyState === WebSocket.OPEN) {
-        console.log('[connection] tx ping')
-        connection.send('A')
-      }
-      return () => {
-        clearInterval(interval)
-      }
-    }, 60000);
+    console.log('[connection OVMSv2] connection',serverurl,connection)        
 
     // Send authentication message when connection opens
     const openListener = () => {
+      console.log('[connection OVMSv2] connection opened')
       const authMessage = `MP-A 1 ${selectedVehicle?.platformParameters?.username} ${selectedVehicle?.platformParameters?.password} ${selectedVehicle?.name}`
-      console.log('[connection] tx auth', authMessage)
+      console.log('[connection OVMSv2] tx auth', authMessage)
       connection?.send(authMessage)
     }
-        
+  
+    const closeListener = () => {
+      console.log('[connection OVMSv2] connection closed')
+    }
+
     const messageListener = (event: MessageEvent) => {
 
       if (event.data.startsWith('MP-S')) {
-        console.log('[connection] rx LOGIN(RESULT)',event.data)
+        console.log('[connection OVMSv2] rx LOGIN(RESULT)',event.data)
 
       } else if (event.data.startsWith('F')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx FIRMWARE', parts)
+        console.log('[connection OVMSv2] rx FIRMWARE', parts)
         const firmwareVersion = parts[0]
         const vin = parts[1]
         const networkSignalQuality = parts[2]
@@ -63,7 +66,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
 
       } else if (event.data.startsWith('S')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx STATE', parts)
+        console.log('[connection OVMSv2] rx STATE', parts)
         const soc = parts[0]
         const units = parts[1]
         const lineVoltage = parts[2]
@@ -113,7 +116,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
 
       } else if (event.data.startsWith('L')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx LOCATION', parts)
+        console.log('[connection OVMSv2] rx LOCATION', parts)
         const latitude = parts[0]
         const longitude = parts[1]
         const carDirection = parts[2]
@@ -143,7 +146,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
 
       } else if (event.data.startsWith('W')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx TPMS(W)', parts)
+        console.log('[connection OVMSv2] rx TPMS(W)', parts)
         const frontRightWheelPressure = parts[0]
         const frontRightWheelTemperature = parts[1]
         const rearRightWheelPressure = parts[2]
@@ -156,28 +159,28 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
 
       } else if (event.data.startsWith('T')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx TIME', parts)
+        console.log('[connection OVMSv2] rx TIME', parts)
         const seconds = parts[0]
 
       } else if (event.data.startsWith('Z')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx PEERS', parts)
+        console.log('[connection OVMSv2] rx PEERS', parts)
         const peerConnectionCount = parts[0]
 
         dispatch(metricsSlice.actions.setMetric({ key: 's.v2.peers', value: peerConnectionCount, currentTime: GetCurrentUTCTimeStamp() }))
 
       } else if (event.data.startsWith('f')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx SERVER', parts)
+        console.log('[connection OVMSv2] rx SERVER', parts)
         const serverFirmwareVersion = parts[0]
 
       } else if (event.data.startsWith('a')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx PING RESPONSE', parts)
+        console.log('[connection OVMSv2] rx PING RESPONSE', parts)
 
       } else if (event.data.startsWith('D')) {
         const parts = event.data.substring(1).split(',')
-        console.log('[connection] rx DOORS', parts)
+        console.log('[connection OVMSv2] rx DOORS', parts)
         const doorState1 = parts[0]
         const doorState2 = parts[1]
         const lockUnlockState = parts[2]
@@ -216,10 +219,14 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
 
     connection?.addEventListener('open', openListener)
     connection?.addEventListener('message', messageListener)
+    connection?.addEventListener('close', closeListener)
 
     return () => {
-      console.log("[connection] OVMSv2 cleanup",selectedVehicle?.name)
+      console.log("[connection OVMSv2] cleanup",selectedVehicle?.name)
       if (connection) {
+        connection.removeEventListener('open', openListener)
+        connection.removeEventListener('message', messageListener)
+        connection.removeEventListener('close', closeListener)
         connection.close()
         connection = null
       }
