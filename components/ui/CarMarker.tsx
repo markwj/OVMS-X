@@ -7,12 +7,17 @@ import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
 
 export function CarMarker() {
-  const vPosLatitude = useSelector(generateGetMetricValueSelector("v.p.latitude"))
-  const vPosLongitude = useSelector(generateGetMetricValueSelector("v.p.longitude"))
-  const vPosDirection = useSelector(generateGetMetricValueSelector("v.p.direction"))
+  const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")
+  const vPosLatitude = useSelector(vPosLatitudeSelector)
+  const vPosLongitudeSelector = generateGetMetricValueSelector("v.p.longitude")
+  const vPosLongitude = useSelector(vPosLongitudeSelector)
+  const vPosDirectionSelector = generateGetMetricValueSelector("v.p.direction")
+  const vPosDirection = useSelector(vPosDirectionSelector)
 
-  const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.b.range.est"))
-  const vBatRangeIdeal = useSelector(generateGetMetricValueSelector("v.b.range.ideal"))
+  const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
+  const vBatRangeEst = useSelector(vBatRangeEstSelector)
+  const vBatRangeIdealSelector = generateGetMetricValueSelector("v.b.range.ideal")
+  const vBatRangeIdeal = useSelector(vBatRangeIdealSelector)
 
   const selectedVehicle = useSelector(getSelectedVehicle)
 
