@@ -49,7 +49,7 @@ export default function AboutMetricScreen() {
             <Controller
               control={control}
               name="value"
-              render={({ field: { onChange, value } }) => (
+              render={({ field: { onChange, value = metric.value } }) => (
                 <View style={{ flexDirection: "row", alignItems: 'center' }}>
                   <TextInput
                     value={value ?? ""}

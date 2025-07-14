@@ -20,9 +20,12 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
   
-  const vBatRangeEst = useSelector(generateGetMetricValueSelector("v.bat.range.est"))
-  const vBatSoc = useSelector(generateGetMetricValueSelector("v.bat.soc"))
-  const vPosOdometer = useSelector(generateGetMetricValueSelector("v.pos.odometer"))
+  const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
+  const vBatRangeEst = useSelector(vBatRangeEstSelector)
+  const vBatSocSelector = generateGetMetricValueSelector("v.b.soc")
+  const vBatSoc = useSelector(vBatSocSelector)
+  const vPosOdometerSelector = generateGetMetricValueSelector("v.p.odometer")
+  const vPosOdometer = useSelector(vPosOdometerSelector)
   const selectedVehicle = useSelector(getSelectedVehicle)
 
   return (

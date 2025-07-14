@@ -109,12 +109,12 @@ export function VehicleMapImage({ image }: { image: VehicleImage }): React.JSX.E
 
   return (
     //@ts-ignore
-    <ImageBackground imageStyle={{ height: '100%', resizeMode: 'contain'}} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].map}>
-      <ImageBackground imageStyle={{ height: '100%', resizeMode: 'contain' }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].mapMask}>
+    <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain'}} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].map}>
+      <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain' }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].mapMask}>
         <Image
           style={{
             aspectRatio: ASPECT_RATIO,
-            flex: 1,
+            width: '100%',
             resizeMode: "contain",
             tintColor: image.tintColor ?? "#fff",
             //@ts-ignore
