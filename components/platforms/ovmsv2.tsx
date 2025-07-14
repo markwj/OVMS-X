@@ -5,6 +5,7 @@ import { getSelectedVehicle } from "@/store/vehiclesSlice";
 import { metricsSlice} from "@/store/metricsSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 import { useInterval } from "@/hooks/useInterval";
+import { messagesSlice } from "@/store/messagesSlice";
 
 let connection: WebSocket | null = null;
 
@@ -211,6 +212,13 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature, currentTime: GetCurrentUTCTimeStamp() }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature, currentTime: GetCurrentUTCTimeStamp() }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature, currentTime: GetCurrentUTCTimeStamp() }))
+
+      } else if (event.data.startsWith('P')) {
+        const type = event.data.substring(1,2)
+        const message = event.data.substring(2)
+        console.log('[connection OVMSv2] rx MESSAGE(PUSH)', type, message)
+
+        dispatch(messagesSlice.actions.addVehicleMessage( message ))
 
       } else {
         console.log('[connection] rx event data', event.data)
