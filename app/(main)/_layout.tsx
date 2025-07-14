@@ -91,7 +91,7 @@ export default function SubscreenStack() {
         }}
       />
       <Stack.Screen
-        name="editVehicle"
+        name="editvehicle"
         options={{
           title: 'Edit Vehicle',
         }}

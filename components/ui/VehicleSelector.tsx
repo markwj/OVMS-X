@@ -43,7 +43,7 @@ function VehicleList() {
                     <IconButton icon='pencil' size={20} onPress={() => { 
                       router.back();
                       setTimeout(() => {
-                        router.push({ pathname: '/(main)/editVehicle', params: { vehicleKey: vehicle.key, index : index } }) 
+                        router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key, index : index } }) 
                       }, 100);
                     }} />
                   </View>
