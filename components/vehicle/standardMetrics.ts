@@ -13,8 +13,6 @@ export const STANDARD_METRICS = [
   //
   { key: "m.version", type: MetricType.STRING },
   { key: "m.hardware", type: MetricType.STRING },
-  { key: "m.version", type: MetricType.STRING },
-  { key: "m.hardware", type: MetricType.STRING },
   { key: "m.serial", type: MetricType.STRING },
   { key: "m.tasks", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER, precision: 0 },
   { key: "m.freeram", staleSeconds: SM_STALE_MID, type: MetricType.NUMBER, precision: 0 },
