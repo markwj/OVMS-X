@@ -83,37 +83,37 @@ export const STANDARD_METRICS = [
   { key: "v.b.12v.voltage_ref", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
   { key: "v.b.12v.voltage_alert", staleSeconds: SM_STALE_MID, type: MetricType.BOOL },
 
-  { key: "v.b.pack.level.min", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.level.max", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.level.avg", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.level.stddev", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.level.min", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.level.max", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.level.avg", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.level.stddev", unit: "%", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
 
-  { key: "v.b.pack.vmin", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.vmax", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.vavg", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.vstddev", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.vstddev_max", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.vgrad", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.vmin", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.vmax", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.vavg", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.vstddev", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.vstddev_max", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.vgrad", unit: "V", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
 
-  { key: "v.b.pack.tmin", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.tmax", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.tavg", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.tstddev", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-  { key: "v.b.pack.tstddev_max", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
-
-  //These are Metric Vectors of floats
-  { key: "v.b.cell.voltage", unit: "V", staleSeconds: SM_STALE_HIGH }, 
-  { key: "v.b.cell.vmin", unit: "V", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.vmax", unit: "V", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.vdevmax", unit: "V", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.valert", unit: "V", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.p.tmin", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.tmax", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.tavg", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.tstddev", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
+  { key: "v.b.p.tstddev_max", unit: "celsius", staleSeconds: SM_STALE_HIGH, type: MetricType.NUMBER },
 
   //These are Metric Vectors of floats
-  { key: "v.b.cell.temp", unit: "celsius", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.tmin", unit: "celsius", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.tmax", unit: "celsius", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.tdevmax", unit: "celsius", staleSeconds: SM_STALE_HIGH },
-  { key: "v.b.cell.talert", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.voltage", unit: "V", staleSeconds: SM_STALE_HIGH }, 
+  { key: "v.b.c.vmin", unit: "V", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.vmax", unit: "V", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.vdevmax", unit: "V", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.valert", unit: "V", staleSeconds: SM_STALE_HIGH },
+
+  //These are Metric Vectors of floats
+  { key: "v.b.c.temp", unit: "celsius", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.tmin", unit: "celsius", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.tmax", unit: "celsius", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.tdevmax", unit: "celsius", staleSeconds: SM_STALE_HIGH },
+  { key: "v.b.c.talert", staleSeconds: SM_STALE_HIGH },
 
   //
   //Charger metrics
@@ -260,10 +260,19 @@ export const STANDARD_METRICS = [
 
   //
   //TMPS: tyre monitoring metrics
-  //These are Metric Vectors of floats
   //
-  { key: "v.tpms.pressure", unit: "kPa", staleSeconds: SM_STALE_HIGH },
-  { key: "v.tpms.temp", unit: "celsius", staleSeconds: SM_STALE_HIGH },
-  { key: "v.tpms.health", unit: "%", staleSeconds: SM_STALE_HIGH },
-  { key: "v.tpms.alert", staleSeconds: SM_STALE_HIGH },
+  { key: "v.tp.fl.t", unit: "celsius", type: MetricType.NUMBER },
+  { key: "v.tp.fr.t", unit: "celsius", type: MetricType.NUMBER },
+  { key: "v.tp.rr.t", unit: "celsius", type: MetricType.NUMBER },
+  { key: "v.tp.rl.t", unit: "celsius", type: MetricType.NUMBER },
+  { key: "v.tp.fl.p", unit: "kPa", type: MetricType.NUMBER },
+  { key: "v.tp.fr.p", unit: "kPa", type: MetricType.NUMBER },
+  { key: "v.tp.rr.p", unit: "kPa", type: MetricType.NUMBER },
+  { key: "v.tp.rl.p", unit: "kPa", type: MetricType.NUMBER },
+
+  //These are Metric Vectors of floats
+  { key: "v.t.pressure", unit: "kPa", staleSeconds: SM_STALE_HIGH },
+  { key: "v.t.temp", unit: "celsius", staleSeconds: SM_STALE_HIGH },
+  { key: "v.t.health", unit: "%", staleSeconds: SM_STALE_HIGH },
+  { key: "v.t.alert", staleSeconds: SM_STALE_HIGH },
 ]
