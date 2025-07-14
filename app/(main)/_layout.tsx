@@ -90,6 +90,12 @@ export default function SubscreenStack() {
           title: 'About Metric',
         }}
       />
+      <Stack.Screen
+        name="editVehicle"
+        options={{
+          title: 'Edit Vehicle',
+        }}
+      />
     </Stack>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Image, View, Pressable, ScrollView, StyleSheet } from "react-native";
 import { router, useRouter } from "expo-router";
-import { Text, Card, Button, Icon } from "react-native-paper";
+import { Text, Card, Button, IconButton } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle, getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
@@ -10,6 +10,7 @@ import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
 
 function VehicleList() {
+  const router = useRouter();
   const vehicleList = useSelector(getVehicles);
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
@@ -36,9 +37,16 @@ function VehicleList() {
               }}>
               <Card.Content>
                 <VehicleSideImage image={vehicle.image} />
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={{ alignSelf: "flex-start" }}>{vehicle.name}</Text>
-                  <View style={{ alignSelf: "flex-end" }}><Icon source='pencil' size={20} /></View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 30 }}>
+                  <Text style={{ alignSelf: "center" }}>{vehicle.name}</Text>
+                  <View style={{ alignSelf: "center" }}>
+                    <IconButton icon='pencil' size={20} onPress={() => { 
+                      router.back();
+                      setTimeout(() => {
+                        router.push({ pathname: '/(main)/editVehicle', params: { vehicleKey: vehicle.key, index : index } }) 
+                      }, 100);
+                    }} />
+                  </View>
                 </View>
               </Card.Content>
             </Card>
