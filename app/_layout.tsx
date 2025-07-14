@@ -21,6 +21,7 @@ import { useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/vehiclesSlice';
+import { ConnectionIcon } from '@/components/platforms/connection';
 
 const MainLayout = () => {
   const dimensions = useWindowDimensions();
@@ -38,7 +39,7 @@ const MainLayout = () => {
         drawerStyle: isLargeScreen ? null : { width: '50%' },
         drawerStatusBarAnimation: 'slide',
         keyboardDismissMode: 'on-drag',
-        headerRight: () => <Icon source='antenna' size={20} />
+        headerRight: () => <ConnectionIcon />
       }}
       drawerContent={(props) => {
         return <VehicleSelector />

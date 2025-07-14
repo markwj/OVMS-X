@@ -105,7 +105,8 @@ export default function NewPlatformOVMSv2() {
               httpsport: data.httpsport,
               wssport: data.wssport,
               username: data.username,
-              password: data.password
+              password: data.password,
+              id: vehicle.id
             },
             image: {
               imageName: generateRandomVehicleType(),
