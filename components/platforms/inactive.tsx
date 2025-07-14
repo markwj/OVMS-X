@@ -3,17 +3,14 @@ import { Icon } from "react-native-paper"
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
 
-export function DefaultConnectionIcon(): React.JSX.Element {
+export function InactiveConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
   
   useEffect(() => {
-    console.log("[connection DEFAULT] start",selectedVehicle?.name)
-    return () => {
-      console.log("[connection DEFAULT] cleanup",selectedVehicle?.name)
-    }
+    console.log("[connection INACTIVE]")
   }, [selectedVehicle])
 
   return (
-    <Icon source='antenna' size={20} />
+    <Icon source='sleep' size={20} />
   )
 }

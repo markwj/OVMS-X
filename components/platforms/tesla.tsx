@@ -7,9 +7,9 @@ export function TeslaConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
   
   useEffect(() => {
-    console.log("[connection] Tesla start",selectedVehicle?.name)
+    console.log("[connection TESLA] start",selectedVehicle?.name)
     return () => {
-      console.log("[connection] Tesla cleanup",selectedVehicle?.name)
+      console.log("[connection TESLA] cleanup",selectedVehicle?.name)
     }
   }, [selectedVehicle])
 
