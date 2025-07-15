@@ -14,7 +14,7 @@ import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
-import { AwakeAgeIndicator } from "@/components/ui/AwakeAgeIndicator";
+import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -34,8 +34,6 @@ export default function HomeScreen() {
   const selectedVehicle = useSelector(getSelectedVehicle)
   const lastUpdated = useSelector(getLastUpdateTime)
 
-  const dataAgeDisplay = lastUpdated != 0 ? DisplayDataAge(Date.now()/1000 - lastUpdated, t) : "no data"
-
   return (
     <>
       <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
@@ -47,7 +45,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
-            <AwakeAgeIndicator />
+            <ConnectionText />
           </View>
         </View>
         <View style={{ flex: 1, width: '80%' }}>
