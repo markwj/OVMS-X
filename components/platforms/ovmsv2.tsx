@@ -10,6 +10,66 @@ import { messagesSlice } from "@/store/messagesSlice";
 
 let connection: WebSocket | null = null;
 
+// Queue for pending command promises
+interface PendingCommand {
+  resolve: (value: string) => void;
+  reject: (reason: any) => void;
+  timeoutId: number;
+}
+
+let pendingCommands: PendingCommand[] = [];
+
+/**
+ * Sends a textual command to OVMSv2 platform via WebSocket
+ * @param commandText - The command text to send
+ * @returns Promise<string> - The textual result of the command
+ */
+export async function sendOVMSv2TextCommand(commandText: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    console.log('[sendOVMSv2TextCommand] commandText', commandText)
+    if (!connection || connection.readyState !== WebSocket.OPEN) {
+      console.log('[sendOVMSv2TextCommand] connection is not available')
+      reject(new Error("OVMSv2 WebSocket connection is not available"));
+      return;
+    }
+
+    // Set up timeout for this command
+    const timeoutId = setTimeout(() => {
+      // Remove this command from the queue
+      console.log('[sendOVMSv2TextCommand] command timed out', timeoutId)
+      const index = pendingCommands.findIndex(cmd => cmd.timeoutId === timeoutId);
+      if (index !== -1) {
+        pendingCommands[index].resolve('ERROR: command timed out');
+        pendingCommands.splice(index, 1);
+      }
+    }, 10000); // 10 second timeout
+
+    // Add command to the queue
+    pendingCommands.push({ resolve, reject, timeoutId });
+
+    // Send the command in OVMSv2 format: 'C' + command code + comma + parameters
+    // For textual commands, use code 7
+    const commandMessage = `C7,${commandText}`;
+    console.log(`[sendOVMSv2TextCommand] Sending command: ${commandMessage}`);
+    connection.send(commandMessage);
+  });
+}
+
+/**
+ * Resolves the next pending command with the given response
+ * @param response - The response from the vehicle
+ */
+function resolveNextPendingCommand(response: string) {
+  console.log('[resolveNextPendingCommand] response', response)
+  if (pendingCommands.length > 0) {
+    const nextCommand = pendingCommands.shift();
+    if (nextCommand) {
+      clearTimeout(nextCommand.timeoutId);
+      nextCommand.resolve(response);
+    }
+  }
+}
+
 export function OVMSv2ConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
@@ -241,6 +301,52 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         console.log('[connection OVMSv2] rx MESSAGE(PUSH)', type, message)
 
         dispatch(messagesSlice.actions.addVehicleMessage( message ))
+
+      } else if (event.data.startsWith('c')) {
+
+        // This is a command response - parse and handle appropriately
+        // Format: 'c' + command code + comma + result + comma + parameters
+        const commandCode = event.data.substring(1, 2) // Get the command code (single digit)
+        const afterCommandCode = event.data.substring(2) // Everything after the command code
+        console.log('[connection OVMSv2] rx COMMAND RESPONSE', commandCode, afterCommandCode)
+        // Find the first comma to separate result from parameters
+        const firstCommaIndex = afterCommandCode.indexOf(',')
+        if (firstCommaIndex !== -1) {
+          const result = parseInt(afterCommandCode.substring(0, firstCommaIndex))
+          const parameters = afterCommandCode.substring(firstCommaIndex + 1) // Everything after the first comma
+          console.log('[connection OVMSv2] rx COMMAND RESPONSE', result, parameters)
+          
+          // Handle textual commands (code 7)
+          if (commandCode === '7') {
+            if (result === 0) {
+              // Success - resolve with the parameters (which contain the textual response)
+              resolveNextPendingCommand(parameters)
+            } else {
+              // Command failed - reject with appropriate error message
+              let errorMessage = "Command failed"
+              switch (result) {
+                case 1:
+                  errorMessage = "Command failed"
+                  break
+                case 2:
+                  errorMessage = "Command unsupported"
+                  break
+                case 3:
+                  errorMessage = "Command unimplemented"
+                  break
+                default:
+                  errorMessage = `Command failed with result code ${result}`
+              }
+              resolveNextPendingCommand(`ERROR: ${errorMessage}`)
+            }
+            
+          } else {
+            // Non-textual command - just log for now
+            console.log(`[connection OVMSv2] Non-textual command response: code=${commandCode}, result=${result}, params=${parameters}`)
+          }
+        } else {
+          console.log('[connection OVMSv2] Invalid command response format:', event.data)
+        }
 
       } else {
         console.log('[connection] rx event data', event.data)
