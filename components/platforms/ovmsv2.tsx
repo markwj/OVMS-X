@@ -250,6 +250,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const peerConnectionCount = parts[0]
 
         dispatch(metricsSlice.actions.setMetric({ key: 's.v2.peers', value: peerConnectionCount }))
+        dispatch(connectionSlice.actions.setCarConnected(peerConnectionCount > 0))
 
       } else if (event.data.startsWith('f')) {
         const parts = event.data.substring(1).split(',')
