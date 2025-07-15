@@ -6,7 +6,7 @@ import { KeyboardAvoidingView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { addAppMessage, addVehicleMessage, selectMessages } from "@/store/messagesSlice";
 import { ConnectionTextualCommand } from "@/components/platforms/connection";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
 
 export default function MessagesScreen() {

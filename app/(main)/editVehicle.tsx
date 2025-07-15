@@ -13,7 +13,7 @@ import { usePreventRemove } from "@react-navigation/native";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
-  const { vehicleKey, index } = useLocalSearchParams<{ vehicleKey: string; index: number }>();
+  const { vehicleKey } = useLocalSearchParams<{ vehicleKey: string }>();
   const { t } = useTranslation();
 
   //@ts-ignore
@@ -34,8 +34,8 @@ export default function EditVehicleScreen() {
 
   const { control, handleSubmit } = useForm<Vehicle>({ defaultValues: vehicle ?? {} })
   const onSubmit: SubmitHandler<Vehicle> = (data) => {
-    dispatch(vehiclesSlice.actions.updateVehicleImage({ index: index, newValue: data.image }))
-    dispatch(vehiclesSlice.actions.updateVehicleName({ index: index, newValue: data.name }))
+    dispatch(vehiclesSlice.actions.updateVehicleImage({ key: vehicleKey, newValue: data.image }))
+    dispatch(vehiclesSlice.actions.updateVehicleName({ key: vehicleKey, newValue: data.name }))
     navigation.setOptions({
       title: t("Edit") + " " + data?.name,
     })

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, KeyboardAvoidingView, View, TextInput } from 'react-native';
-import { Button, Text, Switch, DataTable, Icon } from "react-native-paper";
+import { Text, DataTable } from "react-native-paper";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { generateGetMetricSelector, generateMetricIsStaleSelector, metricsSlice } from "@/store/metricsSlice";
-import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import { Metric, MetricDefined, MetricType } from "@/components/vehicle/metrics";
 import { useTranslation } from "react-i18next";
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
@@ -16,6 +15,8 @@ export default function AboutMetricScreen() {
   const metric = useSelector(generateGetMetricSelector(metricName)) as Metric;
   const metricIsStale = useSelector(generateMetricIsStaleSelector(metricName, GetCurrentUTCTimeStamp()));
 
+  const [tempValue, setTempValue] = useState(metric.value ?? "")
+
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -24,11 +25,6 @@ export default function AboutMetricScreen() {
       title: metricName,
     })
   }, [navigation])
-
-  const { control, handleSubmit } = useForm<Metric>({ defaultValues: metric })
-  const onSubmit: SubmitHandler<Metric> = (data) => {
-    dispatch(metricsSlice.actions.setMetric({ key: metricName, value: data.value ?? "", currentTime: GetCurrentUTCTimeStamp() }))
-  }
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -46,21 +42,16 @@ export default function AboutMetricScreen() {
         <DataTable.Row key={"value"} style={styles.metricRow}>
           <DataTable.Cell style={styles.rowHeading}>{t("Value") + ": "}</DataTable.Cell>
           <DataTable.Cell style={styles.rowValue}>
-            <Controller
-              control={control}
-              name="value"
-              render={({ field: { onChange, value = metric.value } }) => (
-                <View style={{ flexDirection: "row", alignItems: 'center' }}>
-                  <TextInput
-                    value={value ?? ""}
-                    onChangeText={onChange}
-                    style={styles.rowEntry}
-                    placeholder="undefined"
-                  />
-                  {metric.unit != null && <Text>{metric.unit}</Text>}
-                </View>
-              )}
-            />
+            <View style={{ flexDirection: "row", alignItems: 'center' }}>
+              <TextInput
+                value={tempValue}
+                onChangeText={setTempValue}
+                onSubmitEditing={(value) => dispatch(metricsSlice.actions.setMetric({ key: metricName, value: value.nativeEvent.text, currentTime: GetCurrentUTCTimeStamp() }))}
+                style={styles.rowEntry}
+                placeholder="undefined"
+              />
+              {metric.unit != null && <Text>{metric.unit}</Text>}
+            </View>
           </DataTable.Cell>
         </DataTable.Row>
 
@@ -96,10 +87,6 @@ export default function AboutMetricScreen() {
         <DataTable.Row key={"standard"} style={styles.metricRow}>
           <DataTable.Cell style={styles.rowHeading}>{t("Standard?")+" "}</DataTable.Cell>
           <DataTable.Cell style={styles.rowValue}>{metric.standard ? "yes" : "no"}</DataTable.Cell>
-        </DataTable.Row>
-
-        <DataTable.Row key = {"submit"} style={{...styles.metricRow, alignItems: 'center'}}>
-          <Button onPress={handleSubmit(onSubmit)}>{t("Apply Changes")}</Button>
         </DataTable.Row>
 
       </DataTable>

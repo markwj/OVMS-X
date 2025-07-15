@@ -3,7 +3,7 @@ import { useTheme, Text } from 'react-native-paper';
 import { View, TouchableOpacity } from 'react-native';
 import { VehicleTopImage } from "@/components/ui/VehicleImages";
 import { useSelector } from "react-redux";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
 
 export default function ControlsScreen() {
   const vehicle = useSelector(getSelectedVehicle)

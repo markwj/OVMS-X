@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants from 'expo-constants';
-import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, IconButton, Text, Icon, View } from 'react-native-paper';
+import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { store, persistedStore } from '@/store/root';
 import { Provider, useSelector } from 'react-redux';
@@ -20,7 +20,7 @@ import { Drawer } from 'expo-router/drawer';
 import { useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
-import { getSelectedVehicle } from '@/store/vehiclesSlice';
+import { getSelectedVehicle } from '@/store/selectionSlice';
 import { ConnectionIcon } from '@/components/platforms/connection';
 import { hasStandardMetricsSelector, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
@@ -67,8 +67,11 @@ export default function RootLayout() {
     materialDark: MD3DarkTheme,
     materialLight: MD3LightTheme
   });
+  //@ts-ignore
   const { theme } = (colorScheme === 'dark')
+  //@ts-ignore
     ? { ...MD3DarkTheme, colors: MD3DarkTheme.dark }
+  //@ts-ignore
     : { ...MD3LightTheme, colors: MD3LightTheme.light };
   (colorScheme === 'dark') ? DarkTheme : NavigationDefaultTheme;
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);

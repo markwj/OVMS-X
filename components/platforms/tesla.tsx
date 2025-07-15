@@ -1,7 +1,8 @@
 import React, { useEffect } from "react"
 import { Icon } from "react-native-paper"
 import { useSelector } from "react-redux";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
+import { ConnectionDisplay } from "../ui/ConnectionDisplay";
 
 /**
  * Sends a textual command to Tesla platform
@@ -24,6 +25,6 @@ export function TeslaConnectionIcon(): React.JSX.Element {
   }, [selectedVehicle])
 
   return (
-    <Icon source='antenna' size={20} />
+    <ConnectionDisplay />
   )
 }

@@ -22,6 +22,12 @@ export default function DeveloperScreen() {
   let keys = useSelector(metricsAllKeysSelector)
   let values = useSelector(metricsAllValuesSelector)
 
+  let keysIndexes = keys.map((k,i) => i)
+  keysIndexes.sort((a,b) => (keys[a]).localeCompare(keys[b]))
+
+  keys = keysIndexes.map((i) => keys[i])
+  values = keysIndexes.map((i) => values[i])
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>

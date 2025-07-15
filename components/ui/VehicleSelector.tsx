@@ -4,7 +4,8 @@ import { router, useRouter } from "expo-router";
 import { Text, Card, Button, IconButton } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedVehicle, getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
+import { getSelectedVehicle, selectionSlice,  } from "@/store/selectionSlice";
+import {getVehicles, Vehicle, vehiclesSlice} from "@/store/vehiclesSlice"
 import { useTranslation } from "react-i18next";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
@@ -17,7 +18,7 @@ function VehicleList() {
 
   const onVehiclePress = (key: string) => {
     dispatch(metricsSlice.actions.clearAll());
-    dispatch(vehiclesSlice.actions.selectVehicle(key))
+    dispatch(selectionSlice.actions.selectVehicle(key))
   }
 
   if (typeof vehicleList === 'undefined') {
@@ -43,7 +44,7 @@ function VehicleList() {
                     <IconButton icon='pencil' size={20} onPress={() => { 
                       router.back();
                       setTimeout(() => {
-                        router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key, index : index } }) 
+                        router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key } }) 
                       }, 100);
                     }} />
                   </View>

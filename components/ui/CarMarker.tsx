@@ -4,7 +4,7 @@ import { Circle, Marker } from "react-native-maps"
 import { useSelector } from "react-redux"
 import { View } from "react-native";
 import { VehicleMapImage } from "./VehicleImages";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
 
 export function CarMarker() {
   const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")

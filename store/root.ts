@@ -4,6 +4,7 @@ import vehiclesReducer from '@/store/vehiclesSlice';
 import metricsReducer from '@/store/metricsSlice';
 import messagesReducer from '@/store/messagesSlice';
 import connectionReducer from '@/store/connectionSlice';
+import selectionReducer from '@/store/selectionSlice';
 import { ovmsv2wsApi } from '@/store/ovmsv2wsApi';
 import { ovmsv2httpApi } from '@/store/ovmsv2httpApi';
 import {
@@ -29,6 +30,12 @@ const messagesPersistConfig = {
   storage: securePersistStorage,
 }
 
+const selectionPersistConfig = {
+  key: 'selection',
+  version: 1,
+  storage: securePersistStorage,
+}
+
 export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
@@ -40,6 +47,8 @@ export const store = configureStore({
     messages : persistReducer(messagesPersistConfig, messagesReducer),
     //@ts-ignore
     vehicles: persistReducer(vehiclesPersistConfig, vehiclesReducer),
+    //@ts-ignore
+    selection: persistReducer(selectionPersistConfig, selectionReducer)
   },
 
   middleware: (getDefaultMiddleware) =>
