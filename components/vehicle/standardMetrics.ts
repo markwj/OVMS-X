@@ -49,7 +49,7 @@ export const STANDARD_METRICS = [
   { key: "s.v3.peers", type: MetricType.STRING, precision: 0 },
 
   { key: "v.type", type: MetricType.STRING },
-  { key: "s.v.vin", type: MetricType.STRING },
+  { key: "v.vin", type: MetricType.STRING },
 
   //
   //Battery power and cell metrics

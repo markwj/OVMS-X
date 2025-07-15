@@ -3,6 +3,7 @@ import { RootState } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
 import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
 import { useDispatch } from 'react-redux';
+import { GetCurrentUTCTimeStamp } from '@/components/utils/datetime';
 
 export interface Metrics {
   metricsList: {}
@@ -53,7 +54,7 @@ export const metricsSlice = createSlice({
       const params = payload.payload;
       (state.metricsList as any)[params.key] = JSON.stringify(new Metric(params));
     },
-    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime: string }>) => { //Need to pass the current time to maintain purity
+    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime?: string }>) => { //Need to pass the current time to maintain purity
       const params = payload.payload;
       if (!Object.keys(state.metricsList).includes(params.key)) { return; }
       const metric = JSON.parse((state.metricsList as any)[params.key]);
@@ -77,7 +78,7 @@ export const metricsSlice = createSlice({
       }
 
       metric.defined = metric.defined != MetricDefined.NEVER ? MetricDefined.DEFINED : MetricDefined.FIRST
-      metric.lastModified = params.currentTime;
+      metric.lastModified = params.currentTime ?? GetCurrentUTCTimeStamp();
       (state.metricsList as any)[params.key] = JSON.stringify(metric);
     }
   }

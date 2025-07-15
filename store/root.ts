@@ -3,6 +3,7 @@ import spinnerReducer from '@/store/spinnerSlice';
 import vehiclesReducer from '@/store/vehiclesSlice';
 import metricsReducer from '@/store/metricsSlice';
 import messagesReducer from '@/store/messagesSlice';
+import connectionReducer from '@/store/connectionSlice';
 import { ovmsv2wsApi } from '@/store/ovmsv2wsApi';
 import { ovmsv2httpApi } from '@/store/ovmsv2httpApi';
 import {
@@ -32,6 +33,7 @@ export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
     metrics: metricsReducer,
+    connection: connectionReducer,
     [ovmsv2wsApi.reducerPath]: ovmsv2wsApi.reducer,
     [ovmsv2httpApi.reducerPath]: ovmsv2httpApi.reducer,
     //@ts-ignore
