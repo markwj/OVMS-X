@@ -13,6 +13,7 @@ import { generateGetMetricValueSelector } from "@/store/metricsSlice";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
+import { getLastUpdateTime } from "@/store/connectionSlice";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -26,7 +27,13 @@ export default function HomeScreen() {
   const vBatSoc = useSelector(vBatSocSelector)
   const vPosOdometerSelector = generateGetMetricValueSelector("v.p.odometer")
   const vPosOdometer = useSelector(vPosOdometerSelector)
+  const vEAwakeSelector = generateGetMetricValueSelector("v.e.awake12")
+  const vEAwake = useSelector(vEAwakeSelector)
+
   const selectedVehicle = useSelector(getSelectedVehicle)
+  const lastUpdated = useSelector(getLastUpdateTime)
+
+  const dataAgeDisplay = lastUpdated != 0 ? DisplayDataAge(Date.now()/1000 - lastUpdated, t) : "no data"
 
   return (
     <>
@@ -39,7 +46,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
-            <Text>{t('Awake, online')}</Text>
+            <Text>{vEAwake ? t('Awake') : t('Asleep')}, {dataAgeDisplay}</Text>
           </View>
         </View>
         <View style={{ flex: 1, width: '80%' }}>
@@ -94,4 +101,15 @@ export default function HomeScreen() {
         }} />
     </>
   );
+}
+
+function DisplayDataAge(dataAgeSeconds : number, t : any) {
+  const minutes = dataAgeSeconds / 60
+  const hours = minutes / 60
+  const days = hours / 24
+
+  if(days >= 1) {return `${Math.floor(days)} ${days >= 2 ? t('days') : t('day')}`}
+  if(hours >= 1) {return `${Math.floor(hours)} ${hours >= 2 ? t('hours') : t('hour')}`}
+  if(minutes >= 1) {return `${Math.floor(minutes)} ${minutes >= 2 ? t('minutes') : t('minute')}`}
+  return "live"
 }

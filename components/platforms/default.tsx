@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { Icon } from "react-native-paper"
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
 
 export function DefaultConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
@@ -14,6 +15,6 @@ export function DefaultConnectionIcon(): React.JSX.Element {
   }, [selectedVehicle])
 
   return (
-    <Icon source='antenna' size={20} />
+    <ConnectionDisplay />
   )
 }
