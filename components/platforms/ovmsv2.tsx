@@ -8,6 +8,7 @@ import { VehicleConnectionState, connectionSlice, setConnectionState, setLastUpd
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 import { useInterval } from "@/hooks/useInterval";
 import { messagesSlice } from "@/store/messagesSlice";
+import { ConnectionDisplay } from "../ui/ConnectionDisplay";
 
 let connection: WebSocket | null = null;
 
@@ -371,6 +372,6 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
   }, [selectedVehicle])
 
   return (
-    <Icon source='antenna' size={20} />
+    <ConnectionDisplay />
   )
 }
