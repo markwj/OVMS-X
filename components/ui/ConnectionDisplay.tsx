@@ -8,6 +8,7 @@ import { useSelector } from "react-redux"
 
 const GREEN = "#00ff00ff"
 const ORANGE = "#ff8000ff"
+const YELLOW = "#ffff00ff"
 const RED = "#ff0000ff"
 
 export function ConnectionDisplay(): React.JSX.Element {
@@ -42,6 +43,9 @@ export function ConnectionDisplay(): React.JSX.Element {
       color = ORANGE
       flashing = true
     }
+  } else if (connectionState == VehicleConnectionState.AUTHENTICATING) {
+    flashing = true
+    color = YELLOW
   } else {
     color = RED
     flashing = true
@@ -80,7 +84,7 @@ export function ConnectionText() {
     }
   } else if (connectionState == VehicleConnectionState.AUTHENTICATING) {
     textContent = t("Authenticating...")
-    textColor = ORANGE
+    textColor = YELLOW
   } else {
     textContent = t("Connecting...")
     textColor = RED
