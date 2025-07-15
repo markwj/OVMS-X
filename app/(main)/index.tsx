@@ -10,7 +10,7 @@ import { ControlButton, ControlIcon, controlType } from "@/components/ui/Control
 import { useTranslation } from 'react-i18next';
 import { useSelector } from "react-redux";
 import { generateGetMetricValueSelector } from "@/store/metricsSlice";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import { Icon } from "react-native-paper"
 import { useSelector } from "react-redux";
-import { getSelectedVehicle } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
 import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
 
 export function DefaultConnectionIcon(): React.JSX.Element {

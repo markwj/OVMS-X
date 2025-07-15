@@ -1,7 +1,8 @@
 import React, { useEffect } from "react"
 import { Icon } from "react-native-paper"
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedVehicle, vehiclesSlice } from "@/store/vehiclesSlice";
+import { getSelectedVehicle } from "@/store/selectionSlice";
+import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { metricsSlice } from "@/store/metricsSlice";
 import { VehicleConnectionState, connectionSlice, setConnectionState, setLastUpdateTime } from "@/store/connectionSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
