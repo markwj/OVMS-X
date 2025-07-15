@@ -23,13 +23,16 @@ export const connectionSlice = createSlice({
   name: 'connection',
   initialState,
   reducers: {
-    setConnectionState: (state, action: PayloadAction<VehicleConnectionState>) => { state.connectionState = action.payload },
+    setConnectionState: (state, action: PayloadAction<VehicleConnectionState>) => {
+      console.log("setConnectionState", action.payload)
+      state.connectionState = action.payload
+      },
     setLastUpdateTime: (state, action: PayloadAction<number>) => { state.lastUpdateTime = action.payload },
   },
 })
 
-export const getConnectionState = (state: RootState) => state.vehicles.connectionState
-export const getLastUpdateTime = (state: RootState) => state.vehicles.lastUpdateTime
+export const getConnectionState = (state: RootState) => state.connection.connectionState
+export const getLastUpdateTime = (state: RootState) => state.connection.lastUpdateTime
 
 export const { setConnectionState, setLastUpdateTime } = connectionSlice.actions
 export default connectionSlice.reducer

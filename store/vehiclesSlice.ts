@@ -7,36 +7,30 @@ export interface VehicleImage {
   tintColor: string | null,
   customPath: string | null
 }
-
-export enum VehicleConnectionState {
-  DISCONNECTED = 'disconnected',
-  CONNECTING = 'connecting',
-  AUTHENTICATING = 'authenticating',
-  CONNECTED = 'connected',
-  ERROR = 'error'
-}
-
 export interface Vehicle {
   key: string
   vin: string,
   name: string,
   platform: string,
   platformKey: string,
-  platformParameters: {},
+  platformParameters: {
+    server?: string;
+    httpsport?: string;
+    wssport?: string;
+    username?: string;
+    password?: string;
+    id?: string;
+    [key: string]: any;
+  },
   image: VehicleImage,
 }
-
 interface VehiclesState {
   selectedVehicle: string | null
-  connectionState: VehicleConnectionState
-  lastUpdateTime: number
   vehicles: Array<Vehicle>
 }
 
 const initialState: VehiclesState = {
   selectedVehicle: null,
-  connectionState: VehicleConnectionState.DISCONNECTED,
-  lastUpdateTime: 0,
   vehicles: []
 }
 
@@ -58,10 +52,6 @@ export const vehiclesSlice = createSlice({
     selectVehicle: (state, action: PayloadAction<string>) => {
       state.selectedVehicle = action.payload
     },
-
-    setConnectionState: (state, action: PayloadAction<VehicleConnectionState>) => { state.connectionState = action.payload },
-
-    setLastUpdateTime: (state, action: PayloadAction<number>) => { state.lastUpdateTime = action.payload },
 
     updateVehicleVIN: (state, action: PayloadAction<{ key: string, newValue: string }>) => {
       const keys = state.vehicles.map((v) => v.key)
@@ -96,8 +86,6 @@ export function generateFindVehicleSelector(key: string) {
   return (state: RootState) => FindVehicle(state, key)
 }
 export const getSelectedVehicle = (state: RootState) => (state.vehicles.selectedVehicle != null ? FindVehicle(state, state.vehicles.selectedVehicle) : null)
-export const getConnectionState = (state: RootState) => state.vehicles.connectionState
-export const getLastUpdateTime = (state: RootState) => state.vehicles.lastUpdateTime
 
 export const getVehicles = (state: RootState) => state.vehicles.vehicles
 
