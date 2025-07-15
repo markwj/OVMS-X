@@ -14,6 +14,7 @@ import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
+import { AwakeAgeIndicator } from "@/components/ui/AwakeAgeIndicator";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -46,7 +47,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
-            <Text>{vEAwake ? t('Awake') : t('Asleep')}, {dataAgeDisplay}</Text>
+            <AwakeAgeIndicator />
           </View>
         </View>
         <View style={{ flex: 1, width: '80%' }}>
