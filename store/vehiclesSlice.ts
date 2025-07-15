@@ -56,9 +56,32 @@ export const vehiclesSlice = createSlice({
       }
     },
 
-    updateVehicleName: (state, action: PayloadAction<{ index: number, newValue: string }>) => { state.vehicles[action.payload.index].name = action.payload.newValue },
-    updateVehicleImage: (state, action: PayloadAction<{ index: number, newValue: VehicleImage }>) => { state.vehicles[action.payload.index].image = action.payload.newValue },
-    removeVehicle: (state, action: PayloadAction<number>) => { state.vehicles.splice(action.payload, 1) },
+    updateVehicleName: (state, action: PayloadAction<{ key: string, newValue: string }>) => {
+      const keys = state.vehicles.map((v) => v.key)
+      const vehicleIndex = keys.indexOf(action.payload.key)
+      if (vehicleIndex > -1) {
+        state.vehicles[vehicleIndex].name = action.payload.newValue
+        return;
+      }
+    },
+
+    updateVehicleImage: (state, action: PayloadAction<{ key : string, newValue: VehicleImage }>) => { 
+      const keys = state.vehicles.map((v) => v.key)
+      const vehicleIndex = keys.indexOf(action.payload.key)
+      if (vehicleIndex > -1) {
+        state.vehicles[vehicleIndex].image = action.payload.newValue
+        return;
+      }
+    },
+
+    removeVehicle: (state, action: PayloadAction<string>) => { 
+      const keys = state.vehicles.map((v) => v.key)
+      const vehicleIndex = keys.indexOf(action.payload)
+      if (vehicleIndex > -1) {
+        state.vehicles.splice(vehicleIndex, 1) 
+        return;
+      }
+    },
 
     wipeVehicles: (state) => { state.vehicles = []; },
 
