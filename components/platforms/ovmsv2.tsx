@@ -303,7 +303,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const message = event.data.substring(2)
         console.log('[connection OVMSv2] rx MESSAGE(PUSH)', type, message)
 
-        dispatch(messagesSlice.actions.addVehicleMessage( message ))
+        dispatch(messagesSlice.actions.addVehicleMessage({text: message, vehicleKey: selectedVehicle?.key}))
 
       } else if (event.data.startsWith('c')) {
 
