@@ -1,14 +1,11 @@
 import { generateGetMetricValueSelector } from "@/store/metricsSlice"
-import React from "react"
-import { Circle, Marker } from "react-native-maps"
+import React, { useEffect, useState } from "react"
+import { AnimatedRegion, Circle, MarkerAnimated } from "react-native-maps"
 import { useSelector } from "react-redux"
-import { View } from "react-native";
 import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/selectionSlice";
-
-//CENTER THE F*CKING MARKER
-//Also interpolate the position
-//Add repositioning
+import Animated from "react-native-reanimated";
+import { useSharedValue, withTiming, Easing, useAnimatedStyle } from "react-native-reanimated";
 
 export function CarMarker() {
   const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")
@@ -24,16 +21,46 @@ export function CarMarker() {
   const vBatRangeIdeal = useSelector(vBatRangeIdealSelector)
 
   const selectedVehicle = useSelector(getSelectedVehicle)
+  const currentCoordinate = { latitude: vPosLatitude, longitude: vPosLongitude }
+  const [markerCoordinate, setMarkerCoordinate] = useState(new AnimatedRegion({ latitude: vPosLatitude, longitude: vPosLongitude }))
 
-  if (vPosLatitude == null || vPosLongitude == null) { return null; }
+  const markerBearing = useSharedValue(vPosDirection)
+  useEffect(() => {
+    if (markerBearing.value !== vPosDirection) {
+      markerBearing.value = withTiming(vPosDirection, {
+        duration: 5000,
+        easing: Easing.linear,
+      });
+    }
+    if (markerCoordinate != new AnimatedRegion(currentCoordinate)) {
+      markerCoordinate.timing({
+        latitude: currentCoordinate.latitude,
+        longitude: currentCoordinate.longitude,
+        latitudeDelta: 0,
+        longitudeDelta: 0,
+        easing: Easing.linear,
+        duration: 5000,
+        toValue: 1,
+        useNativeDriver: false
+      }).start()
+    }
+  }, [vPosDirection, currentCoordinate]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transformOrigin: 'center',
+      transform: [{ rotate: `${markerBearing.value}deg` }, { translateX: "-25%" }],
+    };
+  });
 
   return (
     <>
-      <Marker coordinate={{ latitude: vPosLatitude, longitude: vPosLongitude }}>
-        <View style={{ width: 36.4, height: 63.04, transform: [{ rotate: vPosDirection + 'deg' }] }}>
+      {/*@ts-ignore*/}
+      <MarkerAnimated coordinate={markerCoordinate}>
+        <Animated.View style={[{width: 36.4, height: 63.04, transformOrigin: 'center'}, animatedStyle]}>
           {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
-        </View>
-      </Marker>
+        </Animated.View>
+      </MarkerAnimated>
       <Circle center={{
         latitude: vPosLatitude,
         longitude: vPosLongitude
