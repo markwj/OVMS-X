@@ -6,6 +6,10 @@ import { View } from "react-native";
 import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 
+//CENTER THE F*CKING MARKER
+//Also interpolate the position
+//Add repositioning
+
 export function CarMarker() {
   const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")
   const vPosLatitude = useSelector(vPosLatitudeSelector)
@@ -26,7 +30,7 @@ export function CarMarker() {
   return (
     <>
       <Marker coordinate={{ latitude: vPosLatitude, longitude: vPosLongitude }}>
-        <View style={{ width: 45.4, height: 78.8, transform: [{ rotate: vPosDirection + 'deg' }] }}>
+        <View style={{ width: 36.4, height: 63.04, transform: [{ rotate: vPosDirection + 'deg' }] }}>
           {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
         </View>
       </Marker>
