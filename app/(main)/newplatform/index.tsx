@@ -6,8 +6,9 @@ import {
 } from "react-native";
 import { router, Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme, Text, Divider, Button } from 'react-native-paper';
+import { useTheme, Text, Card, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import { Image } from "react-native";
 
 export default function NewPlatform() {
   const theme = useTheme();
@@ -17,23 +18,29 @@ export default function NewPlatform() {
     <>
       <ScrollView style={{ height: '100%' }}>
         <View style={{ height: 10 }} />
-        <Button
-          mode='contained-tonal'
-          dark={true}
-          onPress={() => { router.replace('/(main)/newplatform/ovmsv2'); }}
-          style={{ flex: 1, width: '100%', height: 200 }}
-          contentStyle={{ width: '100%', height: '100%' }}>
-          <Text>{t('OVMS v2 API')}</Text>
-        </Button>
+        <Card mode="contained" style={{ margin: 10, padding: 10 }}
+          onPress={() => { router.replace('/(main)/newplatform/ovmsv2'); }}>
+          <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image source={require('@/assets/platforms/ovms.png')} style={{ width: 75, height: 75 }} />
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+              <Text variant="titleLarge">{t('OVMS v2 API')}</Text>
+              <View style={{ height: 10 }} />
+              <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t('Using the OVMS v2 API, protected by SSL/TLS encryption, and authenticated by username and password.')}</Text>
+            </View>
+          </Card.Content>
+        </Card>
         <View style={{ height: 10 }} />
-        <Button
-          mode='contained-tonal'
-          dark={true}
-          onPress={() => { router.replace('/(main)/newplatform/tesla'); }}
-          style={{ flex: 1, width: '100%', height: 200 }}
-          contentStyle={{ width: '100%', height: '100%' }}>
-          <Text>{t('TESLA API')}</Text>
-        </Button>
+        <Card mode="contained" style={{ margin: 10, padding: 10 }}
+          onPress={() => { router.replace('/(main)/newplatform/tesla'); }}>
+          <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image source={require('@/assets/platforms/tesla.png')} style={{ width: 75, height: 75 }} />
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+              <Text variant="titleLarge">{t('Tesla Fleet API')}</Text>
+              <View style={{ height: 10 }} />
+              <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t('Using the Tesla fleet API, protected by SSL/TLS encryption, and authenticated by Tesla account credentials.')}</Text>
+            </View>
+          </Card.Content>
+        </Card>
         <View style={{ height: 10 }} />
       </ScrollView>
       <Stack.Screen
