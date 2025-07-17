@@ -4,8 +4,9 @@ import { AnimatedRegion, Circle, MarkerAnimated } from "react-native-maps"
 import { useSelector } from "react-redux"
 import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/selectionSlice";
-import Animated from "react-native-reanimated";
-import { useSharedValue, withTiming, Easing, useAnimatedStyle } from "react-native-reanimated";
+import Animated, { cancelAnimation, useSharedValue, withTiming, Easing, useAnimatedStyle } from "react-native-reanimated";
+import { useNavigation } from "expo-router";
+import { getLastUpdateTime } from "@/store/connectionSlice";
 
 export function CarMarker() {
   const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")
@@ -21,30 +22,45 @@ export function CarMarker() {
   const vBatRangeIdeal = useSelector(vBatRangeIdealSelector)
 
   const selectedVehicle = useSelector(getSelectedVehicle)
+
   const currentCoordinate = { latitude: vPosLatitude, longitude: vPosLongitude }
   const [markerCoordinate, setMarkerCoordinate] = useState(new AnimatedRegion({ latitude: vPosLatitude, longitude: vPosLongitude }))
-
   const markerBearing = useSharedValue(vPosDirection)
+
+  const navigation = useNavigation()
   useEffect(() => {
-    if (markerBearing.value !== vPosDirection) {
-      markerBearing.value = withTiming(vPosDirection, {
-        duration: 5000,
-        easing: Easing.linear,
-      });
-    }
-    if (markerCoordinate != new AnimatedRegion(currentCoordinate)) {
-      markerCoordinate.timing({
-        latitude: currentCoordinate.latitude,
-        longitude: currentCoordinate.longitude,
-        latitudeDelta: 0,
-        longitudeDelta: 0,
-        easing: Easing.linear,
-        duration: 5000,
-        toValue: 1,
-        useNativeDriver: false
-      }).start()
-    }
-  }, [vPosDirection, currentCoordinate]);
+    setMarkerCoordinate(new AnimatedRegion({ latitude: vPosLatitude, longitude: vPosLongitude }))
+    markerBearing.value = vPosDirection
+    return () => {};
+  }, [navigation.isFocused()]); 
+
+  const lut = Date.now() / 1000 - useSelector(getLastUpdateTime)
+
+  useEffect(() => {
+    markerBearing.value = withTiming(vPosDirection, {
+      duration: 100,
+      easing: Easing.linear,
+    });
+    return () => {
+      cancelAnimation(markerBearing)
+    };
+  }, [vPosDirection]);
+
+  useEffect(() => {
+    markerCoordinate.timing({
+      latitude: currentCoordinate.latitude,
+      longitude: currentCoordinate.longitude,
+      latitudeDelta: 0,
+      longitudeDelta: 0,
+      easing: Easing.linear,
+      duration: 3000,
+      toValue: 1,
+      useNativeDriver: false
+    }).start()
+    return () => {
+      markerCoordinate.stopAnimation(() => currentCoordinate)
+    };
+  }, [currentCoordinate])
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -57,7 +73,7 @@ export function CarMarker() {
     <>
       {/*@ts-ignore*/}
       <MarkerAnimated coordinate={markerCoordinate}>
-        <Animated.View style={[{width: 36.4, height: 63.04, transformOrigin: 'center'}, animatedStyle]}>
+        <Animated.View style={[{ width: 36.4, height: 63.04, transformOrigin: 'center' }, animatedStyle]}>
           {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
         </Animated.View>
       </MarkerAnimated>
