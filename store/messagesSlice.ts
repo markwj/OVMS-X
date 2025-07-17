@@ -1,5 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './root';
+import { Avatar } from 'react-native-paper';
+import { View } from 'react-native';
 
 const MESSAGES_STORE_CAP = 100;
 
@@ -20,14 +22,13 @@ export const messagesSlice = createSlice({
         state.messages.pop()
       }
     },
-    addAppMessage: (state, action : PayloadAction<{text: string, currentTime : number, vehicleKey? : string}>) => { //Add vehicle key - default null
+    addAppMessage: (state, action : PayloadAction<{text: string, vehicleKey? : string}>) => { //Add vehicle key - default null
       let newMessage = {
         //@ts-ignore
         _id: (state.messages[0]?._id ?? -1) + 1,
         text: action.payload.text,
-        vehicleKey: action.payload.vehicleKey ?? null,
-        createdAt: action.payload.currentTime,
-        user: {_id : 1}
+        createdAt: Date.now(),
+        user: {_id : "APP_"+(action.payload.vehicleKey ?? "*"), name: "command"}
       }
       //@ts-ignore
       state.messages = [newMessage, ...state.messages]
@@ -35,14 +36,27 @@ export const messagesSlice = createSlice({
         state.messages.pop()
       }
     },
-    addVehicleMessage: (state, action : PayloadAction<{text : string, vehicleKey? : string}>) => {
+    addBroadcast: (state, action : PayloadAction<{text: string}>) => { //Add vehicle key - default null
       let newMessage = {
         //@ts-ignore
         _id: (state.messages[0]?._id ?? -1) + 1,
         text: action.payload.text,
-        vehicleKey: action.payload.vehicleKey ?? null,
         createdAt: Date.now(),
-        user: {_id : 2}
+        user: {_id : "*", name: "broadcast"}
+      }
+      //@ts-ignore
+      state.messages = [newMessage, ...state.messages]
+      if(state.messages.length > MESSAGES_STORE_CAP) {
+        state.messages.pop()
+      }
+    },
+    addVehicleMessage: (state, action : PayloadAction<{text : string, vehicleName : string | undefined, vehicleKey? : string}>) => {
+      let newMessage = {
+        //@ts-ignore
+        _id: (state.messages[0]?._id ?? -1) + 1,
+        text: action.payload.text,
+        createdAt: Date.now(),
+        user: {_id : action.payload.vehicleKey ?? "*", name: action.payload.vehicleName ?? ""}
       }
       //@ts-ignore
       state.messages = [newMessage, ...state.messages]
@@ -63,7 +77,7 @@ export const selectMessages = (state : RootState) => state.messages.messages;
 
 export function generateSelectVehicleMessages(vehicleKey : string) {
   //@ts-ignore
-  return createSelector(selectMessages, (messages) => messages.filter((m) => [null, vehicleKey].includes(m.vehicleKey)))
+  return createSelector(selectMessages, (messages) => messages.filter((m) => ["*", "APP_"+vehicleKey, "APP_*", null, vehicleKey].includes(m.user._id)))
 }
 
 export const { addMessage, addVehicleMessage, addAppMessage, wipeMessages } = messagesSlice.actions;

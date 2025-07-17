@@ -20,7 +20,7 @@ export function Map() {
 
   const [region, setRegion] = useState(INITIAL_REGION)
 
-  if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta/3 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta/3) {
+  if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta/2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta/2) {
     //@ts-ignore
     mapRef.current?.animateToRegion({
       latitude: vPLatitude ?? region.latitude,
