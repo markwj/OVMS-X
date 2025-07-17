@@ -4,9 +4,7 @@ import { AnimatedRegion, Circle, MarkerAnimated } from "react-native-maps"
 import { useSelector } from "react-redux"
 import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/selectionSlice";
-import Animated, { cancelAnimation, useSharedValue, withTiming, Easing, useAnimatedStyle } from "react-native-reanimated";
-import { useNavigation } from "expo-router";
-import { getLastUpdateTime } from "@/store/connectionSlice";
+import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, useDerivedValue, runOnJS } from "react-native-reanimated";
 
 export function CarMarker() {
   const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")
@@ -15,6 +13,8 @@ export function CarMarker() {
   const vPosLongitude = useSelector(vPosLongitudeSelector)
   const vPosDirectionSelector = generateGetMetricValueSelector("v.p.direction")
   const vPosDirection = useSelector(vPosDirectionSelector)
+  const vPosSpeedSelector = generateGetMetricValueSelector("v.p.speed")
+  const vPosSpeed = useSelector(vPosSpeedSelector)
 
   const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
   const vBatRangeEst = useSelector(vBatRangeEstSelector)
@@ -23,56 +23,71 @@ export function CarMarker() {
 
   const selectedVehicle = useSelector(getSelectedVehicle)
 
-  const currentCoordinate = { latitude: vPosLatitude, longitude: vPosLongitude }
-  const [markerCoordinate, setMarkerCoordinate] = useState(new AnimatedRegion({ latitude: vPosLatitude, longitude: vPosLongitude }))
-  const markerBearing = useSharedValue(vPosDirection)
+  // Create shared values for smooth animations
+  const animatedLatitude = useSharedValue(vPosLatitude || 0)
+  const animatedLongitude = useSharedValue(vPosLongitude || 0)
+  const animatedDirection = useSharedValue(vPosDirection || 0)
 
-  const navigation = useNavigation()
+  // State variables to avoid accessing .value during render
+  const [displayLatitude, setDisplayLatitude] = useState(vPosLatitude || 0)
+  const [displayLongitude, setDisplayLongitude] = useState(vPosLongitude || 0)
+  const [displayDirection, setDisplayDirection] = useState(vPosDirection || 0)
+
+  // Update shared values when new data arrives
   useEffect(() => {
-    setMarkerCoordinate(new AnimatedRegion({ latitude: vPosLatitude, longitude: vPosLongitude }))
-    markerBearing.value = vPosDirection
-    return () => {};
-  }, [navigation.isFocused()]); 
-
-  const lut = Date.now() / 1000 - useSelector(getLastUpdateTime)
-
-  useEffect(() => {
-    markerBearing.value = withTiming(vPosDirection, {
-      duration: 100,
-      easing: Easing.linear,
-    });
-    return () => {
-      cancelAnimation(markerBearing)
-    };
-  }, [vPosDirection]);
+    if (vPosLatitude !== null && vPosLatitude !== undefined) {
+      animatedLatitude.value = withTiming(vPosLatitude, {
+        duration: 3000,
+        easing: Easing.linear
+      })
+    }
+  }, [vPosLatitude, animatedLatitude])
 
   useEffect(() => {
-    markerCoordinate.timing({
-      latitude: currentCoordinate.latitude,
-      longitude: currentCoordinate.longitude,
-      latitudeDelta: 0,
-      longitudeDelta: 0,
-      easing: Easing.linear,
-      duration: 3000,
-      toValue: 1,
-      useNativeDriver: false
-    }).start()
-    return () => {
-      markerCoordinate.stopAnimation(() => currentCoordinate)
-    };
-  }, [currentCoordinate])
+    if (vPosLongitude !== null && vPosLongitude !== undefined) {
+      animatedLongitude.value = withTiming(vPosLongitude, {
+        duration: 3000,
+        easing: Easing.linear
+      })
+    }
+  }, [vPosLongitude, animatedLongitude])
+
+  useEffect(() => {
+    if (vPosDirection !== null && vPosDirection !== undefined) {
+      animatedDirection.value = withTiming(vPosDirection, {
+        duration: 1000,
+        easing: Easing.linear
+      })
+    }
+  }, [vPosDirection, animatedDirection])
+
+  // Update display values from animated values
+  useDerivedValue(() => {
+    runOnJS(setDisplayLatitude)(animatedLatitude.value)
+  })
+
+  useDerivedValue(() => {
+    runOnJS(setDisplayLongitude)(animatedLongitude.value)
+  })
+
+  useDerivedValue(() => {
+    runOnJS(setDisplayDirection)(animatedDirection.value)
+  })
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transformOrigin: 'center',
-      transform: [{ rotate: `${markerBearing.value}deg` }, { translateX: "-25%" }],
+      transform: [{ rotate: `${animatedDirection.value}deg` }, { translateX: "-25%" }],
     };
   });
 
   return (
     <>
       {/*@ts-ignore*/}
-      <MarkerAnimated coordinate={markerCoordinate}>
+      <MarkerAnimated coordinate={{
+        latitude: displayLatitude, 
+        longitude: displayLongitude
+      }}>
         <Animated.View style={[{ width: 36.4, height: 63.04, transformOrigin: 'center' }, animatedStyle]}>
           {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
         </Animated.View>
