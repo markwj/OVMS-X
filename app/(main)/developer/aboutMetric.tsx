@@ -44,7 +44,7 @@ export default function AboutMetricScreen() {
           <DataTable.Cell style={styles.rowValue}>
             <View style={{ flexDirection: "row", alignItems: 'center' }}>
               <TextInput
-                value={tempValue}
+                value={tempValue.toString()}
                 onChangeText={setTempValue}
                 onSubmitEditing={(value) => dispatch(metricsSlice.actions.setMetric({ key: metricName, value: value.nativeEvent.text, currentTime: GetCurrentUTCTimeStamp() }))}
                 style={styles.rowEntry}

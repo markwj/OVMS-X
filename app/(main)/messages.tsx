@@ -54,25 +54,25 @@ export default function MessagesScreen() {
 
           if (currentMessage.user._id == "*") {
             return (
-              <Icon source={"broadcast"} size={30} />
+              <Icon source={"broadcast"} size={40} />
             )
           }
           if (currentMessage.user.name == "command") {
             return (
-              <Icon source={"keyboard"} size={30} />
+              <Icon source={"keyboard"} size={40} />
             )
           }
           const loadedImage = useSelector(generateFindVehicleSelector(currentMessage.user._id as string))?.image
 
           if (loadedImage) {
             return (
-              <View style={{ width: 30, height: 30, marginRight: 0, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ width: 40, height: 40, marginRight: 0, justifyContent: 'flex-end', alignItems: 'center' }}>
                 <VehicleSideImage image={loadedImage} />
               </View>
             )
           }
           return (
-            <Icon source={"car"} size={20} />
+            <Icon source={"car"} size={40} />
           )
         }
         }

@@ -64,12 +64,13 @@ export function VehicleSideImage({ image }: { image: VehicleImage }): React.JSX.
 
   return (
     //@ts-ignore
-    <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain', zIndex: -3 }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].side}>
-      <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain', zIndex: -2 }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].sideMask}>
+    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -3 }} style={{ aspectRatio: ASPECT_RATIO, width: "100%", height: undefined }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].side}>
+      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -2 }} style={{ aspectRatio: ASPECT_RATIO, width: "100%", height: undefined }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].sideMask}>
         <Image
           style={{
             aspectRatio: ASPECT_RATIO,
-            flex: 1,
+            width: "100%",
+            height: undefined,
             tintColor: image.tintColor ?? "#fff",
             //@ts-ignore
             mixBlendMode: 'color-burn',
@@ -89,10 +90,11 @@ export function VehicleTopImage({ image }: { image: VehicleImage }): React.JSX.E
 
   return (
     //@ts-ignore
-    <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain', zIndex: -3 }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].top}>
-      <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain', zIndex: -2 }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].topMask}>
+    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -3 }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1 }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].top}>
+      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -2 }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1 }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].topMask}>
         <Image
           style={{
+            width: '100%', height: undefined,
             aspectRatio: ASPECT_RATIO,
             flex: 1,
             resizeMode: "contain",
@@ -114,12 +116,13 @@ export function VehicleMapImage({ image }: { image: VehicleImage }): React.JSX.E
 
   return (
     //@ts-ignore
-    <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain'}} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].map}>
-      <ImageBackground imageStyle={{ width: '100%', resizeMode: 'contain' }} style={{ aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].mapMask}>
+    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain'}} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].map}>
+      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain' }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].mapMask}>
         <Image
           style={{
+            width: '100%', 
+            height: undefined,
             aspectRatio: ASPECT_RATIO,
-            width: '100%',
             resizeMode: "contain",
             tintColor: image.tintColor ?? "#fff",
             //@ts-ignore
