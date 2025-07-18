@@ -54,10 +54,12 @@ export const metricsSlice = createSlice({
       const params = payload.payload;
       (state.metricsList as any)[params.key] = JSON.stringify(new Metric(params));
     },
-    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime?: string, unit?: string }>) => { //Need to pass the current time to maintain purity
+    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime?: string, unit?: string, stale?: boolean | null }>) => { //Need to pass the current time to maintain purity
       const params = payload.payload;
       if (!Object.keys(state.metricsList).includes(params.key)) { return; }
       const metric = JSON.parse((state.metricsList as any)[params.key]);
+
+      metric.explicitlyStale = params.stale ?? null
 
       switch (metric.type) {
         case MetricType.BOOL:
@@ -80,9 +82,9 @@ export const metricsSlice = createSlice({
             }
           }
 
-          if (metric.precision != null) { 
+          if (metric.precision != null) {
             console.log(`[metricsSlice] Set precision of ${v} to ${metric.precision} d.p. of ${+v.toFixed(metric.precision)}`)
-            v = +v.toFixed(metric.precision); 
+            v = +v.toFixed(metric.precision);
           }
           metric.value = v
           break
@@ -124,7 +126,11 @@ export const generateGetMetricUnitSelector = (key: string) => {
 }
 
 export const generateMetricIsStaleSelector = (key: string, currentTime: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => (new Date(metric?.lastModified ?? 0).getTime() / 1000 + (metric?.staleSeconds ?? 0)) < new Date(currentTime).getTime() / 1000)
+  return createSelector(generateGetMetricSelector(key), (metric) => {
+    if (metric?.explicitlyStale != null) { return metric?.explicitlyStale }
+    if (metric?.staleSeconds == null) { return false }
+    return new Date(metric?.lastModified ?? 0).getTime() / 1000 + (metric?.staleSeconds ?? 0) < new Date(currentTime).getTime() / 1000
+  })
 }
 
 export const generateMetricIsDefinedSelector = (key: string) => {

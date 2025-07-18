@@ -3,6 +3,10 @@ import { View, StyleSheet, Button, Text, ScrollView } from 'react-native';
 import { DataTable } from "react-native-paper";
 import { Metric } from "@/components/vehicle/metrics";
 import { router } from "expo-router";
+import { useSelector } from "react-redux";
+import { MetricValue } from "@/components/ui/MetricValue"
+import { generateMetricIsStaleSelector } from "@/store/metricsSlice";
+import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 
 //@ts-ignore
 export default function MetricTable({ metricKeys, metrics }): React.JSX.Element {
@@ -18,10 +22,14 @@ export default function MetricTable({ metricKeys, metrics }): React.JSX.Element 
 }
 
 function GenerateMetricEntry(metricName: string, metric: Metric) {
+  const stale = useSelector(generateMetricIsStaleSelector(metricName, GetCurrentUTCTimeStamp()))
+
   return (
     <DataTable.Row key={metricName} style={styles.metricRow} onPress={() => OnMetricEntryPress(metricName)}>
       <DataTable.Cell style={{...styles.metricText, flex:2}}>{metricName}</DataTable.Cell>
-      <DataTable.Cell style={styles.metricText}>{metric.value != null ? metric.value + " " +(metric.unit ?? "") : "undefined"}</DataTable.Cell>
+      <DataTable.Cell style={styles.metricText}>
+        <MetricValue metricKey={metricName} children={undefined}></MetricValue>
+      </DataTable.Cell>
     </DataTable.Row>
   )
 }

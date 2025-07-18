@@ -234,16 +234,16 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const frontLeftWheelTemperature = parts[5]
         const rearLeftWheelPressure = parts[6]
         const rearLeftWheelTemperature = parts[7]
-        const staleTpmsIndicator = parts[8]
+        const staleTpmsIndicator = parts[8] < 0 ? undefined : (parts[8] == 0)
 
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.p', value: frontLeftWheelPressure, unit: "psi" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature, unit: "C" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.p', value: frontRightWheelPressure, unit: "psi" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature, unit: "C" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.p', value: rearRightWheelPressure, unit: "psi" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature, unit: "C" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.p', value: rearLeftWheelPressure, unit: "psi" }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.p', value: frontLeftWheelPressure, unit: "psi", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature, unit: "C", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.p', value: frontRightWheelPressure, unit: "psi", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature, unit: "C", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.p', value: rearRightWheelPressure, unit: "psi", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature, unit: "C", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.p', value: rearLeftWheelPressure, unit: "psi", stale: staleTpmsIndicator }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature, unit: "C", stale: staleTpmsIndicator }))
 
       } else if (event.data.startsWith('T')) {
         const parts = event.data.substring(1).split(',')

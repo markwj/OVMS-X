@@ -22,6 +22,7 @@ export class Metric {
   precision: number | null = null
 
   staleSeconds: number | null = null
+  explicitlyStale : boolean | null = null
   defined: MetricDefined = MetricDefined.NEVER
   lastModified: string | null = null
 
@@ -37,6 +38,7 @@ export class Metric {
     this.type = options?.type ?? MetricType.UNDEFINED
     this.trueStatement = options?.trueStatement ?? "true"
     this.falseStatement = options?.falseStatement ?? "false"
+    this.explicitlyStale = options?.explicitlyStale ?? null
     
     if(this.value != null) {
       this.defined = MetricDefined.FIRST;
