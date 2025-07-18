@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Icon } from "react-native-paper"
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
@@ -75,7 +75,9 @@ function resolveNextPendingCommand(response: string) {
 export function OVMSv2ConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
-  
+
+  const [distanceUnits, setDistanceUnits] = useState("km")
+
   useInterval(() => {
     if (connection && connection.readyState === WebSocket.OPEN) {
       console.log('[connection OVMSv2] tx ping')
@@ -84,12 +86,12 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
   }, 60000);
 
   useEffect(() => {
-    console.log("[connection OVMSv2] start",selectedVehicle?.name)
+    console.log("[connection OVMSv2] start", selectedVehicle?.name)
 
     const serverurl = `wss://${selectedVehicle?.platformParameters?.server}:${selectedVehicle?.platformParameters?.wssport}/apiv2`;
     dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.CONNECTING))
     connection = new WebSocket(serverurl)
-    console.log('[connection OVMSv2] connection',serverurl,connection)        
+    console.log('[connection OVMSv2] connection', serverurl, connection)
 
     // Send authentication message when connection opens
     const openListener = () => {
@@ -99,7 +101,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
       console.log('[connection OVMSv2] tx auth', authMessage)
       connection?.send(authMessage)
     }
-  
+
     const closeListener = () => {
       console.log('[connection OVMSv2] connection closed')
       dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.DISCONNECTED))
@@ -108,7 +110,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
     const messageListener = (event: MessageEvent) => {
 
       if (event.data.startsWith('MP-S')) {
-        console.log('[connection OVMSv2] rx LOGIN(RESULT)',event.data)
+        console.log('[connection OVMSv2] rx LOGIN(RESULT)', event.data)
         dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.CONNECTED))
 
       } else if (event.data.startsWith('F')) {
@@ -132,7 +134,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
           dispatch(vehiclesSlice.actions.updateVehicleVIN({ key: selectedVehicle?.key, newValue: vin }))
         }
         dispatch(metricsSlice.actions.setMetric({ key: 'm.version', value: firmwareVersion }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'm.net.sq', value: networkSignalQuality }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'm.net.sq', value: networkSignalQuality, unit: "SQ" }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.type', value: vehicleTypeCode }))
         dispatch(metricsSlice.actions.setMetric({ key: 'm.net.provider', value: networkName }))
         dispatch(metricsSlice.actions.setMetric({ key: 'm.hardware', value: ovmsHardwareVersion }))
@@ -141,7 +143,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const parts = event.data.substring(1).split(',')
         console.log('[connection OVMSv2] rx STATE', parts)
         const soc = parts[0]
-        const units = parts[1]
+        const units = parts[1] == "K" ? "km" : "mi"
         const lineVoltage = parts[2]
         const chargeCurrent = parts[3]
         const chargeState = parts[4]
@@ -183,10 +185,13 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const mainBatteryUsableCapacity = parts[40]
         const dateAndTimeOfLastChargeEnd = parts[41]
 
+        if (distanceUnits != units) { setDistanceUnits(units) }
         dispatch(metricsSlice.actions.setMetric({ key: 'v.b.soc', value: soc }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.b.soh', value: batterySOH }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.ideal', value: idealRange }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.est', value: estimatedRange }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.ideal', value: idealRange, unit: units }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.range.est', value: estimatedRange, unit: units }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.c.climit', value: chargeLimit, unit: "A" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.c.time', value: chargeDuration, unit: "min" }))
 
       } else if (event.data.startsWith('L')) {
         const parts = event.data.substring(1).split(',')
@@ -215,8 +220,8 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.longitude', value: longitude }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.direction', value: carDirection }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.p.altitude', value: carAltitude }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.gpsspeed', value: gpsSpeed }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed, unit: distanceUnits == "km" ? "km/h" : "mph" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.gpsspeed', value: gpsSpeed, unit: distanceUnits == "km" ? "km/h" : "mph" }))
 
       } else if (event.data.startsWith('W')) {
         const parts = event.data.substring(1).split(',')
@@ -231,14 +236,14 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const rearLeftWheelTemperature = parts[7]
         const staleTpmsIndicator = parts[8]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.p', value: frontLeftWheelPressure }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.p', value: frontRightWheelPressure }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.p', value: rearRightWheelPressure }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.p', value: rearLeftWheelPressure }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.p', value: frontLeftWheelPressure, unit: "psi" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.p', value: frontRightWheelPressure, unit: "psi" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.p', value: rearRightWheelPressure, unit: "psi" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.p', value: rearLeftWheelPressure, unit: "psi" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature, unit: "C" }))
 
       } else if (event.data.startsWith('T')) {
         const parts = event.data.substring(1).split(',')
@@ -288,22 +293,22 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const vehicle12VCurrent = parts[19]
         const vehicleCabinTemperature = parts[20]
 
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.odometer', value: carOdometer }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.trip', value: carTripMeter }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.odometer', value: (carOdometer / 10).toString(), unit: distanceUnits }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.speed', value: carSpeed, unit: distanceUnits == "km" ? "km/h" : "mph" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.p.trip', value: (carTripMeter / 10).toString(), unit: distanceUnits }))
         dispatch(metricsSlice.actions.setMetric({ key: 'v.e.cabintemp', value: vehicleCabinTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.temp', value: batteryTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature }))
-        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.12v.voltage', value: vehicle12VLineVoltage }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.temp', value: batteryTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature, unit: "C" }))
+        dispatch(metricsSlice.actions.setMetric({ key: 'v.b.12v.voltage', value: vehicle12VLineVoltage, unit: "V" }))
 
       } else if (event.data.startsWith('P')) {
-        const type = event.data.substring(1,2)
+        const type = event.data.substring(1, 2)
         const message = event.data.substring(2)
         console.log('[connection OVMSv2] rx MESSAGE(PUSH)', type, message)
 
-        dispatch(messagesSlice.actions.addVehicleMessage({text: message, vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name}))
+        dispatch(messagesSlice.actions.addVehicleMessage({ text: message, vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }))
 
       } else if (event.data.startsWith('c')) {
 
@@ -322,7 +327,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
             const result = parseInt(afterCommandCode.substring(0, secondCommaIndex))
             const parameters = afterCommandCode.substring(secondCommaIndex + 1) // Everything after the second comma
             console.log('[connection OVMSv2] rx COMMAND RESPONSE', result, parameters)
-          
+
             // Handle textual commands (code 7)
             if (commandCode === '7') {
               if (result === 0) {
@@ -346,7 +351,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
                 }
                 resolveNextPendingCommand(`ERROR: ${errorMessage}`)
               }
-              
+
             } else {
               // Non-textual command - just log for now
               console.log(`[connection OVMSv2] Non-textual command response: code=${commandCode}, result=${result}, params=${parameters}`)
@@ -368,7 +373,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
     connection?.addEventListener('close', closeListener)
 
     return () => {
-      console.log("[connection OVMSv2] cleanup",selectedVehicle?.name)
+      console.log("[connection OVMSv2] cleanup", selectedVehicle?.name)
       if (connection) {
         connection.removeEventListener('open', openListener)
         connection.removeEventListener('message', messageListener)

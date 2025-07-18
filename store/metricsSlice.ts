@@ -2,7 +2,7 @@ import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
 import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
-import { useDispatch } from 'react-redux';
+import { GetUnitAbbr, numericalUnitConvertor } from '@/components/utils/numericalUnitConverter';
 import { GetCurrentUTCTimeStamp } from '@/components/utils/datetime';
 
 export interface Metrics {
@@ -54,7 +54,7 @@ export const metricsSlice = createSlice({
       const params = payload.payload;
       (state.metricsList as any)[params.key] = JSON.stringify(new Metric(params));
     },
-    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime?: string }>) => { //Need to pass the current time to maintain purity
+    setMetric: (state: Metrics, payload: PayloadAction<{ key: string, value: string, currentTime?: string, unit?: string }>) => { //Need to pass the current time to maintain purity
       const params = payload.payload;
       if (!Object.keys(state.metricsList).includes(params.key)) { return; }
       const metric = JSON.parse((state.metricsList as any)[params.key]);
@@ -70,7 +70,20 @@ export const metricsSlice = createSlice({
         case MetricType.NUMBER:
           let v = +params.value;
           if (isNaN(v)) { metric.value = "NaN"; break; }
-          if (metric.precision != null) { v = +v.toFixed(metric.precision); }
+
+          if (params.unit && metric.unit && GetUnitAbbr(params.unit) != GetUnitAbbr(metric.unit)) {
+            try {
+              v = numericalUnitConvertor(v).from(GetUnitAbbr(params.unit)).to(GetUnitAbbr(metric.unit))
+              console.log(`[metricsSlice] Converted ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`)
+            } catch (error) {
+              console.error(error)
+            }
+          }
+
+          if (metric.precision != null) { 
+            console.log(`[metricsSlice] Set precision of ${v} to ${metric.precision} d.p. of ${+v.toFixed(metric.precision)}`)
+            v = +v.toFixed(metric.precision); 
+          }
           metric.value = v
           break
         default:
@@ -89,13 +102,21 @@ export const metricsAllKeysSelector = createSelector(getMetricsListSelector, (me
 export const metricsAllSerialisedValuesSelector = createSelector(getMetricsListSelector, (metricsList) => Object.values(metricsList))
 export const metricsAllValuesSelector = createSelector(metricsAllSerialisedValuesSelector, (metricsList) => metricsList.map((stringMetric) => JSON.parse(stringMetric as string)))
 
-
 export const generateGetMetricSelector = (key: string) => {
   return createSelector(getMetricsListSelector, (metricsList) => JSON.parse((metricsList as any)[key] ?? "{}"))
 }
 
-export const generateGetMetricValueSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric?.value)
+export const generateGetMetricValueSelector = (key: string, unit?: string) => {
+  return createSelector(generateGetMetricSelector(key), (metric) => {
+    if (unit && metric?.unit && metric?.value && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
+      try {
+        return numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    return metric?.value
+  })
 }
 
 export const generateGetMetricUnitSelector = (key: string) => {
