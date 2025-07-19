@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { ScrollView, View } from 'react-native';
-import { selectMetricsKeys, metricsSlice, selectMetricsValues } from "@/store/metricsSlice";
+import { selectMetricsKeys, metricsSlice, selectMetricsValues, selectLocalisedMetricValue } from "@/store/metricsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import MetricTable from "@/components/ui/MetricTable";
@@ -20,13 +20,11 @@ export default function DeveloperScreen() {
   const closeMenu = () => { setVisible(false); }
 
   let keys = useSelector(selectMetricsKeys)
-  let values = useSelector(selectMetricsValues)
 
   let keysIndexes = keys.map((k,i) => i)
   keysIndexes.sort((a,b) => (keys[a]).localeCompare(keys[b]))
 
   keys = keysIndexes.map((i) => keys[i])
-  values = keysIndexes.map((i) => values[i])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -47,7 +45,7 @@ export default function DeveloperScreen() {
 
   return (
     <ScrollView>
-      <MetricTable metrics={values} metricKeys={keys} />
+      <MetricTable metricKeys={keys} />
     </ScrollView>
   );
 }

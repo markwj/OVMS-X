@@ -9,12 +9,13 @@ import { Stack } from "expo-router";
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from "react-redux";
-import { selectMetricValue } from "@/store/metricsSlice";
+import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
 import { ConnectionText } from "@/components/ui/ConnectionDisplay";
+import { store } from "@/store/root";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -22,14 +23,10 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
   
-  const vBatRangeEstSelector = selectMetricValue("v.b.range.est")
-  const vBatRangeEst = useSelector(vBatRangeEstSelector)
+  const {value: vBatRangeEst, unit: vBatRangeEstUnit} = store.dispatch(selectLocalisedMetricValue("v.b.range.est"))
   const vBatSocSelector = selectMetricValue("v.b.soc")
   const vBatSoc = useSelector(vBatSocSelector)
-  const vPosOdometerSelector = selectMetricValue("v.p.odometer")
-  const vPosOdometer = useSelector(vPosOdometerSelector)
-  const vEAwakeSelector = selectMetricValue("v.e.awake12")
-  const vEAwake = useSelector(vEAwakeSelector)
+  const {value: vPosOdometer, unit: vPosOdometerUnit} = store.dispatch(selectLocalisedMetricValue("v.p.odometer"))
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const lastUpdated = useSelector(getLastUpdateTime)
@@ -41,7 +38,7 @@ export default function HomeScreen() {
           <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
               <BatteryIcon />
-              <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}km</Text>
+              <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text>
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
@@ -74,7 +71,7 @@ export default function HomeScreen() {
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
               <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
-              <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}km</Text>
+              <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text>
             </View>
             <View style={{ alignItems: 'center', marginTop: 20 }}>
               <ControlButton type={controlType.Controls} />
@@ -87,7 +84,7 @@ export default function HomeScreen() {
             </View>
             <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
               <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
-              <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}km</Text>
+              <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}{t(vPosOdometerUnit)}</Text>
               <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
             </View>
           </BottomSheetView>
@@ -100,15 +97,4 @@ export default function HomeScreen() {
         }} />
     </>
   );
-}
-
-function DisplayDataAge(dataAgeSeconds : number, t : any) {
-  const minutes = dataAgeSeconds / 60
-  const hours = minutes / 60
-  const days = hours / 24
-
-  if(days >= 1) {return `${Math.floor(days)} ${days >= 2 ? t('days') : t('day')}`}
-  if(hours >= 1) {return `${Math.floor(hours)} ${hours >= 2 ? t('hours') : t('hour')}`}
-  if(minutes >= 1) {return `${Math.floor(minutes)} ${minutes >= 2 ? t('minutes') : t('minute')}`}
-  return "live"
 }

@@ -1,9 +1,11 @@
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { RootState } from './root';
+import { createSelector, createSlice, Dispatch, PayloadAction, UnknownAction } from '@reduxjs/toolkit'
+import { AppDispatch, RootState } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
 import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
 import { GetUnitAbbr, numericalUnitConvertor } from '@/components/utils/numericalUnitConverter';
 import { GetCurrentUTCTimeStamp } from '@/components/utils/datetime';
+import { useDispatch } from 'react-redux';
+import { getDistancePreference, getPressureUnit, getTemperatureUnit } from './preferencesSlice';
 
 export interface Metrics {
   metricsList: {}
@@ -83,7 +85,6 @@ export const metricsSlice = createSlice({
           }
 
           if (metric.precision != null) {
-            console.log(`[metricsSlice] Set precision of ${v} to ${metric.precision} d.p. of ${+v.toFixed(metric.precision)}`)
             v = +v.toFixed(metric.precision);
           }
           metric.value = v
@@ -111,14 +112,23 @@ export const selectMetric = (key: string) => {
 
 export const selectMetricValue = (key: string, unit?: string) => {
   return createSelector(selectMetric(key), (metric) => {
-    if (unit && metric?.unit && metric?.value && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
+    let v = metric?.value
+
+    if(v == null) { return v }
+
+    v = v!
+
+    if (unit && metric?.unit && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
       try {
-        return numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
+        v = numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
       } catch (error) {
         console.error(error)
       }
     }
-    return metric?.value
+    if (metric.precision != null) {
+      v = +v.toFixed(metric.precision);
+    }
+    return v
   })
 }
 
@@ -140,6 +150,48 @@ export const selectMetricIsDefined = (key: string) => {
 
 export const selectMetricLastModified = (key: string) => {
   return createSelector(selectMetric(key), (metric) => metric?.lastModified)
+}
+
+export function selectLocalisedMetricValue(metricName : string) {
+  return (dispatch : AppDispatch, getState : () => RootState) => {
+    const currentUnit = selectMetricUnit(metricName)(getState())
+    const possibleUnits = numericalUnitConvertor().possibilities()
+    let metricValue = selectMetricValue(metricName)(getState())
+
+    if(metricValue == null || [NaN, null, undefined].includes(+metricValue)){
+      return { value: metricValue, unit: currentUnit }
+    } 
+    
+    metricValue = +metricValue
+
+    let targetUnit;
+    
+    if(possibleUnits.includes(currentUnit) && currentUnit != null) {
+      switch(numericalUnitConvertor().describe(currentUnit).measure) {
+        case "temperature":
+          targetUnit = getTemperatureUnit(getState())
+          break
+        case "length":
+          targetUnit = getDistancePreference(getState())
+          break
+        case "pressure":
+          targetUnit = getPressureUnit(getState())
+          break
+        default: 
+          targetUnit = "system"
+      }
+
+      if(targetUnit == "system" || targetUnit == currentUnit ) {return { value: metricValue, unit: currentUnit } }
+      if(targetUnit == currentUnit) { return { value: metricValue, unit: targetUnit } }
+
+      const convertedMetricValue = selectMetricValue(metricName, targetUnit)(getState())
+
+      return { value: convertedMetricValue, unit: targetUnit } 
+
+    } else {
+      return { value: metricValue, unit: currentUnit }
+    }
+  }
 }
 
 export const { deleteAll, deleteOne, clearAll, clearOne, createMetric, resetToStandardMetrics } = metricsSlice.actions;

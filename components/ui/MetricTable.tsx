@@ -9,19 +9,19 @@ import { selectMetricIsStale } from "@/store/metricsSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 
 //@ts-ignore
-export default function MetricTable({ metricKeys, metrics }): React.JSX.Element {
+export default function MetricTable({ metricKeys }): React.JSX.Element {
   return (
     <DataTable style={styles.table}>
       <DataTable.Header style={styles.headerRow}>
         <DataTable.Title style={{...styles.metricText, flex:2}}>Name</DataTable.Title>
         <DataTable.Title style={styles.headerText}>Value</DataTable.Title>
       </DataTable.Header>
-      {metricKeys.map((metricKey: string, index: string | number) => GenerateMetricEntry(metricKey, (metrics as any)[index]))}
+      {metricKeys.map((metricKey: string, index: string | number) => GenerateMetricEntry(metricKey))}
     </DataTable>
   )
 }
 
-function GenerateMetricEntry(metricName: string, metric: Metric) {
+function GenerateMetricEntry(metricName: string ) {
   const stale = useSelector(selectMetricIsStale(metricName, GetCurrentUTCTimeStamp()))
 
   return (

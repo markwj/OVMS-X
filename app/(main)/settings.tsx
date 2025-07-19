@@ -33,7 +33,7 @@ const PRESSURE_BUTTONS = [
   { value: PressureChoiceType.SYSTEM, label: 'System' },
   { value: PressureChoiceType.PSI, label: 'PSI' },
   { value: PressureChoiceType.BAR, label: 'Bar' },
-  { value: PressureChoiceType.KPA, label: 'kPa' }
+  { value: PressureChoiceType.kPa, label: 'kPa' }
 ]
 
 export default function SettingsScreen() {
