@@ -16,7 +16,7 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
         <DataTable.Title style={{...styles.metricText, flex:2}}>Name</DataTable.Title>
         <DataTable.Title style={styles.headerText}>Value</DataTable.Title>
       </DataTable.Header>
-      {metricKeys.map((metricKey: string, index: string | number) => GenerateMetricEntry(metricKey))}
+      {metricKeys.map((metricKey: string) => GenerateMetricEntry(metricKey))}
     </DataTable>
   )
 }
@@ -28,7 +28,7 @@ function GenerateMetricEntry(metricName: string ) {
     <DataTable.Row key={metricName} style={styles.metricRow} onPress={() => OnMetricEntryPress(metricName)}>
       <DataTable.Cell style={{...styles.metricText, flex:2}}>{metricName}</DataTable.Cell>
       <DataTable.Cell style={styles.metricText}>
-        <MetricValue metricKey={metricName} children={undefined}></MetricValue>
+        <MetricValue metricKey={metricName}></MetricValue>
       </DataTable.Cell>
     </DataTable.Row>
   )

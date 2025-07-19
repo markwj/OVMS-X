@@ -16,17 +16,16 @@ import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
 import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 import { store } from "@/store/root";
+import { MetricValue } from "@/components/ui/MetricValue";
 
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
-  
-  const {value: vBatRangeEst, unit: vBatRangeEstUnit} = store.dispatch(selectLocalisedMetricValue("v.b.range.est"))
+
   const vBatSocSelector = selectMetricValue("v.b.soc")
   const vBatSoc = useSelector(vBatSocSelector)
-  const {value: vPosOdometer, unit: vPosOdometerUnit} = store.dispatch(selectLocalisedMetricValue("v.p.odometer"))
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const lastUpdated = useSelector(getLastUpdateTime)
@@ -38,7 +37,7 @@ export default function HomeScreen() {
           <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
               <BatteryIcon />
-              <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text>
+              <MetricValue style={{ marginStart: 10 }} metricKey={"v.b.range.est"}/>
             </View>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
@@ -71,7 +70,13 @@ export default function HomeScreen() {
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
               <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
-              <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text>
+              {/* <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text> */}
+              <View style={{width: 300, flexDirection: 'row', justifyContent: 'center', marginTop: 5}}>
+                <Text>SOC: </Text>
+                <MetricValue metricKey={"v.b.soc"}/>
+                <Text>  Range: </Text>
+                <MetricValue metricKey={"v.b.range.est"}/>
+              </View>
             </View>
             <View style={{ alignItems: 'center', marginTop: 20 }}>
               <ControlButton type={controlType.Controls} />
@@ -84,7 +89,8 @@ export default function HomeScreen() {
             </View>
             <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
               <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
-              <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}{t(vPosOdometerUnit)}</Text>
+              {/* <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}{t(vPosOdometerUnit)}</Text> */}
+              <MetricValue variant='labelMedium' metricKey={"v.p.odometer"}/>
               <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
             </View>
           </BottomSheetView>
