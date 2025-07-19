@@ -4,20 +4,20 @@ import { GiftedChat, IMessage } from 'react-native-gifted-chat'
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { addAppMessage, addVehicleMessage, generateSelectVehicleMessages } from "@/store/messagesSlice";
+import { addAppMessage, addVehicleMessage, selectVehicleMessages } from "@/store/messagesSlice";
 import { ConnectionTextualCommand } from "@/components/platforms/connection";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
 import { Icon } from "react-native-paper";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
-import { generateFindVehicleSelector } from "@/store/vehiclesSlice";
+import { selectVehicle } from "@/store/vehiclesSlice";
 
 export default function MessagesScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch()
   const selectedVehicle = useSelector(getSelectedVehicle)
   const connectionState = useSelector(getConnectionState)
-  const messages = useSelector(generateSelectVehicleMessages(selectedVehicle?.key ?? ""))
+  const messages = useSelector(selectVehicleMessages(selectedVehicle?.key ?? ""))
 
   const onSend = async (newMessage: IMessage) => {
     dispatch(addAppMessage({ text: newMessage.text, vehicleKey: selectedVehicle?.key }));
@@ -62,7 +62,7 @@ export default function MessagesScreen() {
               <Icon source={"keyboard"} size={40} />
             )
           }
-          const loadedImage = useSelector(generateFindVehicleSelector(currentMessage.user._id as string))?.image
+          const loadedImage = useSelector(selectVehicle(currentMessage.user._id as string))?.image
 
           if (loadedImage) {
             return (

@@ -99,17 +99,18 @@ export const metricsSlice = createSlice({
   }
 })
 
-export const getMetricsListSelector = (state: RootState) => state.metrics.metricsList ?? [];
-export const metricsAllKeysSelector = createSelector(getMetricsListSelector, (metricsList) => Object.keys(metricsList))
-export const metricsAllSerialisedValuesSelector = createSelector(getMetricsListSelector, (metricsList) => Object.values(metricsList))
-export const metricsAllValuesSelector = createSelector(metricsAllSerialisedValuesSelector, (metricsList) => metricsList.map((stringMetric) => JSON.parse(stringMetric as string)))
+export const selectMetrics = (state: RootState) => state.metrics.metricsList ?? [];
+export const selectMetricsKeys = createSelector(selectMetrics, (metricsList) => Object.keys(metricsList))
+export const selectMetricsSerialisedValues = createSelector(selectMetrics, (metricsList) => Object.values(metricsList))
+export const selectMetricsValues = createSelector(selectMetricsSerialisedValues, (metricsList) => metricsList.map((stringMetric) => JSON.parse(stringMetric as string)))
+export const selectHasStandardMetrics = (state: RootState) => state.metrics.hasStandardMetrics ?? false
 
-export const generateGetMetricSelector = (key: string) => {
-  return createSelector(getMetricsListSelector, (metricsList) => JSON.parse((metricsList as any)[key] ?? "{}"))
+export const selectMetric = (key: string) => {
+  return createSelector(selectMetrics, (metricsList) => JSON.parse((metricsList as any)[key] ?? "{}"))
 }
 
-export const generateGetMetricValueSelector = (key: string, unit?: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => {
+export const selectMetricValue = (key: string, unit?: string) => {
+  return createSelector(selectMetric(key), (metric) => {
     if (unit && metric?.unit && metric?.value && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
       try {
         return numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
@@ -121,27 +122,25 @@ export const generateGetMetricValueSelector = (key: string, unit?: string) => {
   })
 }
 
-export const generateGetMetricUnitSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric?.unit)
+export const selectMetricUnit = (key: string) => {
+  return createSelector(selectMetric(key), (metric) => metric?.unit)
 }
 
-export const generateMetricIsStaleSelector = (key: string, currentTime: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => {
+export const selectMetricIsStale = (key: string, currentTime: string) => {
+  return createSelector(selectMetric(key), (metric) => {
     if (metric?.explicitlyStale != null) { return metric?.explicitlyStale }
     if (metric?.staleSeconds == null) { return false }
     return new Date(metric?.lastModified ?? 0).getTime() / 1000 + (metric?.staleSeconds ?? 0) < new Date(currentTime).getTime() / 1000
   })
 }
 
-export const generateMetricIsDefinedSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric?.defined)
+export const selectMetricIsDefined = (key: string) => {
+  return createSelector(selectMetric(key), (metric) => metric?.defined)
 }
 
-export const generateGetMetricLastModifiedSelector = (key: string) => {
-  return createSelector(generateGetMetricSelector(key), (metric) => metric?.lastModified)
+export const selectMetricLastModified = (key: string) => {
+  return createSelector(selectMetric(key), (metric) => metric?.lastModified)
 }
-
-export const hasStandardMetricsSelector = (state: RootState) => state.metrics.hasStandardMetrics ?? false
 
 export const { deleteAll, deleteOne, clearAll, clearOne, createMetric, resetToStandardMetrics } = metricsSlice.actions;
 export default metricsSlice.reducer;

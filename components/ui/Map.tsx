@@ -2,14 +2,14 @@ import React, { useRef, useState } from "react";
 import MapView, { AnimatedRegion, Marker } from "react-native-maps";
 import { CarMarker } from "./CarMarker";
 import { useSelector } from "react-redux";
-import { generateGetMetricValueSelector } from "@/store/metricsSlice";
+import { selectMetricValue } from "@/store/metricsSlice";
 import { Animated } from "react-native";
 
 export function Map() {
   const mapRef = useRef(null)
 
-  const vPLatitude = useSelector(generateGetMetricValueSelector("v.p.latitude"))
-  const vPLongitude = useSelector(generateGetMetricValueSelector("v.p.longitude"))
+  const vPLatitude = useSelector(selectMetricValue("v.p.latitude"))
+  const vPLongitude = useSelector(selectMetricValue("v.p.longitude"))
 
   const INITIAL_REGION = {
     latitude: vPLatitude ?? 52.5,

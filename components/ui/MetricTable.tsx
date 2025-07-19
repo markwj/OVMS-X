@@ -5,7 +5,7 @@ import { Metric } from "@/components/vehicle/metrics";
 import { router } from "expo-router";
 import { useSelector } from "react-redux";
 import { MetricValue } from "@/components/ui/MetricValue"
-import { generateMetricIsStaleSelector } from "@/store/metricsSlice";
+import { selectMetricIsStale } from "@/store/metricsSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 
 //@ts-ignore
@@ -22,7 +22,7 @@ export default function MetricTable({ metricKeys, metrics }): React.JSX.Element 
 }
 
 function GenerateMetricEntry(metricName: string, metric: Metric) {
-  const stale = useSelector(generateMetricIsStaleSelector(metricName, GetCurrentUTCTimeStamp()))
+  const stale = useSelector(selectMetricIsStale(metricName, GetCurrentUTCTimeStamp()))
 
   return (
     <DataTable.Row key={metricName} style={styles.metricRow} onPress={() => OnMetricEntryPress(metricName)}>

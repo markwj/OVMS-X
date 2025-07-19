@@ -1,4 +1,4 @@
-import { generateGetMetricValueSelector } from "@/store/metricsSlice"
+import { selectMetricValue } from "@/store/metricsSlice"
 import React from "react"
 import { Icon } from "react-native-paper"
 import { useSelector } from "react-redux"
@@ -6,8 +6,8 @@ import { useSelector } from "react-redux"
 export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: number, batteryCharging?: boolean }): React.JSX.Element {
   let batteryIconSource = ''
 
-  batterySOC ??= useSelector(generateGetMetricValueSelector("v.b.soc"))
-  batteryCharging ??= useSelector(generateGetMetricValueSelector('v.c.inprogress')) == "yes"
+  batterySOC ??= useSelector(selectMetricValue("v.b.soc"))
+  batteryCharging ??= useSelector(selectMetricValue('v.c.inprogress')) == "yes"
 
   if (batterySOC == undefined) {
     batteryIconSource = "battery-unknown"

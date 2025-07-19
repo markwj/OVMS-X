@@ -3,7 +3,7 @@ import { StyleSheet, KeyboardAvoidingView, View, TextInput } from 'react-native'
 import { Text, DataTable } from "react-native-paper";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { generateGetMetricSelector, generateMetricIsStaleSelector, metricsSlice } from "@/store/metricsSlice";
+import { selectMetric, selectMetricIsStale, metricsSlice } from "@/store/metricsSlice";
 import { Metric, MetricDefined, MetricType } from "@/components/vehicle/metrics";
 import { useTranslation } from "react-i18next";
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
@@ -12,8 +12,8 @@ export default function AboutMetricScreen() {
   const { metricName } = useLocalSearchParams<{ metricName: string }>();
   const dispatch = useDispatch();
 
-  const metric = useSelector(generateGetMetricSelector(metricName)) as Metric;
-  const metricIsStale = useSelector(generateMetricIsStaleSelector(metricName, GetCurrentUTCTimeStamp()));
+  const metric = useSelector(selectMetric(metricName)) as Metric;
+  const metricIsStale = useSelector(selectMetricIsStale(metricName, GetCurrentUTCTimeStamp()));
 
   const [tempValue, setTempValue] = useState(metric.value ?? "")
 

@@ -97,7 +97,7 @@ function FindVehicle(state: RootState, key: string) {
   return null
 }
 
-export function generateFindVehicleSelector(key: string) {
+export function selectVehicle(key: string) {
   return (state: RootState) => FindVehicle(state, key)
 }
 

@@ -1,5 +1,5 @@
 import { getCarConnected, getConnectionState, getLastUpdateTime, VehicleConnectionState } from "@/store/connectionSlice"
-import { generateGetMetricValueSelector } from "@/store/metricsSlice"
+import { selectMetricValue } from "@/store/metricsSlice"
 import React, { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { Icon, Text } from "react-native-paper"
@@ -64,7 +64,7 @@ export function ConnectionDisplay(): React.JSX.Element {
 export function ConnectionText() {
   const { t } = useTranslation()
   const lastUpdated = useSelector(getLastUpdateTime)
-  const vEAwake = useSelector(generateGetMetricValueSelector("v.e.awake12"))
+  const vEAwake = useSelector(selectMetricValue("v.e.awake12"))
 
   const connectionState = useSelector(getConnectionState)
   const carConnected = useSelector(getCarConnected)

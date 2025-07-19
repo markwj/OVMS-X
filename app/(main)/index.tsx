@@ -9,7 +9,7 @@ import { Stack } from "expo-router";
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from "react-redux";
-import { generateGetMetricValueSelector } from "@/store/metricsSlice";
+import { selectMetricValue } from "@/store/metricsSlice";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
@@ -22,13 +22,13 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
   
-  const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
+  const vBatRangeEstSelector = selectMetricValue("v.b.range.est")
   const vBatRangeEst = useSelector(vBatRangeEstSelector)
-  const vBatSocSelector = generateGetMetricValueSelector("v.b.soc")
+  const vBatSocSelector = selectMetricValue("v.b.soc")
   const vBatSoc = useSelector(vBatSocSelector)
-  const vPosOdometerSelector = generateGetMetricValueSelector("v.p.odometer")
+  const vPosOdometerSelector = selectMetricValue("v.p.odometer")
   const vPosOdometer = useSelector(vPosOdometerSelector)
-  const vEAwakeSelector = generateGetMetricValueSelector("v.e.awake12")
+  const vEAwakeSelector = selectMetricValue("v.e.awake12")
   const vEAwake = useSelector(vEAwakeSelector)
 
   const selectedVehicle = useSelector(getSelectedVehicle)

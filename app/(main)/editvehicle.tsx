@@ -4,7 +4,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next";
-import { generateFindVehicleSelector, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
+import { selectVehicle, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
 import { VehicleSideImage, VehicleTypes } from "@/components/ui/VehicleImages";
 import ColorPicker from 'react-native-wheel-color-picker'
 import { useTheme, TextInput } from "react-native-paper";
@@ -20,7 +20,7 @@ export default function EditVehicleScreen() {
   let vehicleImageNames = Object.keys(VehicleTypes).map((k) => { return { "key": t(VehicleTypes[k].name), "value": k } })
 
   const dispatch = useDispatch()
-  const vehicle = useSelector(generateFindVehicleSelector(vehicleKey))
+  const vehicle = useSelector(selectVehicle(vehicleKey))
 
   const navigation = useNavigation();
 
@@ -68,7 +68,7 @@ export default function EditVehicleScreen() {
                     title: t("Edit") + " " + v,
                   })
                 }}
-                style={{ color: 'white', width: '90%', backgroundColor: 'grey' }}
+                style={{ color: 'white', width: '90%', backgroundColor: 'dimgrey' }}
                 dense={true}
                 placeholder="Name..."
               />
@@ -91,8 +91,8 @@ export default function EditVehicleScreen() {
                 itemTextStyle={{ color: 'white' }}
                 containerStyle={{ backgroundColor: 'grey' }}
                 itemContainerStyle={{ backgroundColor: 'grey' }}
-                activeColor="darkgray"
-                style={{ width: '80%', alignContent: 'center', backgroundColor: 'grey', borderColor: 'black', borderWidth: 2, padding: 20 }}
+                activeColor="dimgrey"
+                style={{ width: '80%', alignContent: 'center', backgroundColor: 'dimgrey', borderColor: 'black', borderWidth: 2, padding: 20 }}
                 data={vehicleImageNames}
                 onChange={(v) => onChange(v.value)}
                 labelField={"key"} valueField={"value"}

@@ -1,4 +1,4 @@
-import { generateGetMetricValueSelector } from "@/store/metricsSlice"
+import { selectMetricValue } from "@/store/metricsSlice"
 import React, { useEffect, useState } from "react"
 import { AnimatedRegion, Circle, MarkerAnimated } from "react-native-maps"
 import { useSelector } from "react-redux"
@@ -7,18 +7,18 @@ import { getSelectedVehicle } from "@/store/selectionSlice";
 import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, useDerivedValue, runOnJS } from "react-native-reanimated";
 
 export function CarMarker() {
-  const vPosLatitudeSelector = generateGetMetricValueSelector("v.p.latitude")
+  const vPosLatitudeSelector = selectMetricValue("v.p.latitude")
   const vPosLatitude = useSelector(vPosLatitudeSelector)
-  const vPosLongitudeSelector = generateGetMetricValueSelector("v.p.longitude")
+  const vPosLongitudeSelector = selectMetricValue("v.p.longitude")
   const vPosLongitude = useSelector(vPosLongitudeSelector)
-  const vPosDirectionSelector = generateGetMetricValueSelector("v.p.direction")
+  const vPosDirectionSelector = selectMetricValue("v.p.direction")
   const vPosDirection = useSelector(vPosDirectionSelector)
-  const vPosSpeedSelector = generateGetMetricValueSelector("v.p.speed")
+  const vPosSpeedSelector = selectMetricValue("v.p.speed")
   const vPosSpeed = useSelector(vPosSpeedSelector)
 
-  const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
+  const vBatRangeEstSelector = selectMetricValue("v.b.range.est")
   const vBatRangeEst = useSelector(vBatRangeEstSelector)
-  const vBatRangeIdealSelector = generateGetMetricValueSelector("v.b.range.ideal")
+  const vBatRangeIdealSelector = selectMetricValue("v.b.range.ideal")
   const vBatRangeIdeal = useSelector(vBatRangeIdealSelector)
 
   const selectedVehicle = useSelector(getSelectedVehicle)

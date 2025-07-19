@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 import { ScrollView, View } from 'react-native';
-import { metricsAllKeysSelector, metricsSlice, metricsAllValuesSelector } from "@/store/metricsSlice";
+import { selectMetricsKeys, metricsSlice, selectMetricsValues } from "@/store/metricsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import MetricTable from "@/components/ui/MetricTable";
@@ -19,8 +19,8 @@ export default function DeveloperScreen() {
   const openMenu = () => { setVisible(true); }
   const closeMenu = () => { setVisible(false); }
 
-  let keys = useSelector(metricsAllKeysSelector)
-  let values = useSelector(metricsAllValuesSelector)
+  let keys = useSelector(selectMetricsKeys)
+  let values = useSelector(selectMetricsValues)
 
   let keysIndexes = keys.map((k,i) => i)
   keysIndexes.sort((a,b) => (keys[a]).localeCompare(keys[b]))
