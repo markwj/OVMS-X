@@ -4,7 +4,7 @@ import { selectMetricsKeys, metricsSlice, selectMetricsValues, selectLocalisedMe
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import MetricTable from "@/components/ui/MetricTable";
-import { Menu, Button, IconButton, Portal, Dialog, Text } from "react-native-paper";
+import { Menu, Button, IconButton, Portal, Dialog, Text, TextInput } from "react-native-paper";
 import { useNavigation } from "expo-router";
 import { messagesSlice } from "@/store/messagesSlice";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
@@ -26,6 +26,8 @@ export default function DeveloperScreen() {
 
   keys = keysIndexes.map((i) => keys[i])
 
+  const [searchKeyword, setSearchKeyword] = useState("")
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
@@ -44,8 +46,8 @@ export default function DeveloperScreen() {
   }, [navigation, visible])
 
   return (
-    <ScrollView>
+    <View>
       <MetricTable metricKeys={keys} />
-    </ScrollView>
+    </View>
   );
 }
