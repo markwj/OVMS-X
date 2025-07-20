@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MapView, { AnimatedRegion, Marker } from "react-native-maps";
 import { CarMarker } from "./CarMarker";
 import { useSelector } from "react-redux";
 import { selectMetricValue } from "@/store/metricsSlice";
 import { Animated } from "react-native";
+import { getSelectedVehicle } from "@/store/selectionSlice";
 
 export function Map() {
   const mapRef = useRef(null)
@@ -20,7 +21,11 @@ export function Map() {
 
   const [region, setRegion] = useState(INITIAL_REGION)
 
-  if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta/2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta/2) {
+  if (vPLatitude == null || vPLongitude == null) {
+    return (<></>);
+  }
+
+  if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
     //@ts-ignore
     mapRef.current?.animateToRegion({
       latitude: vPLatitude ?? region.latitude,
