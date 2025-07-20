@@ -80,7 +80,7 @@ export const metricsSlice = createSlice({
               v = numericalUnitConvertor(v).from(GetUnitAbbr(params.unit)).to(GetUnitAbbr(metric.unit))
               console.log(`[metricsSlice] Converted ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`)
             } catch (error) {
-              console.error(error)
+              console.error(`[metricsSlice] Error converting ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`, error)
             }
           }
 

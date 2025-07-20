@@ -26,8 +26,6 @@ export default function DeveloperScreen() {
 
   keys = keysIndexes.map((i) => keys[i])
 
-  const [searchKeyword, setSearchKeyword] = useState("")
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>

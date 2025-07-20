@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme, Text, Button, SegmentedButtons } from 'react-native-paper';
-import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet, View } from 'react-native';
 import { useSelector, useDispatch } from "react-redux";
 import {
   getTemperaturePreference, getDistancePreference, getPressurePreference,
@@ -41,6 +41,8 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const dispatch = useDispatch()
 
+  const theme = useTheme()
+
   const temperaturePreference = useSelector(getTemperaturePreference)
   const distancePreference = useSelector(getDistancePreference)
   const pressurePreference = useSelector(getPressurePreference)
@@ -62,53 +64,59 @@ export default function SettingsScreen() {
 
       <ScrollView style={styles.scrollview}>
 
-        <Text>{t('Temperature')}</Text>
-        <Controller
-          control={control}
-          name="temperaturePreference"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={(value) => {                {
-                  setValue('temperaturePreference', value)}
+        <View style={styles.settingsSection}>
+          <Text variant="titleLarge" style={{paddingBottom: 10}}>{t("Metrics")}</Text>
+
+          <Text variant="labelMedium">{t('Temperature')}</Text>
+          <Controller
+            control={control}
+            name="temperaturePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  {
+                    setValue('temperaturePreference', value)
+                  }
                   dispatch(setTemperaturePreference(value))
                 }}
-              buttons={TEMPERATURE_BUTTONS}
-            />
-          )}
-        />
+                buttons={TEMPERATURE_BUTTONS}
+              />
+            )}
+          />
 
-        <Text>{t('Distance')}</Text>
-        <Controller
-          control={control}
-          name="distancePreference"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={(value) => {
-                setValue('distancePreference', value)
-                dispatch(setDistancePreference(value))
-              }}
-              buttons={DISTANCE_BUTTONS}
-            />
-          )}
-        />
+          <Text variant="labelMedium">{t('Distance')}</Text>
+          <Controller
+            control={control}
+            name="distancePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  setValue('distancePreference', value)
+                  dispatch(setDistancePreference(value))
+                }}
+                buttons={DISTANCE_BUTTONS}
+              />
+            )}
+          />
 
-        <Text>{t('Pressure')}</Text>
-        <Controller
-          control={control}
-          name="pressurePreference"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={(value) => {
-                setValue('pressurePreference', value)
-                dispatch(setPressurePreference(value))
-              }}
-              buttons={PRESSURE_BUTTONS}
-            />
-          )}
-        />
+          <Text variant="labelMedium">{t('Pressure')}</Text>
+          <Controller
+            control={control}
+            name="pressurePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  setValue('pressurePreference', value)
+                  dispatch(setPressurePreference(value))
+                }}
+                buttons={PRESSURE_BUTTONS}
+              />
+            )}
+          />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -121,10 +129,13 @@ const styles = StyleSheet.create({
   scrollview: {
     flex: 1,
     flexDirection: 'column',
-    gap: 20,
     padding: 20
   },
-  gap: {
-    height: 20
+  settingsSection : {
+    backgroundColor: "rgba(50,47,55,0.4)", 
+    padding: 10, 
+    paddingBottom: 20,
+    gap: 10,
+    marginBottom: 40
   }
 });

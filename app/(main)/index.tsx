@@ -69,7 +69,7 @@ export default function HomeScreen() {
               <ControlIcon type={controlType.Messages} />
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
-              <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
+              <ProgressBar progress={(vBatSoc ?? 0) / 100} color={(vBatSoc ?? 0) <= 10 ? "#ff0000" : (vBatSoc <= 40 ? "#ffff00" : "#00ff00")} visible={true} style={{ height: 10, width: 300 }} />
               {/* <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text> */}
               <View style={{width: 300, flexDirection: 'row', justifyContent: 'center', marginTop: 5}}>
                 <Text>SOC: </Text>

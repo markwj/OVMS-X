@@ -4,14 +4,16 @@ import { DataTable, IconButton, TextInput } from "react-native-paper";
 import { router } from "expo-router";
 import { MetricValue } from "@/components/ui/MetricValue"
 import { FlatList } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
 
 //@ts-ignore
 export default function MetricTable({ metricKeys }): React.JSX.Element {
-  const [searchField, setSearchField] = useState("")
-  const [searchFilter, setSearchFilter] = useState(searchField)
+  const [searchFilter, setSearchFilter] = useState("")
+
+  const { t } = useTranslation()
 
   if (searchFilter != "") {
-    metricKeys = metricKeys.filter((k: string) => k.toUpperCase().includes(searchFilter))
+    metricKeys = metricKeys.filter((k: string) => k.toUpperCase().includes(searchFilter.toUpperCase()))
   }
 
   return (
@@ -23,16 +25,13 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
               <View style={{ ...styles.headerRow, flexDirection: 'row', alignItems: 'center', padding: 5, paddingVertical: 10 }}>
                 <TextInput
                   style={{ flex: 1, marginRight: 10, width: 'auto' }}
-                  value={searchField}
-                  placeholder="Search..."
-                  onChangeText={(v) => setSearchField(v)}
+                  value={searchFilter}
+                  autoCapitalize="none"
+                  placeholder={t("Search") + "..."}
+                  onChangeText={(v) => setSearchFilter(v)}
+                  autoCorrect={false}
+                  right={searchFilter != "" && <TextInput.Icon size={20} icon={"filter-remove-outline"} onPress={() => { setSearchFilter("") }} />}
                 />
-                <IconButton size={30} icon={"magnify"} onPress={() => {
-                  setSearchFilter(searchField.toUpperCase())
-                }} />
-                <IconButton size={30} icon={"eraser"} onPress={() => {
-                  setSearchFilter("")
-                }} />
               </View>
             </DataTable.Header>
             <DataTable.Header style={styles.headerRow}>

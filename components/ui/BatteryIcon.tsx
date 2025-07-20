@@ -9,6 +9,8 @@ export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: numb
   batterySOC ??= useSelector(selectMetricValue("v.b.soc"))
   batteryCharging ??= useSelector(selectMetricValue('v.c.inprogress')) == "yes"
 
+  let batteryColor = "#ffffff"
+
   if (batterySOC == undefined) {
     batteryIconSource = "battery-unknown"
   } else {
@@ -17,12 +19,16 @@ export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: numb
         batteryIconSource = batteryCharging ? 'battery-charging-100' : 'battery'
         break
       case 0:
+        batteryColor = "#ff0000"
         batteryIconSource = batteryCharging ? 'battery-charging-outline' : 'battery-outline'
         break
       default:
+        if(batterySOC <= 10) {
+          batteryColor = "#ff0000"
+        }
         batteryIconSource = (batteryCharging ? 'battery-charging-' : 'battery-') + Math.floor(batterySOC / 10) * 10
     }
   }
 
-  return (<Icon source={batteryIconSource} size={20} />)
+  return (<Icon source={batteryIconSource} size={20} color={batteryColor}/>)
 }
