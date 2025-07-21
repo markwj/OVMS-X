@@ -10,6 +10,10 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useTranslation } from "react-i18next";
+import { GetUnitAbbr, numericalUnitConvertor } from "@/components/utils/numericalUnitConverter";
+import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
+import { messagesSlice } from "@/store/messagesSlice";
+import { vehiclesSlice } from "@/store/vehiclesSlice";
 
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
@@ -51,7 +55,7 @@ export default function SettingsScreen() {
     defaultValues: {
       temperaturePreference: temperaturePreference,
       distancePreference: distancePreference,
-      pressurePreference: pressurePreference,
+      pressurePreference: pressurePreference
     }
   });
 
@@ -64,8 +68,7 @@ export default function SettingsScreen() {
 
       <ScrollView style={styles.scrollview}>
 
-        <View style={styles.settingsSection}>
-          <Text variant="titleLarge" style={{paddingBottom: 10}}>{t("Metrics")}</Text>
+        <SettingsSection title={"Metrics"}>
 
           <Text variant="labelMedium">{t('Temperature')}</Text>
           <Controller
@@ -116,10 +119,36 @@ export default function SettingsScreen() {
               />
             )}
           />
-        </View>
+        </SettingsSection>
+
+        <SettingsSection title={""}>
+          <Button textColor="red" onPress={() => ConfirmationMessage(
+            () => {dispatch(messagesSlice.actions.wipeMessages())},
+            "Warning!",
+            "Do you want to delete all your messages? This action cannot be undone.",
+            "Delete"
+          )}>DELETE MESSAGES</Button>
+          <Button textColor="red" onPress={() => ConfirmationMessage(
+            () => {dispatch(vehiclesSlice.actions.wipeVehicles())},
+            "Warning!",
+            "Do you want to delete all your vehicles? This action cannot be undone.",
+            "Delete"
+          )}>DELETE ALL VEHICLES</Button>
+        </SettingsSection>
       </ScrollView>
     </KeyboardAvoidingView>
   );
+}
+
+function SettingsSection({ title, children }: { title?: string, children?: any }) {
+  const { t } = useTranslation()
+
+  return (
+    <View style={styles.settingsSection}>
+      {title && <Text variant="titleLarge" style={{ paddingBottom: 10 }}>{t(title)}</Text>}
+      {children}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -131,11 +160,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     padding: 20
   },
-  settingsSection : {
-    backgroundColor: "rgba(50,47,55,0.4)", 
-    padding: 10, 
+  settingsSection: {
+    backgroundColor: "rgba(50,47,55,0.4)",
+    padding: 10,
     paddingBottom: 20,
     gap: 10,
-    marginBottom: 40
+    marginBottom: 30,
+    alignItems: 'flex-start'
   }
 });

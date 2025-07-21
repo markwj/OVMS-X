@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from 'react-native';
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { StyleSheet, View, Text, Alert } from 'react-native';
+import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next";
 import { selectVehicle, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
 import { VehicleSideImage, VehicleTypes } from "@/components/ui/VehicleImages";
 import ColorPicker from 'react-native-wheel-color-picker'
-import { useTheme, TextInput } from "react-native-paper";
+import { useTheme, TextInput, Button, IconButton } from "react-native-paper";
 import { Dropdown } from "react-native-element-dropdown"
 import { usePreventRemove } from "@react-navigation/native";
+import { getSelectedVehicle, selectionSlice } from "@/store/selectionSlice";
+import { store } from "@/store/root";
+import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
@@ -63,7 +66,7 @@ export default function EditVehicleScreen() {
               <TextInput
                 value={value ?? ""}
                 onChangeText={(v) => {
-                  onChange(v); 
+                  onChange(v);
                   navigation.setOptions({
                     title: t("Edit") + " " + v,
                   })
@@ -116,6 +119,26 @@ export default function EditVehicleScreen() {
           )}
         />
       </View>
+
+      <Stack.Screen options={{
+        title: t("Edit") + " " + vehicle?.name,
+        headerRight: () => (
+          <IconButton icon={"delete"} onPress={() => (
+            ConfirmationMessage(
+              () => {
+                if (getSelectedVehicle(store.getState())?.key == vehicleKey) {
+                  dispatch(selectionSlice.actions.unselectVehicle())
+                }
+                dispatch(vehiclesSlice.actions.removeVehicle(vehicleKey))
+                router.back()
+              },
+              "Warning!",
+              `Do you want to delete ${vehicle.name}? This action cannot be undone.`,
+              "Delete"
+            )
+          )} />
+        )
+      }} />
     </View>
   );
 }

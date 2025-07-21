@@ -84,7 +84,7 @@ export const metricsSlice = createSlice({
             }
           }
 
-          if (metric.precision != null) {
+          if (metric.precision != null && +v) {
             v = +v.toFixed(metric.precision);
           }
           metric.value = v
@@ -125,7 +125,7 @@ export const selectMetricValue = (key: string, unit?: string) => {
         console.error(error)
       }
     }
-    if (metric.precision != null) {
+    if (metric.precision != null && +v) {
       v = +v.toFixed(metric.precision);
     }
     return v

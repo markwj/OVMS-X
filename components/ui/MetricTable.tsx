@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from 'react-native';
-import { DataTable, IconButton, TextInput } from "react-native-paper";
+import { DataTable, Searchbar, TextInput } from "react-native-paper";
 import { router } from "expo-router";
 import { MetricValue } from "@/components/ui/MetricValue"
 import { FlatList } from "react-native-gesture-handler";
@@ -23,14 +23,14 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
           <>
             <DataTable.Header style={styles.headerRow}>
               <View style={{ ...styles.headerRow, flexDirection: 'row', alignItems: 'center', padding: 5, paddingVertical: 10 }}>
-                <TextInput
-                  style={{ flex: 1, marginRight: 10, width: 'auto' }}
+                <Searchbar
+                  style={{ flex: 1, width: 'auto' }}
                   value={searchFilter}
                   autoCapitalize="none"
                   placeholder={t("Search") + "..."}
                   onChangeText={(v) => setSearchFilter(v)}
                   autoCorrect={false}
-                  right={searchFilter != "" && <TextInput.Icon size={20} icon={"filter-remove-outline"} onPress={() => { setSearchFilter("") }} />}
+                  clearIcon={"filter-remove-outline"}
                 />
               </View>
             </DataTable.Header>
