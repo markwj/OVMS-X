@@ -27,6 +27,12 @@ import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { isRunningInExpoGo } from 'expo';
+
+const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
+});
 
 Sentry.init({
   dsn: 'https://42f9d70e8f2c9079587606dd89d4b41d@o4509709354205184.ingest.de.sentry.io/4509709355909200',
@@ -35,8 +41,18 @@ Sentry.init({
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
   sendDefaultPii: true,
 
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
+  debug: (isProduction) ? false : true,
+  enableAutoSessionTracking: (isProduction) ? false : true,
+  sessionTrackingIntervalMillis: 10000,
+  // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing. 
+  // Adjusting this value in production.
+  tracesSampleRate: (isProduction) ? 0.0 : 1.0,
+  integrations: [
+    // Pass integration
+    navigationIntegration,
+  ],
+  // Tracks slow and frozen frames in the application
+  enableNativeFramesTracking: !isRunningInExpoGo(),
 });
 
 Notifications.setNotificationHandler({
