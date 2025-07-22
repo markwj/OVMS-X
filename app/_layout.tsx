@@ -146,6 +146,7 @@ export default Sentry.wrap(function RootLayout() {
       .catch((error: any) => setExpoPushToken(`${error}`));
 
     const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      console.log('[notificationListener] notification', notification);
       setNotification(notification);
     });
 
