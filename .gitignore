@@ -46,3 +46,4 @@ package-lock.json
 
 .env.local
 GOOGLE_SERVICES_JSON
+google-services.json
