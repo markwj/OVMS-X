@@ -9,9 +9,9 @@ import Constants, { ExecutionEnvironment } from 'expo-constants';
 const isExpo = (Constants.executionEnvironment == ExecutionEnvironment.StoreClient);
 const isWeb = (Platform.OS == 'web');
 
-let storage;
+let storage: MMKV | null = null;
 
-console.log('[persistStorage] platform is %O exec env is %O', Platform.OS, Constants.executionEnvironment);
+console.log('[persistStorage] platform is', Platform.OS, 'exec env is', Constants.executionEnvironment);
 
 if (isExpo) {
   console.log('[persistStorage] create for EXPO');
@@ -37,7 +37,7 @@ export const securePersistStorage: Storage = {
     } else if (isWeb) {
       return Promise.resolve(null);
     } else {
-      const value = storage.get(key);
+      const value = storage?.getString(key);
       return Promise.resolve(value);
     }
   },
@@ -49,7 +49,7 @@ export const securePersistStorage: Storage = {
     } else if (isWeb) {
       return Promise.resolve(true);
     } else {
-      storage.set(key, value);
+      storage?.set(key, value);
       return Promise.resolve(true);
     }
   },
@@ -61,7 +61,7 @@ export const securePersistStorage: Storage = {
     } else if (isWeb) {
       return Promise.resolve();
     } else {
-      storage.delete(key);
+      storage?.delete(key);
       return Promise.resolve();
     }
   }
