@@ -24,6 +24,18 @@ import { getSelectedVehicle } from '@/store/selectionSlice';
 import { ConnectionIcon } from '@/components/platforms/connection';
 import { hasStandardMetricsSelector, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://42f9d70e8f2c9079587606dd89d4b41d@o4509709354205184.ingest.de.sentry.io/4509709355909200',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 const MainLayout = () => {
   const dimensions = useWindowDimensions();
@@ -57,7 +69,7 @@ const MainLayout = () => {
       )
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
 
@@ -93,4 +105,4 @@ export default function RootLayout() {
       </Provider>
     </GestureHandlerRootView>
   );
-}
+});

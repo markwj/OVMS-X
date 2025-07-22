@@ -31,6 +31,7 @@
     "@react-navigation/drawer": "^7.1.1",
     "@react-navigation/native": "^7.0.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "@sentry/react-native": "^6.18.0",
     "convert-units": "^3.0.0-beta.8",
     "expo": "^53.0.15",
     "expo-blur": "~14.1.5",
