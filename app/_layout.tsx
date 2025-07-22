@@ -9,8 +9,8 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
-import Constants from 'expo-constants';
-import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider } from 'react-native-paper';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, Portal, Dialog, Text, Button } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { store, persistedStore } from '@/store/root';
 import { Provider, useSelector } from 'react-redux';
@@ -28,6 +28,8 @@ import * as Sentry from '@sentry/react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { isRunningInExpoGo } from 'expo';
+import * as Updates from 'expo-updates';
+import * as Network from 'expo-network';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -74,7 +76,7 @@ async function registerForPushNotificationsAsync() {
     console.log('[registerForPushNotificationsAsync] Web platform, no push notifications');
     return;
   }
-  
+
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -129,23 +131,23 @@ const MainLayout = () => {
 
   return (
     <>
-    <StatusBar style='auto' hidden={false} />
-    <Drawer
-      defaultStatus="closed"
-      screenOptions={{
-        title: selectedVehicle?.name ?? '',
-        drawerType: isLargeScreen ? 'permanent' : 'slide',
-        drawerStyle: isLargeScreen ? null : { width: '50%' },
-        drawerStatusBarAnimation: 'slide',
-        keyboardDismissMode: 'on-drag',
-        headerRight: () => <ConnectionIcon />
-      }}
-      drawerContent={(props) => {
-        return <VehicleSelector />
-      }}>
-    </Drawer>
+      <StatusBar style='auto' hidden={false} />
+      <Drawer
+        defaultStatus="closed"
+        screenOptions={{
+          title: selectedVehicle?.name ?? '',
+          drawerType: isLargeScreen ? 'permanent' : 'slide',
+          drawerStyle: isLargeScreen ? null : { width: '50%' },
+          drawerStatusBarAnimation: 'slide',
+          keyboardDismissMode: 'on-drag',
+          headerRight: () => <ConnectionIcon />
+        }}
+        drawerContent={(props) => {
+          return <VehicleSelector />
+        }}>
+      </Drawer>
     </>
-      )
+  )
 }
 
 export default Sentry.wrap(function RootLayout() {
@@ -155,6 +157,27 @@ export default Sentry.wrap(function RootLayout() {
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
     undefined
   );
+
+  // This code is to check if the device is connected to the internet.
+  const [isConnected, setIsConnected] = useState(true);
+  useEffect(() => {
+    const checkNetwork = async () => {
+      const status = await Network.getNetworkStateAsync();
+      setIsConnected(status?.isConnected ?? false);
+    };
+
+    // Check initially
+    checkNetwork();
+
+    // Add listener for changes
+    const unsubscribe = Network.addNetworkStateListener((state) => {
+      setIsConnected(state?.isConnected ?? false);
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe.remove();
+    };
+  }, []);
 
   useEffect(() => {
     registerForPushNotificationsAsync()
@@ -176,6 +199,31 @@ export default Sentry.wrap(function RootLayout() {
     };
   }, []);
 
+  // This code is to check for updates, and handle automatic reload.
+  const [updateDialogSkipped, setUpdateDialogSkipped] = React.useState(false);
+  const {
+    isUpdateAvailable,
+    isChecking,
+    isUpdatePending } = Updates.useUpdates();
+
+  useEffect(() => {
+    if (isUpdatePending) {
+      // Update has successfully downloaded; apply it now
+      Updates.reloadAsync();
+    }
+  }, [isUpdatePending]);
+
+  useEffect(() => {
+    const isProduction = !__DEV__ &&
+      !(Constants.executionEnvironment == ExecutionEnvironment.StoreClient) &&
+      Platform.OS !== 'web';
+
+    if (isConnected && isProduction) {
+      Updates.checkForUpdateAsync();
+      setUpdateDialogSkipped(false);
+    }
+  }, [isConnected]);
+
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavigationDarkTheme,
     reactNavigationLight: NavigationDefaultTheme,
@@ -184,9 +232,9 @@ export default Sentry.wrap(function RootLayout() {
   });
   //@ts-ignore
   const { theme } = (colorScheme === 'dark')
-  //@ts-ignore
+    //@ts-ignore
     ? { ...MD3DarkTheme, colors: MD3DarkTheme.dark }
-  //@ts-ignore
+    //@ts-ignore
     : { ...MD3LightTheme, colors: MD3LightTheme.light };
   (colorScheme === 'dark') ? DarkTheme : NavigationDefaultTheme;
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);
@@ -201,6 +249,20 @@ export default Sentry.wrap(function RootLayout() {
         }>
           <PaperProvider theme={theme}>
             <PersistGate loading={null} persistor={persistedStore}>
+              <Portal>
+                <Dialog visible={!updateDialogSkipped && isUpdateAvailable}>
+                  <Dialog.Title>{t('Update Available')}</Dialog.Title>
+                  <Dialog.Content>
+                    <Text variant="bodyMedium">
+                      {t('An update for Box Mail is available. We suggest to install the update now, or you can skip it until later.')}
+                    </Text>
+                  </Dialog.Content>
+                  <Dialog.Actions>
+                    <Button onPress={() => { Updates.fetchUpdateAsync() }}>Update now</Button>
+                    <Button onPress={() => { setUpdateDialogSkipped(true) }}>Skip until later</Button>
+                  </Dialog.Actions>
+                </Dialog>
+              </Portal>
               <MainLayout />
             </PersistGate>
           </PaperProvider>

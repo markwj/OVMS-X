@@ -49,6 +49,7 @@ export default {
       ],
       "expo-font",
       "expo-web-browser",
+      "expo-build-properties",
       [
         "@sentry/react-native/expo",
         {
@@ -69,6 +70,11 @@ export default {
         "projectId": "ceb83602-03c8-44fa-ab2c-21c00721ad57"
       }
     },
-    "owner": "openvehicles"
+    "owner": "openvehicles",
+    "updates": {
+      "url": "https://u.expo.dev/ceb83602-03c8-44fa-ab2c-21c00721ad57",
+      "enabled": true,
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    }
   }
 }
