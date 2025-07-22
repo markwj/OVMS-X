@@ -1,6 +1,6 @@
 import React from "react";
-import { useTheme, Text, Button, SegmentedButtons } from 'react-native-paper';
-import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native';
+import { useTheme, Text, SegmentedButtons, Card, Icon } from 'react-native-paper';
+import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet, View } from 'react-native';
 import { useSelector, useDispatch } from "react-redux";
 import {
   getTemperaturePreference, getDistancePreference, getPressurePreference,
@@ -10,7 +10,10 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useTranslation } from "react-i18next";
-
+import { os } from "@/utils/platform";
+import Constants, { ExecutionEnvironment } from "expo-constants";
+import * as Updates from 'expo-updates';
+import * as Application from 'expo-application';
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
@@ -40,6 +43,7 @@ export default function SettingsScreen() {
   const height = useHeaderHeight()
   const { t } = useTranslation();
   const dispatch = useDispatch()
+  const { isChecking, currentlyRunning } = Updates.useUpdates();
 
   const temperaturePreference = useSelector(getTemperaturePreference)
   const distancePreference = useSelector(getDistancePreference)
@@ -53,6 +57,14 @@ export default function SettingsScreen() {
     }
   });
 
+  const updateVersion =
+    (!__DEV__ &&
+      !(Constants.executionEnvironment == ExecutionEnvironment.StoreClient) &&
+      Platform.OS !== 'web' &&
+      typeof currentlyRunning !== 'undefined')
+      ? currentlyRunning?.createdAt + "\n" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion
+      : undefined;
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -62,6 +74,20 @@ export default function SettingsScreen() {
 
       <ScrollView style={styles.scrollview}>
 
+        {(os !== 'web') && (
+          <Card>
+            <Card.Title
+              title={'App: ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
+              subtitle={'Build: ' + os + ' ' + Application?.nativeBuildVersion +
+                (typeof updateVersion !== 'undefined' ? "\n" + updateVersion : "")}
+              subtitleNumberOfLines={(typeof updateVersion !== 'undefined') ? 3 : 1}
+              left={(props) => <Icon {...props} source="application-cog" />}
+            />
+          </Card>
+        )}
+
+        <View style={{ height: 10 }} />
+
         <Text>{t('Temperature')}</Text>
         <Controller
           control={control}
@@ -69,14 +95,18 @@ export default function SettingsScreen() {
           render={({ field: { value } }) => (
             <SegmentedButtons
               value={value}
-              onValueChange={(value) => {                {
-                  setValue('temperaturePreference', value)}
-                  dispatch(setTemperaturePreference(value))
-                }}
+              onValueChange={(value) => {
+                {
+                  setValue('temperaturePreference', value)
+                }
+                dispatch(setTemperaturePreference(value))
+              }}
               buttons={TEMPERATURE_BUTTONS}
             />
           )}
         />
+
+        <View style={{ height: 10 }} />
 
         <Text>{t('Distance')}</Text>
         <Controller
@@ -93,6 +123,8 @@ export default function SettingsScreen() {
             />
           )}
         />
+
+        <View style={{ height: 10 }} />
 
         <Text>{t('Pressure')}</Text>
         <Controller
