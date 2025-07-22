@@ -1,6 +1,4 @@
-import process from 'process';
-
-export default { 
+{ 
   "expo": {
     "name": "OVMS-X",
     "slug": "ovms",
@@ -26,7 +24,7 @@ export default {
       "buildProperties": {
         "minSdkVersion": 46
       },
-      "googleServicesFile": process.env.GOOGLE_SERVICES_JSON ?? `${process.env.PWD}/.eas/.env/GOOGLE_SERVICES_JSON`
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
