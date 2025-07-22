@@ -17,7 +17,7 @@ import { Provider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { VehicleSelector } from '@/components/ui/VehicleSelector';
 import { Drawer } from 'expo-router/drawer';
-import { useWindowDimensions } from 'react-native';
+import { Platform, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/selectionSlice';
@@ -25,6 +25,8 @@ import { ConnectionIcon } from '@/components/platforms/connection';
 import { hasStandardMetricsSelector, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 
 Sentry.init({
   dsn: 'https://42f9d70e8f2c9079587606dd89d4b41d@o4509709354205184.ingest.de.sentry.io/4509709355909200',
@@ -36,6 +38,62 @@ Sentry.init({
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
 });
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+function handleRegistrationError(errorMessage: string) {
+  alert(errorMessage);
+  throw new Error(errorMessage);
+}
+
+async function registerForPushNotificationsAsync() {
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      handleRegistrationError('[registerForPushNotificationsAsync] Permission not granted to get push token for push notification!');
+      return;
+    }
+    const projectId =
+      Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+    if (!projectId) {
+      handleRegistrationError('[registerForPushNotificationsAsync] Project ID not found');
+    }
+    try {
+      const pushTokenString = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId,
+        })
+      ).data;
+      console.log('[registerForPushNotificationsAsync] pushTokenString', pushTokenString);
+      return pushTokenString;
+    } catch (e: unknown) {
+      handleRegistrationError(`${e}`);
+    }
+  } else {
+    console.log('[registerForPushNotificationsAsync] Must use physical device for push notifications');
+  }
+}
 
 const MainLayout = () => {
   const dimensions = useWindowDimensions();
@@ -72,6 +130,29 @@ const MainLayout = () => {
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    registerForPushNotificationsAsync()
+      .then(token => setExpoPushToken(token ?? ''))
+      .catch((error: any) => setExpoPushToken(`${error}`));
+
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      notificationListener.remove();
+      responseListener.remove();
+    };
+  }, []);
 
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavigationDarkTheme,
