@@ -54,6 +54,11 @@ function handleRegistrationError(errorMessage: string) {
 }
 
 async function registerForPushNotificationsAsync() {
+  if (Platform.OS === "web") {
+    console.log('[registerForPushNotificationsAsync] Web platform, no push notifications');
+    return;
+  }
+  
   if (Platform.OS === 'android') {
     Notifications.setNotificationChannelAsync('default', {
       name: 'default',
