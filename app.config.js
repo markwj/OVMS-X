@@ -1,4 +1,6 @@
-{
+import process from 'process';
+
+export default { 
   "expo": {
     "name": "OVMS-X",
     "slug": "ovms",
@@ -23,7 +25,8 @@
       "package": "com.openvehicles.ovmsx",
       "buildProperties": {
         "minSdkVersion": 46
-      }
+      },
+      "googleServicesFile": process.env.GOOGLE_SERVICES_JSON ?? `${process.env.PWD}/.eas/.env/GOOGLE_SERVICES_JSON`
     },
     "web": {
       "bundler": "metro",

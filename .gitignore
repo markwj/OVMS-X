@@ -45,3 +45,5 @@ credentials.json
 package-lock.json
 
 .env.local
+google-services.json
+GOOGLE_SERVICES_JSON

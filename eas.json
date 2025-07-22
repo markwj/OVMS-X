@@ -5,7 +5,7 @@
   },
   "build": {
     "production": {
-      "node": "22.12.0",
+      "node": "22.14.0",
       "autoIncrement": false,
       "android": {
         "buildType": "apk"
