@@ -166,6 +166,12 @@ export default function NewPlatformOVMSv2() {
                 readOnly={selectedServer !== 'other'}
                 onChangeText={onChange}
                 placeholder={t('Enter server URL')}
+                autoComplete="url"
+                clearButtonMode="always"
+                inputMode="url"
+                autoCapitalize="none"
+                autoCorrect={false}
+                spellCheck={false}
               />
             )}
           />
@@ -183,12 +189,23 @@ export default function NewPlatformOVMSv2() {
               <Controller
                 control={control}
                 name="httpsport"
-                rules={{ required: 'Required' }}
+                rules={{ 
+                  required: 'Required',
+                  min: { value: 1, message: 'Port must be at least 1' },
+                  max: { value: 65535, message: 'Port must be at most 65535' },
+                  pattern: { value: /^[1-9]\d{0,4}$/, message: 'Port must be between 1 and 65535' }
+                }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
                     value={value}
                     label={t('HTTPS Port')}
-                    onChangeText={onChange}
+                    onChangeText={(text) => {
+                      // Only allow numeric input and limit to 5 digits
+                      const numericText = text.replace(/[^0-9]/g, '');
+                      if (numericText.length <= 5) {
+                        onChange(numericText);
+                      }
+                    }}
                     placeholder={t('HTTPS Port')}
                     keyboardType="numeric"
                     autoComplete="off"
@@ -209,12 +226,23 @@ export default function NewPlatformOVMSv2() {
               <Controller
                 control={control}
                 name="wssport"
-                rules={{ required: 'Required' }}
+                rules={{ 
+                  required: 'Required',
+                  min: { value: 1, message: 'Port must be at least 1' },
+                  max: { value: 65535, message: 'Port must be at most 65535' },
+                  pattern: { value: /^[1-9]\d{0,4}$/, message: 'Port must be between 1 and 65535' }
+                }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
                     value={value}
                     label={t('WSS Port')}
-                    onChangeText={onChange}
+                    onChangeText={(text) => {
+                      // Only allow numeric input and limit to 5 digits
+                      const numericText = text.replace(/[^0-9]/g, '');
+                      if (numericText.length <= 5) {
+                        onChange(numericText);
+                      }
+                    }}
                     placeholder={t('WSS Port')}
                     keyboardType="numeric"
                     autoComplete="off"
@@ -249,6 +277,8 @@ export default function NewPlatformOVMSv2() {
                 clearButtonMode="always"
                 inputMode="text"
                 autoCapitalize="none"
+                autoCorrect={false}
+                spellCheck={false}
               />
             )}
           />
@@ -278,6 +308,8 @@ export default function NewPlatformOVMSv2() {
                 clearButtonMode="always"
                 inputMode="text"
                 autoCapitalize="none"
+                autoCorrect={false}
+                spellCheck={false}
               />
             )}
           />
