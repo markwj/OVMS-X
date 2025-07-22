@@ -43,3 +43,6 @@ credentials
 credentials.json
 .vscode
 package-lock.json
+
+.env.local
+GOOGLE_SERVICES_JSON

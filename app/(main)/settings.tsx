@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme, Text, Button, SegmentedButtons } from 'react-native-paper';
-import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from "react-redux";
 import {
   getTemperaturePreference, getDistancePreference, getPressurePreference,
@@ -14,7 +14,10 @@ import { GetUnitAbbr, numericalUnitConvertor } from "@/components/utils/numerica
 import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
 import { messagesSlice } from "@/store/messagesSlice";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
-
+import { os } from "@/utils/platform";
+import Constants, { ExecutionEnvironment } from "expo-constants";
+import * as Updates from 'expo-updates';
+import * as Application from 'expo-application';
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
@@ -44,6 +47,7 @@ export default function SettingsScreen() {
   const height = useHeaderHeight()
   const { t } = useTranslation();
   const dispatch = useDispatch()
+  const { isChecking, currentlyRunning } = Updates.useUpdates();
 
   const theme = useTheme()
 
@@ -59,6 +63,22 @@ export default function SettingsScreen() {
     }
   });
 
+  const updateVersion =
+    (!__DEV__ &&
+      !(Constants.executionEnvironment == ExecutionEnvironment.StoreClient) &&
+      Platform.OS !== 'web' &&
+      typeof currentlyRunning !== 'undefined')
+      ? currentlyRunning?.createdAt + "\n" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion
+      : undefined;
+
+  const updateVersion =
+    (!__DEV__ &&
+      !(Constants.executionEnvironment == ExecutionEnvironment.StoreClient) &&
+      Platform.OS !== 'web' &&
+      typeof currentlyRunning !== 'undefined')
+      ? currentlyRunning?.createdAt + "\n" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion
+      : undefined;
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -67,6 +87,20 @@ export default function SettingsScreen() {
       style={styles.container}>
 
       <ScrollView style={styles.scrollview}>
+
+        {(os !== 'web') && (
+          <Card>
+            <Card.Title
+              title={'App: ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
+              subtitle={'Build: ' + os + ' ' + Application?.nativeBuildVersion +
+                (typeof updateVersion !== 'undefined' ? "\n" + updateVersion : "")}
+              subtitleNumberOfLines={(typeof updateVersion !== 'undefined') ? 3 : 1}
+              left={(props) => <Icon {...props} source="application-cog" />}
+            />
+          </Card>
+        )}
+
+        <View style={{ height: 10 }} />
 
         <SettingsSection title={"Metrics"}>
 
