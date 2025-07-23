@@ -79,8 +79,8 @@ export const vehiclesSlice = createSlice({
       const keys = state.vehicles.map((v) => v.key)
       const vehicleIndex = keys.indexOf(action.payload)
       if (vehicleIndex > -1) {
-        state.vehicles.splice(vehicleIndex, 1) 
         FileSystem.deleteAsync(FileSystem.documentDirectory + "carimages/" + encodeURI(state.vehicles[vehicleIndex].key))
+        state.vehicles.splice(vehicleIndex, 1) 
         return;
       }
     },
