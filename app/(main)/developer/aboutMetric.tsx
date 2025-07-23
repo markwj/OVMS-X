@@ -70,6 +70,7 @@ export default function AboutMetricScreen() {
                   onSubmitEditing={(value) => dispatch(metricsSlice.actions.setMetric({ key: metricName, value: value.nativeEvent.text, currentTime: GetCurrentUTCTimeStamp() }))}
                   style={styles.rowEntry}
                   placeholder="undefined"
+                  autoCapitalize="none"
                 />
                 {metricUnit != null && <Text>{metricUnit}</Text>}
               </View>

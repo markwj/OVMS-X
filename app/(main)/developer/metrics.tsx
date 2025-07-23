@@ -37,6 +37,8 @@ export default function DeveloperScreen() {
           <Menu.Item leadingIcon="refresh" onPress={() => { dispatch(metricsSlice.actions.resetToStandardMetrics()); closeMenu(); }} title={t("Reset standard metrics")} />
           <Menu.Item leadingIcon="eraser" onPress={() => { dispatch(metricsSlice.actions.clearAll()); closeMenu(); }} title={t("Clear all metrics")} />
           <Menu.Item leadingIcon="delete" onPress={() => { dispatch(metricsSlice.actions.deleteAll()); closeMenu(); }} title={t("Delete all metrics")} />
+          <Menu.Item leadingIcon="delete" onPress={() => { dispatch(messagesSlice.actions.wipeMessages()); closeMenu(); }} title={t("Delete all messages")} />
+          <Menu.Item leadingIcon="delete" onPress={() => { dispatch(vehiclesSlice.actions.wipeVehicles()); closeMenu(); }} title={t("Delete all vehicles")} />
         </Menu>
     })
   }, [navigation, visible])

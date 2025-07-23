@@ -65,7 +65,7 @@ export const metricsSlice = createSlice({
 
       switch (metric.type) {
         case MetricType.BOOL:
-          if ([1, "yes", metric.trueStatement].includes(params.value)) {
+          if (["1", "yes", metric.trueStatement].includes(params.value)) {
             metric.value = "yes"
           } else {
             metric.value = "no"
@@ -114,21 +114,32 @@ export const selectMetricValue = (key: string, unit?: string) => {
   return createSelector(selectMetric(key), (metric) => {
     let v = metric?.value
 
-    if(v == null) { return v }
+    if (v == null) { return v }
 
     v = v!
 
-    if (unit && metric?.unit && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
-      try {
-        v = numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
-      } catch (error) {
-        console.error(error)
-      }
+    switch (metric.type) {
+      case MetricType.BOOL:
+        if ([1, "yes", metric.trueStatement].includes(v)) {
+          return metric.trueStatement ?? "yes"
+        } else {
+          return metric.falseStatement ?? "no"
+        }
+      case MetricType.NUMBER:
+        if (unit && metric?.unit && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
+          try {
+            v = numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
+          } catch (error) {
+            console.error(error)
+          }
+        }
+        if (metric.precision != null && +v) {
+          v = +v.toFixed(metric.precision);
+        }
+        return v
+      default:
+        return v
     }
-    if (metric.precision != null && +v) {
-      v = +v.toFixed(metric.precision);
-    }
-    return v
   })
 }
 
@@ -152,22 +163,22 @@ export const selectMetricLastModified = (key: string) => {
   return createSelector(selectMetric(key), (metric) => metric?.lastModified)
 }
 
-export function selectLocalisedMetricValue(metricName : string) {
-  return (dispatch : AppDispatch, getState : () => RootState) => {
+export function selectLocalisedMetricValue(metricName: string) {
+  return (dispatch: AppDispatch, getState: () => RootState) => {
     const currentUnit = selectMetricUnit(metricName)(getState())
     const possibleUnits = numericalUnitConvertor().possibilities()
     let metricValue = selectMetricValue(metricName)(getState())
 
-    if(metricValue == null || [NaN, null, undefined].includes(+metricValue)){
+    if (metricValue == null || [NaN, null, undefined].includes(+metricValue)) {
       return { value: metricValue, unit: currentUnit }
-    } 
-    
+    }
+
     metricValue = +metricValue
 
     let targetUnit;
-    
-    if(possibleUnits.includes(currentUnit) && currentUnit != null) {
-      switch(numericalUnitConvertor().describe(currentUnit).measure) {
+
+    if (possibleUnits.includes(currentUnit) && currentUnit != null) {
+      switch (numericalUnitConvertor().describe(currentUnit).measure) {
         case "temperature":
           targetUnit = getTemperatureUnit(getState())
           break
@@ -177,16 +188,16 @@ export function selectLocalisedMetricValue(metricName : string) {
         case "pressure":
           targetUnit = getPressureUnit(getState())
           break
-        default: 
+        default:
           targetUnit = "system"
       }
 
-      if(targetUnit == "system" || targetUnit == currentUnit ) {return { value: metricValue, unit: currentUnit } }
-      if(targetUnit == currentUnit) { return { value: metricValue, unit: targetUnit } }
+      if (targetUnit == "system" || targetUnit == currentUnit) { return { value: metricValue, unit: currentUnit } }
+      if (targetUnit == currentUnit) { return { value: metricValue, unit: targetUnit } }
 
       const convertedMetricValue = selectMetricValue(metricName, targetUnit)(getState())
 
-      return { value: convertedMetricValue, unit: targetUnit } 
+      return { value: convertedMetricValue, unit: targetUnit }
 
     } else {
       return { value: metricValue, unit: currentUnit }

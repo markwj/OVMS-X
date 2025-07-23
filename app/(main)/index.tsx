@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
-import { VehicleSideImage } from "@/components/ui/VehicleImages";
+import { GetVehicleName, VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
 import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 import { store } from "@/store/root";
@@ -24,8 +24,8 @@ export default function HomeScreen() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   //bottomSheetRef.current?.snapToPosition('66%');
 
-  const vBatSocSelector = selectMetricValue("v.b.soc")
-  const vBatSoc = useSelector(vBatSocSelector)
+  const vBatSoc = useSelector(selectMetricValue("v.b.soc"))
+  const vType = useSelector(selectMetricValue("v.type"))
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const lastUpdated = useSelector(getLastUpdateTime)
@@ -69,7 +69,7 @@ export default function HomeScreen() {
               <ControlIcon type={controlType.Messages} />
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
-              <ProgressBar progress={(vBatSoc ?? 0) / 100} color={(vBatSoc ?? 0) <= 10 ? "#ff0000" : (vBatSoc <= 40 ? "#ffff00" : "#00ff00")} visible={true} style={{ height: 10, width: 300 }} />
+              <ProgressBar progress={(vBatSoc ?? 0) / 100} color={(vBatSoc ?? 0) < 20 ? "#ff0000" : "#00ff00"} visible={true} style={{ height: 10, width: 300 }} />
               {/* <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}{t(vBatRangeEstUnit)}</Text> */}
               <View style={{width: 300, flexDirection: 'row', justifyContent: 'center', marginTop: 5}}>
                 <Text>SOC: </Text>
@@ -88,7 +88,7 @@ export default function HomeScreen() {
               <ControlButton type={controlType.Developer} />
             </View>
             <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
-              <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
+              <Text variant='labelMedium'>{t(GetVehicleName(vType) ?? "Vehicle")}</Text>
               {/* <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}{t(vPosOdometerUnit)}</Text> */}
               <MetricValue variant='labelMedium' metricKey={"v.p.odometer"}/>
               <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>

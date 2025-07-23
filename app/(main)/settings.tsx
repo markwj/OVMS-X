@@ -1,6 +1,6 @@
 import React from "react";
-import { useTheme, Text, Button, SegmentedButtons } from 'react-native-paper';
-import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from 'react-native';
+import { useTheme, Text, Button, SegmentedButtons, Card, Icon } from 'react-native-paper';
+import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet, View } from 'react-native';
 import { useSelector, useDispatch } from "react-redux";
 import {
   getTemperaturePreference, getDistancePreference, getPressurePreference,
@@ -62,14 +62,6 @@ export default function SettingsScreen() {
       pressurePreference: pressurePreference
     }
   });
-
-  const updateVersion =
-    (!__DEV__ &&
-      !(Constants.executionEnvironment == ExecutionEnvironment.StoreClient) &&
-      Platform.OS !== 'web' &&
-      typeof currentlyRunning !== 'undefined')
-      ? currentlyRunning?.createdAt + "\n" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion
-      : undefined;
 
   const updateVersion =
     (!__DEV__ &&

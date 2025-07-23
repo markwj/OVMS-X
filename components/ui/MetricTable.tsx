@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from 'react-native';
-import { DataTable, Searchbar, TextInput } from "react-native-paper";
+import { DataTable, Searchbar, TextInput, useTheme } from "react-native-paper";
 import { router } from "expo-router";
 import { MetricValue } from "@/components/ui/MetricValue"
 import { FlatList } from "react-native-gesture-handler";
@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 //@ts-ignore
 export default function MetricTable({ metricKeys }): React.JSX.Element {
   const [searchFilter, setSearchFilter] = useState("")
+
+  const theme = useTheme()
 
   const { t } = useTranslation()
 
@@ -20,11 +22,11 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
     <DataTable style={styles.table}>
       <FlatList
         ListHeaderComponent={(
-          <>
+          <View style={{backgroundColor: theme.colors.background}}>
             <DataTable.Header style={styles.headerRow}>
               <View style={{ ...styles.headerRow, flexDirection: 'row', alignItems: 'center', padding: 5, paddingVertical: 10 }}>
                 <Searchbar
-                  style={{ flex: 1, width: 'auto' }}
+                  style={{ flex: 1, width: 'auto'}}
                   value={searchFilter}
                   autoCapitalize="none"
                   placeholder={t("Search") + "..."}
@@ -38,8 +40,9 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
               <DataTable.Title style={{ ...styles.metricText, flex: 2 }}>Name</DataTable.Title>
               <DataTable.Title style={styles.headerText}>Value</DataTable.Title>
             </DataTable.Header>
-          </>
+          </View>
         )}
+        stickyHeaderIndices={[0]}
         data={metricKeys}
         renderItem={(item) => (
           <DataTable.Row key={item.item} style={styles.metricRow} onPress={() => OnMetricEntryPress(item.item)}>
