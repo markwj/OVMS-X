@@ -98,7 +98,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
     const openListener = () => {
       console.log('[connection OVMSv2] connection opened')
       dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.AUTHENTICATING))
-      const authMessage = `MP-A 1 ${selectedVehicle?.platformParameters?.username} ${selectedVehicle?.platformParameters?.password} ${selectedVehicle?.name}`
+      const authMessage = `MP-A 1 ${selectedVehicle?.platformParameters?.username} ${selectedVehicle?.platformParameters?.password} ${selectedVehicle?.platformParameters?.id}`
       console.log('[connection OVMSv2] tx auth', authMessage)
       connection?.send(authMessage)
     }
