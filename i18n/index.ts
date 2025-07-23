@@ -7,7 +7,7 @@ const resources = {
   'en': { translation: enLang },
 };
 const myLocale = getLocales()[0];
-const locale = myLocale?.languageCode;
+const locale = myLocale?.languageCode || 'en';
 
 i18n
   // pass the i18n instance to react-i18next.

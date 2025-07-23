@@ -9,6 +9,7 @@ import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 import { useInterval } from "@/hooks/useInterval";
 import { messagesSlice } from "@/store/messagesSlice";
 import { ConnectionDisplay } from "../ui/ConnectionDisplay";
+import { notificationsEnabled, notificationsToken, notificationsUniqueID } from "@/store/notificationSlice";
 
 let connection: WebSocket | null = null;
 
@@ -74,6 +75,10 @@ function resolveNextPendingCommand(response: string) {
 
 export function OVMSv2ConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
+  const notificationEnabled = useSelector(notificationsEnabled);
+  const notificationToken = useSelector(notificationsToken);
+  const notificationUniqueID = useSelector(notificationsUniqueID);
+
   const dispatch = useDispatch();
 
   const [distanceUnits, setDistanceUnits] = useState("km")
@@ -113,6 +118,11 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
       if (event.data.startsWith('MP-S')) {
         console.log('[connection OVMSv2] rx LOGIN(RESULT)', event.data)
         dispatch(connectionSlice.actions.setConnectionState(VehicleConnectionState.CONNECTED))
+        if (notificationEnabled) {
+          const subscribeMessage = `p${notificationUniqueID},expo,simple,${notificationToken}`
+          connection?.send(subscribeMessage)
+          console.log('[connection OVMSv2] tx subscribe', subscribeMessage)
+        }
 
       } else if (event.data.startsWith('F')) {
         const parts = event.data.substring(1).split(',')

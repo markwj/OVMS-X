@@ -11,6 +11,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.openvehicles.ovmsx",
+      "associatedDomains": ["applinks:ovmsx.openvehicles.com"],
+      "entitlements": { "aps-environment": "production" },
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -24,7 +26,20 @@
       "buildProperties": {
         "minSdkVersion": 46
       },
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "ovmsx.openvehicles.com"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -73,6 +88,13 @@
       "url": "https://u.expo.dev/ceb83602-03c8-44fa-ab2c-21c00721ad57",
       "enabled": true,
       "checkAutomatically": "ON_ERROR_RECOVERY"
+    },
+    "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6748969822"
+      }
     }
+  }
   }
 }

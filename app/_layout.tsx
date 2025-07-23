@@ -30,6 +30,8 @@ import * as Notifications from 'expo-notifications';
 import { isRunningInExpoGo } from 'expo';
 import * as Updates from 'expo-updates';
 import * as Network from 'expo-network';
+import { setToken, setUniqueID } from '@/store/notificationSlice';
+import * as Application from 'expo-application';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -71,7 +73,7 @@ function handleRegistrationError(errorMessage: string) {
   throw new Error(errorMessage);
 }
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(dispatch: any) {
   if (Platform.OS === "web") {
     console.log('[registerForPushNotificationsAsync] Web platform, no push notifications');
     return;
@@ -109,6 +111,7 @@ async function registerForPushNotificationsAsync() {
         })
       ).data;
       console.log('[registerForPushNotificationsAsync] pushTokenString', pushTokenString);
+      dispatch(setToken(pushTokenString));
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
@@ -124,10 +127,43 @@ const MainLayout = () => {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const hasStandardMetrics = useSelector(hasStandardMetricsSelector);
   const dispatch = useDispatch();
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+    undefined
+  );
+  
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      Application.getIosIdForVendorAsync().then((id) => 
+        dispatch(setUniqueID(id || 'unknown')));
+    } else if (Platform.OS === 'android') {
+      dispatch(setUniqueID(Application.getAndroidId() || 'unknown'));
+    }
+  }, []);
 
   if (!hasStandardMetrics) {
     dispatch(metricsSlice.actions.resetToStandardMetrics());
   }
+
+  useEffect(() => {
+    registerForPushNotificationsAsync(dispatch)
+      .then(token => setExpoPushToken(token ?? ''))
+      .catch((error: any) => setExpoPushToken(`${error}`));
+
+    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      console.log('[notificationListener] notification', notification);
+      setNotification(notification);
+    });
+
+    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      notificationListener.remove();
+      responseListener.remove();
+    };
+  }, [dispatch]);
 
   return (
     <>
@@ -176,26 +212,6 @@ export default Sentry.wrap(function RootLayout() {
 
     return () => {
       if (unsubscribe) unsubscribe.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then(token => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`));
-
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      console.log('[notificationListener] notification', notification);
-      setNotification(notification);
-    });
-
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
-
-    return () => {
-      notificationListener.remove();
-      responseListener.remove();
     };
   }, []);
 
