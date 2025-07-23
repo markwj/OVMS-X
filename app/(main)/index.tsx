@@ -61,8 +61,7 @@ export default function HomeScreen() {
           enablePanDownToClose={false}
           enableDynamicSizing={false}
           ref={bottomSheetRef}
-          style={{ backgroundColor: '#000000' }}
-          backgroundStyle={{ backgroundColor: theme.colors.background }}
+          backgroundStyle={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
         >
           <BottomSheetView>
             <View style={{ alignItems: 'center', gap: 20, justifyContent: 'center', flexDirection: 'row' }}>
