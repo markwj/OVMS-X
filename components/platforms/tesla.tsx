@@ -11,7 +11,19 @@ import { ConnectionDisplay } from "../ui/ConnectionDisplay";
  */
 export async function sendTeslaTextCommand(commandText: string): Promise<string> {
   // Tesla platform is not yet implemented
-  throw new Error("Tesla platform commands are not yet implemented");
+  return new Promise((resolve, reject) => {
+    console.log('[sendTeslaTextCommand] commandText', commandText)
+    reject(new Error("Not yet implemented"));
+    return;
+  });
+}
+
+export async function sendTeslaStandardCommand(command: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    console.log('[sendTeslaStandardCommand] command', command)
+    reject(new Error("Not implemented"));
+    return;
+  });
 }
 
 export function TeslaConnectionIcon(): React.JSX.Element {

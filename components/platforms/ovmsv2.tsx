@@ -73,6 +73,14 @@ function resolveNextPendingCommand(response: string) {
   }
 }
 
+export async function sendOVMSv2StandardCommand(command: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    console.log('[sendOVMSv2StandardCommand] command', command)
+    reject(new Error("Not implemented"));
+    return;
+  });
+}
+
 export function OVMSv2ConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const notificationEnabled = useSelector(notificationsEnabled);
