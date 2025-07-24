@@ -26,8 +26,12 @@ import { hasStandardMetricsSelector, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import { isRunningInExpoGo } from 'expo';
+// Conditionally import notifications to avoid warnings in Expo Go
+let Notifications: any = null;
+if (!isRunningInExpoGo()) {
+  Notifications = require('expo-notifications');
+}
 import * as Updates from 'expo-updates';
 import * as Network from 'expo-network';
 import { setToken, setUniqueID } from '@/store/notificationSlice';
@@ -59,14 +63,16 @@ Sentry.init({
   enableNativeFramesTracking: !isRunningInExpoGo(),
 });
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+if (Notifications) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
@@ -74,6 +80,11 @@ function handleRegistrationError(errorMessage: string) {
 }
 
 async function registerForPushNotificationsAsync(dispatch: any) {
+  if (!Notifications) {
+    console.log('[registerForPushNotificationsAsync] Notifications not available');
+    return;
+  }
+
   if (Platform.OS === "web") {
     console.log('[registerForPushNotificationsAsync] Web platform, no push notifications');
     return;
@@ -128,7 +139,7 @@ const MainLayout = () => {
   const hasStandardMetrics = useSelector(hasStandardMetricsSelector);
   const dispatch = useDispatch();
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+  const [notification, setNotification] = useState<any | undefined>(
     undefined
   );
   
@@ -146,23 +157,25 @@ const MainLayout = () => {
   }
 
   useEffect(() => {
-    registerForPushNotificationsAsync(dispatch)
-      .then(token => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`));
+    if (Notifications) {
+      registerForPushNotificationsAsync(dispatch)
+        .then(token => setExpoPushToken(token ?? ''))
+        .catch((error: any) => setExpoPushToken(`${error}`));
 
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      console.log('[notificationListener] notification', notification);
-      setNotification(notification);
-    });
+      const notificationListener = Notifications.addNotificationReceivedListener((notification: any) => {
+        console.log('[notificationListener] notification', notification);
+        setNotification(notification);
+      });
 
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
+      const responseListener = Notifications.addNotificationResponseReceivedListener((response: any) => {
+        console.log(response);
+      });
 
-    return () => {
-      notificationListener.remove();
-      responseListener.remove();
-    };
+      return () => {
+        notificationListener.remove();
+        responseListener.remove();
+      };
+    }
   }, [dispatch]);
 
   return (
@@ -190,7 +203,7 @@ export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+  const [notification, setNotification] = useState<any | undefined>(
     undefined
   );
 
