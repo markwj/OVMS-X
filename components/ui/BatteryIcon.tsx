@@ -37,15 +37,13 @@ export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: numb
 
 const battery100 = require("@/assets/images/component/battery_100.png")
 const battery0 = require("@/assets/images/component/battery_000.png")
-const minPercentageWidth = 9
-const maxPercentageWidth = 82
+const minPercentageWidth = 6
+const maxPercentageWidth = 81
 
 export function HorizontalBatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: number, batteryCharging?: boolean }): React.JSX.Element {
 
   batterySOC ??= useSelector(selectMetricValue("v.b.soc"))
   batteryCharging ??= useSelector(selectMetricValue('v.c.inprogress')) == "yes"
-
-  batterySOC = 50
 
   const displayedPercent = batterySOC ?? 0
 
