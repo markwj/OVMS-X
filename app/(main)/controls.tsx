@@ -101,8 +101,8 @@ function MetricIconDisplay({ metricName, icon, iconSize, style, onPress }: { met
 const styles = StyleSheet.create({
   primaryContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'relative', padding: 20 },
   screenContainer: { width: '100%', height: '100%', borderWidth: 0, borderColor: 'blue' },
-  vehicleImageBoundary: { position: 'absolute', left: '20%', top: '10%', width: '60%', height: '75%', borderWidth: 0, borderColor: 'blue' },
-  vehicleImageContainer: { height: '100%', alignItems: 'center' },
+  vehicleImageBoundary: { position: 'absolute', left: '20%', top: '15%', width: '60%', height: '70%', borderWidth: 0, borderColor: 'blue' },
+  vehicleImageContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   metricValue: { fontSize: 20, padding: 5 },
 
   absoluteCentering: { position: 'absolute', transform: [{ 'translateX': '-50%' }, { 'translateY': "-50%" }] }

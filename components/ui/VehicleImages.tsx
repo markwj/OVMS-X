@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { ImageBackground, View, Image, StyleSheet } from "react-native"
 import { VehicleImage } from "@/store/vehiclesSlice"
 import { GetCurrentUTCTimeStamp } from "../utils/datetime"
+import * as FileSystem from "expo-file-system"
 
 const DEFAULT_IMAGE_NAME = "roadster"
 
@@ -79,17 +80,27 @@ export const GetVehicleName = (type: string) => {
 export function VehicleSideImage({ image }: { image: VehicleImage }): React.JSX.Element {
   const ASPECT_RATIO = 654 / 302
 
+  const [customVehicleImageSource, setCustomVehicleImageSource] = useState(undefinedCarImages.side)
+
   if (image == null) { return (<View></View>); }
 
   if (image.imageName == "custom") {
+    const getCustomImageSource = async () => {
+      if ((await FileSystem.getInfoAsync(image.customPath + "/side")).exists) {
+        setCustomVehicleImageSource({ uri: image.customPath + "/side?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
+      }
+    }
+
+    getCustomImageSource()
+
     return (<Image
       style={{
         aspectRatio: ASPECT_RATIO,
         width: "100%",
         height: undefined,
       }}
-      resizeMode="contain" 
-      source={image.customPath ? {uri: image.customPath+"/side?timestamp="+encodeURI(GetCurrentUTCTimeStamp())} : undefinedCarImages.side}  
+      resizeMode="contain"
+      source={customVehicleImageSource}
       defaultSource={undefinedCarImages.side}
     />);
   }
@@ -121,31 +132,40 @@ export function VehicleSideImage({ image }: { image: VehicleImage }): React.JSX.
 export function VehicleTopImage({ image }: { image: VehicleImage }): React.JSX.Element {
   const ASPECT_RATIO = 304 / 606
 
+  const [customVehicleImageSource, setCustomVehicleImageSource] = useState(undefinedCarImages.top)
+
   if (image == null) { return (<View></View>); }
 
   if (image.imageName == "custom") {
+    const getCustomImageSource = async () => {
+      if ((await FileSystem.getInfoAsync(image.customPath + "/top")).exists) {
+        setCustomVehicleImageSource({ uri: image.customPath + "/top?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
+      }
+    }
+
+    getCustomImageSource()
+
     return (<Image
       style={{
         aspectRatio: ASPECT_RATIO,
         width: "100%",
         height: undefined,
       }}
-      resizeMode="contain" 
-      source={image.customPath ? {uri: image.customPath+"/top?timestamp="+encodeURI(GetCurrentUTCTimeStamp())} : undefinedCarImages.top}  
+      resizeMode="contain"
+      source={customVehicleImageSource}
       defaultSource={undefinedCarImages.top}
     />);
   }
 
   return (
     //@ts-ignore
-    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -3 }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1 }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].top}>
+    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -3 }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].top}>
       {/* @ts-ignore */}
-      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -2 }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1 }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].topMask}>
+      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain', zIndex: -2 }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].topMask}>
         <Image
           style={{
             width: '100%', height: undefined,
             aspectRatio: ASPECT_RATIO,
-            flex: 1,
             resizeMode: "contain",
             tintColor: image.tintColor ?? "#fff",
             //@ts-ignore
@@ -163,26 +183,36 @@ export function VehicleTopImage({ image }: { image: VehicleImage }): React.JSX.E
 export function VehicleMapImage({ image }: { image: VehicleImage }): React.JSX.Element {
   const ASPECT_RATIO = 96 / 96
 
+  const [customVehicleImageSource, setCustomVehicleImageSource] = useState(undefinedCarImages.top)
+
   if (image == null) { return (<View></View>); }
 
   if (image.imageName == "custom") {
+    const getCustomImageSource = async () => {
+      if ((await FileSystem.getInfoAsync(image.customPath + "/map")).exists) {
+        setCustomVehicleImageSource({ uri: image.customPath + "/map?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
+      }
+    }
+
+    getCustomImageSource()
+
     return (<Image
       style={{
         aspectRatio: ASPECT_RATIO,
         width: "100%",
         height: undefined,
       }}
-      resizeMode="contain" 
-      source={image.customPath ? { uri: image.customPath+"/map?timestamp="+encodeURI(GetCurrentUTCTimeStamp()) } : undefinedCarImages.map} 
-      defaultSource={undefinedCarImages.map} 
+      resizeMode="contain"
+      source={customVehicleImageSource}
+      defaultSource={undefinedCarImages.map}
     />);
   }
 
   return (
     //@ts-ignore
-    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain' }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].map}>
+    <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain' }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].map}>
       {/* @ts-ignore */}
-      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain' }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO, flex: 1, flexDirection: 'row' }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].mapMask}>
+      <ImageBackground imageStyle={{ width: '100%', height: undefined, resizeMode: 'contain' }} style={{ width: '100%', height: undefined, aspectRatio: ASPECT_RATIO }} source={VehicleTypes[image.imageName ?? DEFAULT_IMAGE_NAME].mapMask}>
         <Image
           style={{
             width: '100%',
