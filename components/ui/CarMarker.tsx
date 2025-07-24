@@ -89,7 +89,7 @@ export function CarMarker() {
         latitude: displayLatitude ?? 0, 
         longitude: displayLongitude ?? 0
       }} anchor={{x: 0.5, y : 0.5}}>
-        <Animated.View style={[{ width: 36.4, height: 36.4, justifyContent: 'center' }, animatedStyle]}>
+        <Animated.View style={[{ width: 50, height: 50, justifyContent: 'center' }, animatedStyle]}>
           {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
         </Animated.View>
       </MarkerAnimated>
