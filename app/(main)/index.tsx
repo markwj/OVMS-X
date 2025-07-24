@@ -43,9 +43,7 @@ export default function HomeScreen() {
   const routepath = usePathname();
 
   if ((selectedVehicle == null) || (vehicleCount == 0)) {
-  console.log('--------------------------------');
-  console.log("No vehicle selected, currently at", routepath);
-  console.log('--------------------------------');
+  console.log("[HomeScreen] No vehicle selected, currently at", routepath);
   if (routepath.substring(0, 12) !== '/newplatform') {
       setTimeout(() => {
         router.push('/(main)/newplatform');

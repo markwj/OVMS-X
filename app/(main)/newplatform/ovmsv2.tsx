@@ -25,6 +25,7 @@ interface FormData {
 const SERVER_BUTTONS = [
   { value: 'api.openvehicles.com', label: 'Global' },
   { value: 'ovms.dexters-web.de', label: 'EU' },
+  { value: 'markapi.openvehicles.com', label: 'Mark' },
   { value: 'other', label: 'Other' }
 ];
 
