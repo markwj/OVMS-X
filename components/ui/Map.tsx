@@ -28,16 +28,23 @@ export function Map() {
   if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
     //@ts-ignore
     mapRef.current?.animateToRegion({
-      latitude: vPLatitude ?? region.latitude,
-      longitude: vPLongitude ?? region.longitude,
-    }, 100)
+      latitude: vPLatitude,
+      longitude: vPLongitude,
+      latitudeDelta: region.latitudeDelta,
+      longitudeDelta: region.longitudeDelta
+    }, 500)
   }
 
   return (
     <MapView
       ref={mapRef}
       region={region}
-      onRegionChangeComplete={setRegion}
+      initialRegion={INITIAL_REGION}
+      onRegionChangeComplete={(r, v) => {
+        if (v.isGesture) {
+          setRegion(r)
+        }
+      }}
       rotateEnabled={false}
       showsTraffic={false}
       style={{ flex: 1 }}

@@ -1,10 +1,10 @@
 import { selectMetricValue } from "@/store/metricsSlice"
 import React, { useEffect, useState } from "react"
-import { AnimatedRegion, Circle, MarkerAnimated } from "react-native-maps"
+import { AnimatedRegion, Circle, Marker, MarkerAnimated } from "react-native-maps"
 import { useSelector } from "react-redux"
 import { VehicleMapImage } from "./VehicleImages";
 import { getSelectedVehicle } from "@/store/selectionSlice";
-import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, useDerivedValue, runOnJS } from "react-native-reanimated";
+import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, useDerivedValue, runOnJS, cancelAnimation } from "react-native-reanimated";
 
 export function CarMarker() {
   const vPosLatitudeSelector = selectMetricValue("v.p.latitude")
@@ -36,12 +36,13 @@ export function CarMarker() {
   // Update shared values when new data arrives
   useEffect(() => {
     if (vPosLatitude != null && vPosLatitude != undefined) {
+      cancelAnimation(animatedLatitude)
       animatedLatitude.value = withTiming(vPosLatitude, {
         duration: 3000,
         easing: Easing.linear
       })
     }
-  }, [vPosLatitude])
+  }, [vPosLatitude, animatedLatitude])
 
   useEffect(() => {
     if (vPosLongitude != null && vPosLongitude != undefined) {
@@ -50,7 +51,7 @@ export function CarMarker() {
         easing: Easing.linear
       })
     }
-  }, [vPosLongitude])
+  }, [vPosLongitude, animatedLongitude])
 
   useEffect(() => {
     if (vPosDirection != null && vPosDirection != undefined) {
@@ -59,7 +60,7 @@ export function CarMarker() {
         easing: Easing.linear
       })
     }
-  }, [vPosDirection])
+  }, [vPosDirection, animatedDirection])
 
   // Update display values from animated values
   useDerivedValue(() => {
@@ -77,7 +78,7 @@ export function CarMarker() {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transformOrigin: 'center',
-      transform: [{ rotate: `${animatedDirection.value ?? 0}deg` }, { translateX: "-25%" }],
+      transform: [{ rotate: `${animatedDirection.value}deg` }],
     };
   });
 
@@ -87,8 +88,8 @@ export function CarMarker() {
       <MarkerAnimated coordinate={{
         latitude: displayLatitude ?? 0, 
         longitude: displayLongitude ?? 0
-      }}>
-        <Animated.View style={[{ width: 36.4, height: 63.04, transformOrigin: 'center' }, animatedStyle]}>
+      }} anchor={{x: 0.5, y : 0.5}}>
+        <Animated.View style={[{ width: 36.4, height: 36.4, justifyContent: 'center' }, animatedStyle]}>
           {selectedVehicle != null && <VehicleMapImage image={selectedVehicle.image} />}
         </Animated.View>
       </MarkerAnimated>
