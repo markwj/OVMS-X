@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root'
+import * as FileSystem from 'expo-file-system'
 
 export interface VehicleImage {
   imageName: string | null,
@@ -78,12 +79,13 @@ export const vehiclesSlice = createSlice({
       const keys = state.vehicles.map((v) => v.key)
       const vehicleIndex = keys.indexOf(action.payload)
       if (vehicleIndex > -1) {
+        FileSystem.deleteAsync(FileSystem.documentDirectory + "carimages/" + encodeURI(state.vehicles[vehicleIndex].key))
         state.vehicles.splice(vehicleIndex, 1) 
         return;
       }
     },
 
-    wipeVehicles: (state) => { state.vehicles = []; },
+    wipeVehicles: (state) => { state.vehicles = []; FileSystem.deleteAsync(FileSystem.documentDirectory + "carimages") },
 
   },
 })
@@ -97,7 +99,7 @@ function FindVehicle(state: RootState, key: string) {
   return null
 }
 
-export function generateFindVehicleSelector(key: string) {
+export function selectVehicle(key: string) {
   return (state: RootState) => FindVehicle(state, key)
 }
 

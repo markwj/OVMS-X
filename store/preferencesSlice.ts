@@ -19,7 +19,7 @@ export enum PressureChoiceType {
   SYSTEM = "system",
   PSI = "psi",
   BAR = "bar",
-  KPA = "kpa"
+  kPa = "kPa"
 }
 
 interface PreferencesState {
@@ -63,7 +63,7 @@ export const getTemperatureUnit = (state: RootState) => {
       return 'F'
     }
   } else {
-    return state.preferences.pressureChoice.toString();
+    return state.preferences.temperatureChoice.toString();
   }
 }
 
@@ -80,7 +80,7 @@ export const getDistanceUnit = (state: RootState) => {
       return 'mi'
     }
   } else {
-    return state.preferences.pressureChoice.toString();
+    return state.preferences.distanceChoice.toString();
   }
 }
 

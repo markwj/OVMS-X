@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme, Text, SegmentedButtons, Card, Icon } from 'react-native-paper';
+import { useTheme, Text, Button, SegmentedButtons, Card, Icon } from 'react-native-paper';
 import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet, View } from 'react-native';
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -10,6 +10,10 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useTranslation } from "react-i18next";
+import { GetUnitAbbr, numericalUnitConvertor } from "@/components/utils/numericalUnitConverter";
+import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
+import { messagesSlice } from "@/store/messagesSlice";
+import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { os } from "@/utils/platform";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as Updates from 'expo-updates';
@@ -38,7 +42,7 @@ const PRESSURE_BUTTONS = [
   { value: PressureChoiceType.SYSTEM, label: 'System' },
   { value: PressureChoiceType.PSI, label: 'PSI' },
   { value: PressureChoiceType.BAR, label: 'Bar' },
-  { value: PressureChoiceType.KPA, label: 'kPa' }
+  { value: PressureChoiceType.kPa, label: 'kPa' }
 ]
 
 export default function SettingsScreen() {
@@ -49,6 +53,8 @@ export default function SettingsScreen() {
   const notificationEnabled = useSelector(notificationsEnabled);
   const notificationToken = useSelector(notificationsToken);
 
+  const theme = useTheme()
+
   const temperaturePreference = useSelector(getTemperaturePreference)
   const distancePreference = useSelector(getDistancePreference)
   const pressurePreference = useSelector(getPressurePreference)
@@ -57,7 +63,7 @@ export default function SettingsScreen() {
     defaultValues: {
       temperaturePreference: temperaturePreference,
       distancePreference: distancePreference,
-      pressurePreference: pressurePreference,
+      pressurePreference: pressurePreference
     }
   });
 
@@ -111,62 +117,87 @@ export default function SettingsScreen() {
           </>
         )}
 
-        <Text>{t('Temperature')}</Text>
-        <Controller
-          control={control}
-          name="temperaturePreference"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={(value) => {
-                {
-                  setValue('temperaturePreference', value)
-                }
-                dispatch(setTemperaturePreference(value))
-              }}
-              buttons={TEMPERATURE_BUTTONS}
-            />
-          )}
-        />
+        <SettingsSection title={"Metrics"}>
 
-        <View style={{ height: 10 }} />
+          <Text variant="labelMedium">{t('Temperature')}</Text>
+          <Controller
+            control={control}
+            name="temperaturePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  {
+                    setValue('temperaturePreference', value)
+                  }
+                  dispatch(setTemperaturePreference(value))
+                }}
+                buttons={TEMPERATURE_BUTTONS}
+              />
+            )}
+          />
 
-        <Text>{t('Distance')}</Text>
-        <Controller
-          control={control}
-          name="distancePreference"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={(value) => {
-                setValue('distancePreference', value)
-                dispatch(setDistancePreference(value))
-              }}
-              buttons={DISTANCE_BUTTONS}
-            />
-          )}
-        />
+          <Text variant="labelMedium">{t('Distance')}</Text>
+          <Controller
+            control={control}
+            name="distancePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  setValue('distancePreference', value)
+                  dispatch(setDistancePreference(value))
+                }}
+                buttons={DISTANCE_BUTTONS}
+              />
+            )}
+          />
 
-        <View style={{ height: 10 }} />
+          <Text variant="labelMedium">{t('Pressure')}</Text>
+          <Controller
+            control={control}
+            name="pressurePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  setValue('pressurePreference', value)
+                  dispatch(setPressurePreference(value))
+                }}
+                buttons={PRESSURE_BUTTONS}
+              />
+            )}
+          />
+        </SettingsSection>
 
-        <Text>{t('Pressure')}</Text>
-        <Controller
-          control={control}
-          name="pressurePreference"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={(value) => {
-                setValue('pressurePreference', value)
-                dispatch(setPressurePreference(value))
-              }}
-              buttons={PRESSURE_BUTTONS}
-            />
-          )}
-        />
+        <SettingsSection title={""}>
+          <Button textColor="red" onPress={() => ConfirmationMessage(
+            () => {dispatch(messagesSlice.actions.wipeMessages())},
+            "Warning!",
+            "Do you want to delete all your messages? This action cannot be undone.",
+            "Delete"
+          )}>DELETE MESSAGES</Button>
+          <Button textColor="red" onPress={() => ConfirmationMessage(
+            () => {dispatch(vehiclesSlice.actions.wipeVehicles())},
+            "Warning!",
+            "Do you want to delete all your vehicles? This action cannot be undone.",
+            "Delete"
+          )}>DELETE ALL VEHICLES</Button>
+        </SettingsSection>
       </ScrollView>
     </KeyboardAvoidingView>
   );
+}
+
+function SettingsSection({ title, children }: { title?: string, children?: any }) {
+  const { t } = useTranslation()
+
+  return (
+    <View style={styles.settingsSection}>
+      {title && <Text variant="titleLarge" style={{ paddingBottom: 10 }}>{t(title)}</Text>}
+      {children}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -176,10 +207,14 @@ const styles = StyleSheet.create({
   scrollview: {
     flex: 1,
     flexDirection: 'column',
-    gap: 20,
     padding: 20
   },
-  gap: {
-    height: 20
+  settingsSection: {
+    backgroundColor: "rgba(50,47,55,0.4)",
+    padding: 10,
+    paddingBottom: 20,
+    gap: 10,
+    marginBottom: 30,
+    alignItems: 'flex-start'
   }
 });

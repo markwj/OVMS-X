@@ -1,42 +1,66 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Button, Text, ScrollView } from 'react-native';
-import { DataTable } from "react-native-paper";
-import { Metric } from "@/components/vehicle/metrics";
+import React, { useState } from "react";
+import { View, StyleSheet } from 'react-native';
+import { DataTable, Searchbar, TextInput, useTheme } from "react-native-paper";
 import { router } from "expo-router";
-import { useSelector } from "react-redux";
 import { MetricValue } from "@/components/ui/MetricValue"
-import { generateMetricIsStaleSelector } from "@/store/metricsSlice";
-import { GetCurrentUTCTimeStamp } from "../utils/datetime";
+import { FlatList } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
 
 //@ts-ignore
-export default function MetricTable({ metricKeys, metrics }): React.JSX.Element {
+export default function MetricTable({ metricKeys }): React.JSX.Element {
+  const [searchFilter, setSearchFilter] = useState("")
+
+  const theme = useTheme()
+
+  const { t } = useTranslation()
+
+  if (searchFilter != "") {
+    metricKeys = metricKeys.filter((k: string) => k.toUpperCase().includes(searchFilter.toUpperCase()))
+  }
+
   return (
     <DataTable style={styles.table}>
-      <DataTable.Header style={styles.headerRow}>
-        <DataTable.Title style={{...styles.metricText, flex:2}}>Name</DataTable.Title>
-        <DataTable.Title style={styles.headerText}>Value</DataTable.Title>
-      </DataTable.Header>
-      {metricKeys.map((metricKey: string, index: string | number) => GenerateMetricEntry(metricKey, (metrics as any)[index]))}
+      <FlatList
+        ListHeaderComponent={(
+          <View style={{backgroundColor: theme.colors.background}}>
+            <DataTable.Header style={styles.headerRow}>
+              <View style={{ ...styles.headerRow, flexDirection: 'row', alignItems: 'center', padding: 5, paddingVertical: 10 }}>
+                <Searchbar
+                  style={{ flex: 1, width: 'auto'}}
+                  value={searchFilter}
+                  autoCapitalize="none"
+                  placeholder={t("Search") + "..."}
+                  onChangeText={(v) => setSearchFilter(v)}
+                  autoCorrect={false}
+                  clearIcon={"filter-remove-outline"}
+                />
+              </View>
+            </DataTable.Header>
+            <DataTable.Header style={styles.headerRow}>
+              <DataTable.Title style={{ ...styles.metricText, flex: 2 }}>Name</DataTable.Title>
+              <DataTable.Title style={styles.headerText}>Value</DataTable.Title>
+            </DataTable.Header>
+          </View>
+        )}
+        stickyHeaderIndices={[0]}
+        data={metricKeys}
+        renderItem={(item) => (
+          <DataTable.Row key={item.item} style={styles.metricRow} onPress={() => OnMetricEntryPress(item.item)}>
+            <DataTable.Cell style={{ ...styles.metricText, flex: 2 }}>{item.item}</DataTable.Cell>
+            <DataTable.Cell style={styles.metricText}>
+              <MetricValue metricKey={item.item}></MetricValue>
+            </DataTable.Cell>
+          </DataTable.Row>
+        )}
+      />
     </DataTable>
   )
 }
 
-function GenerateMetricEntry(metricName: string, metric: Metric) {
-  const stale = useSelector(generateMetricIsStaleSelector(metricName, GetCurrentUTCTimeStamp()))
 
-  return (
-    <DataTable.Row key={metricName} style={styles.metricRow} onPress={() => OnMetricEntryPress(metricName)}>
-      <DataTable.Cell style={{...styles.metricText, flex:2}}>{metricName}</DataTable.Cell>
-      <DataTable.Cell style={styles.metricText}>
-        <MetricValue metricKey={metricName} children={undefined}></MetricValue>
-      </DataTable.Cell>
-    </DataTable.Row>
-  )
-}
-
-function OnMetricEntryPress(metricName : string) {
+function OnMetricEntryPress(metricName: string) {
   //alert(metricName)
-  router.push({pathname: "/(main)/developer/aboutMetric", params: { metricName: metricName }})
+  router.push({ pathname: "/(main)/developer/aboutMetric", params: { metricName: metricName } })
 }
 
 const styles = StyleSheet.create({

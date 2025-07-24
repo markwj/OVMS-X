@@ -182,7 +182,7 @@ export function GetUnitAbbr(name) {
 
   const measures = numericalUnitConvertor().list()
   for (const m of measures) {
-    if ([m.abbr.toUpperCase(), m.singular.toUpperCase(), m.plural.toUpperCase()].includes(name.toUpperCase())) {
+    if ([m.abbr, m.singular, m.plural].includes(name)) {
       return m.abbr
     }
   }

@@ -17,42 +17,9 @@ export default function NewPlatform() {
   return (
     <>
       <ScrollView style={{ height: '100%' }}>
-        <Card mode="contained" style={{ margin: 10, padding: 10 }}
-          onPress={() => { router.push('/(main)/newplatform/ovmsv2'); }}>
-          <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Image source={require('@/assets/platforms/ovms.png')} style={{ width: 75, height: 75 }} />
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
-              <Text variant="titleLarge">{t('OVMS v2 API')}</Text>
-              <View style={{ height: 10 }} />
-              <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t('Using the OVMS v2 API, protected by SSL/TLS encryption, and authenticated by username and password.')}</Text>
-            </View>
-          </Card.Content>
-        </Card>
-        <View style={{ height: 10 }} />
-        <Card mode="contained" style={{ margin: 10, padding: 10 }}
-          onPress={() => { router.push('/(main)/newplatform/ovmsv2demo'); }}>
-          <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Image source={require('@/assets/platforms/ovms.png')} style={{ width: 75, height: 75 }} />
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
-              <Text variant="titleLarge">{t('OVMS v2 DEMO')}</Text>
-              <View style={{ height: 10 }} />
-              <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t('The OVMS v2 Demonstration Vehicle. This is a simple demonstration of the OVMS system using randomised sample data.')}</Text>
-            </View>
-          </Card.Content>
-        </Card>
-        <View style={{ height: 10 }} />
-        <Card mode="contained" style={{ margin: 10, padding: 10 }}
-          onPress={() => { router.push('/(main)/newplatform/tesla'); }}>
-          <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Image source={require('@/assets/platforms/tesla.png')} style={{ width: 75, height: 75 }} />
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
-              <Text variant="titleLarge">{t('Tesla Fleet API')}</Text>
-              <View style={{ height: 10 }} />
-              <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t('Using the Tesla fleet API, protected by SSL/TLS encryption, and authenticated by Tesla account credentials.')}</Text>
-            </View>
-          </Card.Content>
-        </Card>
-        <View style={{ height: 10 }} />
+        <PlatformCard imageSource={require('@/assets/platforms/ovms.png')} title={t('OVMS v2 API')} body={t('Using the OVMS v2 API, protected by SSL/TLS encryption, and authenticated by username and password.')} pageSource={'/(main)/newplatform/ovmsv2'}></PlatformCard>
+        <PlatformCard imageSource={require('@/assets/platforms/ovms.png')} title={t('OVMS v2 DEMO')} body={t('The OVMS v2 Demonstration Vehicle. This is a simple demonstration of the OVMS system using randomised sample data.')} pageSource={'/(main)/newplatform/ovmsv2demo'}></PlatformCard>
+        <PlatformCard imageSource={require('@/assets/platforms/tesla.png')} title={t('Tesla Fleet API')} body={t('Using the Tesla fleet API, protected by SSL/TLS encryption, and authenticated by Tesla account credentials.')} pageSource={'/(main)/newplatform/tesla'}></PlatformCard>
       </ScrollView>
       <Stack.Screen
         options={{
@@ -61,6 +28,24 @@ export default function NewPlatform() {
       />
     </>
   );
+}
+
+function PlatformCard({ imageSource, title, body, pageSource }: { imageSource: any, title: string, body: string, pageSource : any }) {
+  const {t} = useTranslation()
+
+  return (
+    <Card mode="contained" style={{ margin: 10, padding: 10, marginTop: 10 }}
+      onPress={() => { router.replace(pageSource); }}>
+      <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <Image source={imageSource} style={{ width: 75, height: 75 }} />
+        <View style={{ flex: 1, justifyContent: 'center', padding: 10 }}>
+          <Text variant="titleLarge">{t(title)}</Text>
+          <View style={{ height: 10 }} />
+          <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t(body)}</Text>
+        </View>
+      </Card.Content>
+    </Card>
+  )
 }
 
 const styles = StyleSheet.create({

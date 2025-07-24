@@ -5,12 +5,14 @@ import { Stack, usePathname, useRouter } from "expo-router";
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from "react-redux";
-import { generateGetMetricValueSelector } from "@/store/metricsSlice";
+import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
-import { VehicleSideImage } from "@/components/ui/VehicleImages";
+import { GetVehicleName, VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
 import { ConnectionText } from "@/components/ui/ConnectionDisplay";
+import { store } from "@/store/root";
+import { MetricValue } from "@/components/ui/MetricValue";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 
@@ -19,14 +21,8 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
-  const vBatRangeEst = useSelector(vBatRangeEstSelector)
-  const vBatSocSelector = generateGetMetricValueSelector("v.b.soc")
-  const vBatSoc = useSelector(vBatSocSelector)
-  const vPosOdometerSelector = generateGetMetricValueSelector("v.p.odometer")
-  const vPosOdometer = useSelector(vPosOdometerSelector)
-  const vEAwakeSelector = generateGetMetricValueSelector("v.e.awake12")
-  const vEAwake = useSelector(vEAwakeSelector)
+  const vBatSoc = useSelector(selectMetricValue("v.b.soc"))
+  const vType = useSelector(selectMetricValue("v.type"))
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const vehicleCount = useSelector(getVehicleCount)
@@ -43,13 +39,13 @@ export default function HomeScreen() {
   const routepath = usePathname();
 
   if ((selectedVehicle == null) || (vehicleCount == 0)) {
-  console.log("[HomeScreen] No vehicle selected, currently at", routepath);
-  if (routepath.substring(0, 12) !== '/newplatform') {
+    console.log("[HomeScreen] No vehicle selected, currently at", routepath);
+    if (routepath.substring(0, 12) !== '/newplatform') {
       setTimeout(() => {
         router.push('/(main)/newplatform');
       }, 0);
     }
-  return null;
+    return null;
   }
 
   return (
@@ -62,7 +58,7 @@ export default function HomeScreen() {
             <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
               <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
                 <BatteryIcon />
-                <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}km</Text>
+                <MetricValue style={{ marginStart: 10 }} metricKey={"v.b.range.est"} />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
@@ -98,7 +94,12 @@ export default function HomeScreen() {
               {/* Battery and range */}
               <View style={{ alignItems: 'center', marginTop: 10 }}>
                 <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
-                <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}km</Text>
+                <View style={{ width: 300, flexDirection: 'row', justifyContent: 'center', marginTop: 5 }}>
+                  <Text>SOC: </Text>
+                  <MetricValue metricKey={"v.b.soc"} />
+                  <Text>  Range: </Text>
+                  <MetricValue metricKey={"v.b.range.est"} />
+                </View>
               </View>
 
               {/* Control main buttons */}
@@ -114,8 +115,8 @@ export default function HomeScreen() {
 
               {/* Vehicle info */}
               <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
-                <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
-                <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}km</Text>
+                <Text variant='labelMedium'>{t(GetVehicleName(vType) ?? "Vehicle")}</Text>
+                <MetricValue variant='labelMedium' metricKey={"v.p.odometer"}/>
                 <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
               </View>
             </View>

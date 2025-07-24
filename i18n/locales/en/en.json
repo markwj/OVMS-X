@@ -56,5 +56,8 @@
   "OVMS v2 API (Other)": "OVMS v2 API (Other)",
   "Delete all vehicles": "Delete all vehicles",
   "Delete all messages": "Delete all messages",
-  "Edit": "Edit"
+  "Edit": "Edit",
+  "mi":"mi",
+  "km":"km",
+  "Search":"Search"
 }

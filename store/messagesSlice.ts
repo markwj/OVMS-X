@@ -75,7 +75,7 @@ export const messagesSlice = createSlice({
 export const selectMessages = (state : RootState) => state.messages.messages; 
 //Add selector where messages have vehicle key specified or null
 
-export function generateSelectVehicleMessages(vehicleKey : string) {
+export function selectVehicleMessages(vehicleKey : string) {
   //@ts-ignore
   return createSelector(selectMessages, (messages) => messages.filter((m) => ["*", "APP_"+vehicleKey, "APP_*", null, vehicleKey].includes(m.user._id)))
 }
