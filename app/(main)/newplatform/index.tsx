@@ -17,9 +17,8 @@ export default function NewPlatform() {
   return (
     <>
       <ScrollView style={{ height: '100%' }}>
-        <View style={{ height: 10 }} />
         <Card mode="contained" style={{ margin: 10, padding: 10 }}
-          onPress={() => { router.replace('/(main)/newplatform/ovmsv2'); }}>
+          onPress={() => { router.push('/(main)/newplatform/ovmsv2'); }}>
           <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <Image source={require('@/assets/platforms/ovms.png')} style={{ width: 75, height: 75 }} />
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
@@ -31,7 +30,19 @@ export default function NewPlatform() {
         </Card>
         <View style={{ height: 10 }} />
         <Card mode="contained" style={{ margin: 10, padding: 10 }}
-          onPress={() => { router.replace('/(main)/newplatform/tesla'); }}>
+          onPress={() => { router.push('/(main)/newplatform/ovmsv2demo'); }}>
+          <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Image source={require('@/assets/platforms/ovms.png')} style={{ width: 75, height: 75 }} />
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+              <Text variant="titleLarge">{t('OVMS v2 DEMO')}</Text>
+              <View style={{ height: 10 }} />
+              <Text variant="bodySmall" style={{ alignSelf: 'flex-start' }}>{t('The OVMS v2 Demonstration Vehicle. This is a simple demonstration of the OVMS system using randomised sample data.')}</Text>
+            </View>
+          </Card.Content>
+        </Card>
+        <View style={{ height: 10 }} />
+        <Card mode="contained" style={{ margin: 10, padding: 10 }}
+          onPress={() => { router.push('/(main)/newplatform/tesla'); }}>
           <Card.Content style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <Image source={require('@/assets/platforms/tesla.png')} style={{ width: 75, height: 75 }} />
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 10 }}>

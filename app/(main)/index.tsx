@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useEffect } from "react";
 import { View, ScrollView, RefreshControl, SafeAreaView } from "react-native";
 import { useTheme, Text, Icon, ProgressBar } from 'react-native-paper';
-import { Stack } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from "react-redux";
@@ -12,10 +12,12 @@ import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { getLastUpdateTime } from "@/store/connectionSlice";
 import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { getVehicleCount } from "@/store/vehiclesSlice";
 
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
 
   const vBatRangeEstSelector = generateGetMetricValueSelector("v.b.range.est")
   const vBatRangeEst = useSelector(vBatRangeEstSelector)
@@ -27,6 +29,7 @@ export default function HomeScreen() {
   const vEAwake = useSelector(vEAwakeSelector)
 
   const selectedVehicle = useSelector(getSelectedVehicle)
+  const vehicleCount = useSelector(getVehicleCount)
   const lastUpdated = useSelector(getLastUpdateTime)
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -37,78 +40,92 @@ export default function HomeScreen() {
     setRefreshing(false);
   }, []);
 
+  const routepath = usePathname();
+
+  if ((selectedVehicle == null) || (vehicleCount == 0)) {
+  console.log('--------------------------------');
+  console.log("No vehicle selected, currently at", routepath);
+  console.log('--------------------------------');
+  if (routepath.substring(0, 12) !== '/newplatform') {
+      setTimeout(() => {
+        router.push('/(main)/newplatform');
+      }, 0);
+    }
+  return null;
+  }
+
   return (
     <>
-    <SafeAreaProvider>
-      <SafeAreaView>
+      <SafeAreaProvider>
+        <SafeAreaView>
 
-      {/* Top status (battery, range, connection status) */}
-      <View style={{ flex: 1, zIndex: 1, flexDirection: 'row', width: '100%', position: 'absolute', left: 0, top: 20 }}>
-        <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
-          <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
-            <BatteryIcon />
-            <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}km</Text>
-          </View>
-        </View>
-        <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
-          <ConnectionText />
-        </View>
-      </View>
-
-      {/* Main content (vehicle image, controls, etc.) */}
-      <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-
-        {/* Vehicle image */}
-        <View style={{ flexShrink: 1, justifyContent: 'space-between', alignItems: 'center' }}>
-          <View style={{ flex: 1, width: '80%' }}>
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', marginTop: 50, marginBottom: 10 }}>
-              {selectedVehicle != null && <VehicleSideImage image={selectedVehicle.image} />}
+          {/* Top status (battery, range, connection status) */}
+          <View style={{ flex: 1, zIndex: 1, flexDirection: 'row', width: '100%', position: 'absolute', left: 0, top: 20 }}>
+            <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
+              <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
+                <BatteryIcon />
+                <Text style={{ marginStart: 10 }}>{vBatRangeEst ?? "N/A "}km</Text>
+              </View>
+            </View>
+            <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
+              <ConnectionText />
             </View>
           </View>
-        </View>
 
-        {/* Controls */}
-        <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'stretch', marginTop: 10, marginBottom: 10 }}>
+          {/* Main content (vehicle image, controls, etc.) */}
+          <ScrollView
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
 
-          {/* Control little buttons */}
-          <View style={{ alignItems: 'center', gap: 20, justifyContent: 'center', flexDirection: 'row' }}>
-            <ControlIcon type={controlType.Lock} />
-            <ControlIcon type={controlType.Charging} />
-            <ControlIcon type={controlType.Controls} />
-            <ControlIcon type={controlType.Climate} />
-            <ControlIcon type={controlType.Messages} />
-          </View>
+            {/* Vehicle image */}
+            <View style={{ flexShrink: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flex: 1, width: '80%' }}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start', marginTop: 50, marginBottom: 10 }}>
+                  {selectedVehicle != null && <VehicleSideImage image={selectedVehicle.image} />}
+                </View>
+              </View>
+            </View>
 
-          {/* Battery and range */}
-          <View style={{ alignItems: 'center', marginTop: 10 }}>
-            <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
-            <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}km</Text>
-          </View>
+            {/* Controls */}
+            <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'stretch', marginTop: 10, marginBottom: 10 }}>
 
-          {/* Control main buttons */}
-          <View style={{ alignItems: 'center', marginTop: 20 }}>
-            <ControlButton type={controlType.Controls} />
-            <ControlButton type={controlType.Climate} />
-            <ControlButton type={controlType.Charging} />
-            <ControlButton type={controlType.Location} />
-            <ControlButton type={controlType.Messages} />
-            <ControlButton type={controlType.Settings} />
-            <ControlButton type={controlType.Developer} />
-          </View>
+              {/* Control little buttons */}
+              <View style={{ alignItems: 'center', gap: 20, justifyContent: 'center', flexDirection: 'row' }}>
+                <ControlIcon type={controlType.Lock} />
+                <ControlIcon type={controlType.Charging} />
+                <ControlIcon type={controlType.Controls} />
+                <ControlIcon type={controlType.Climate} />
+                <ControlIcon type={controlType.Messages} />
+              </View>
 
-          {/* Vehicle info */}
-          <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
-            <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
-            <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}km</Text>
-            <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
-          </View>
-        </View>
+              {/* Battery and range */}
+              <View style={{ alignItems: 'center', marginTop: 10 }}>
+                <ProgressBar progress={(vBatSoc ?? 0) / 100} color='#00ff00' visible={true} style={{ height: 10, width: 300 }} />
+                <Text style={{ marginTop: 5 }}>{t('SOC')}: {vBatSoc ?? "N/A "}%  {t('Range')}: {vBatRangeEst ?? "N/A "}km</Text>
+              </View>
 
-      </ScrollView>
+              {/* Control main buttons */}
+              <View style={{ alignItems: 'center', marginTop: 20 }}>
+                <ControlButton type={controlType.Controls} />
+                <ControlButton type={controlType.Climate} />
+                <ControlButton type={controlType.Charging} />
+                <ControlButton type={controlType.Location} />
+                <ControlButton type={controlType.Messages} />
+                <ControlButton type={controlType.Settings} />
+                <ControlButton type={controlType.Developer} />
+              </View>
 
-      </SafeAreaView>
-    </SafeAreaProvider>
+              {/* Vehicle info */}
+              <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
+                <Text variant='labelMedium'>Tesla Roadster 2.0 Sport</Text>
+                <Text variant='labelMedium'>{vPosOdometer ?? "N/A "}km</Text>
+                <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
+              </View>
+            </View>
+
+          </ScrollView>
+
+        </SafeAreaView>
+      </SafeAreaProvider>
 
       <Stack.Screen
         options={{

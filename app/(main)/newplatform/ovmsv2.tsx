@@ -10,6 +10,8 @@ import { useDispatch } from "react-redux";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { useLazyGetVehiclesQuery } from "@/store/ovmsv2httpApi";
 import { VehicleTypes } from "@/components/ui/VehicleImages";
+import { metricsSlice } from "@/store/metricsSlice";
+import { selectionSlice } from "@/store/selectionSlice";
 
 interface FormData {
   server: string;
@@ -91,11 +93,13 @@ export default function NewPlatformOVMSv2() {
       
       console.log('getVehicles result', result);
       // Handle the response - add vehicles to the store
+      var firstVehicle = true;
       if (result && Array.isArray(result)) {
         result.forEach((vehicle: any) => {
           // Transform the API response to match the Vehicle interface
+          const newKey = `ovmsv2api:${data.serverurl}:${data.httpsport}:${data.wssport}:${data.username}:${vehicle.id}`;
           const newVehicle = {
-            key: `ovmsv2api:${data.serverurl}:${data.httpsport}:${data.wssport}:${data.username}:${vehicle.id}`,
+            key: newKey,
             name: vehicle.id,
             vin: '',
             platform: 'ovmsv2api',
@@ -116,12 +120,18 @@ export default function NewPlatformOVMSv2() {
           };
           
           dispatch(vehiclesSlice.actions.addVehicle(newVehicle));
+          if (firstVehicle) {
+            console.log("[NewPlatformOVMSv2] selecting vehicle", newKey);
+            dispatch(metricsSlice.actions.clearAll());
+            dispatch(selectionSlice.actions.selectVehicle(newKey));
+            firstVehicle = false;
+          }
         });
       }
       
       // Navigate back to main screen after successful addition
       setTimeout(() => {
-        router.back();
+        router.replace({ pathname: '/' });
       }, 1500);
       
     } catch (error) {

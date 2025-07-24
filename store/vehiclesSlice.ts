@@ -102,6 +102,7 @@ export function generateFindVehicleSelector(key: string) {
 }
 
 export const getVehicles = (state: RootState) => state.vehicles.vehicles
+export const getVehicleCount = (state: RootState) => state.vehicles.vehicles.length
 
 export const { addVehicle, removeVehicle, updateVehicleName, updateVehicleVIN, wipeVehicles, updateVehicleImage } = vehiclesSlice.actions
 export default vehiclesSlice.reducer
