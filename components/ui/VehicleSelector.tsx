@@ -50,12 +50,16 @@ function VehicleList({ navigation }: { navigation?: any }) {
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 30 }}>
                   <Text style={{ alignSelf: "center" }}>{vehicle.name}</Text>
                   <View style={{ alignSelf: "center" }}>
-                    <IconButton icon='pencil' size={20} onPress={() => { 
+                    {selectedVehicle?.key == vehicle.key && (
+                    <IconButton
+                    icon='pencil'
+                    size={20} onPress={() => { 
                       router.back();
                       setTimeout(() => {
                         router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key } }) 
                       }, 100);
                     }} />
+                    )}
                   </View>
                 </View>
               </Card.Content>
