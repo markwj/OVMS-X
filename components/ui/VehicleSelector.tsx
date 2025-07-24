@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, RefObject } from "react";
 import { Image, View, Pressable, ScrollView, StyleSheet } from "react-native";
 import { router, useRouter } from "expo-router";
 import { Text, Card, Button, IconButton } from "react-native-paper";
@@ -9,16 +9,25 @@ import {getVehicles, Vehicle, vehiclesSlice} from "@/store/vehiclesSlice"
 import { useTranslation } from "react-i18next";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+interface VehicleSelectorProps {
+  navigation?: any;
+}
 
-function VehicleList() {
+function VehicleList({ navigation }: { navigation?: any }) {
   const router = useRouter();
   const vehicleList = useSelector(getVehicles);
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
 
+  console.log("[VehicleList] navigation", navigation);
   const onVehiclePress = (key: string) => {
     dispatch(metricsSlice.actions.clearAll());
-    dispatch(selectionSlice.actions.selectVehicle(key))
+    dispatch(selectionSlice.actions.selectVehicle(key));
+    console.log("closing drawer with navigation", navigation);
+    if (navigation) {
+      navigation.closeDrawer();
+    }
   }
 
   if (typeof vehicleList === 'undefined') {
@@ -58,9 +67,11 @@ function VehicleList() {
   }
 }
 
-export function VehicleSelector() {
+export function VehicleSelector({ navigation }: VehicleSelectorProps) {
   const router = useRouter();
   const { t } = useTranslation();
+
+  console.log("[VehicleSelector] navigation", navigation);
 
   const handleAddNewPlatform = () => {
     // Close the drawer first by going back
@@ -72,9 +83,10 @@ export function VehicleSelector() {
   };
 
   return (
+    <SafeAreaProvider>
     <SafeAreaView style={{ height: '100%' }}>
       <ScrollView>
-        <VehicleList />
+        <VehicleList navigation={navigation} />
         <Pressable onPress={handleAddNewPlatform}>
           <Card style={styles.container}>
             <Card.Content>
@@ -84,6 +96,7 @@ export function VehicleSelector() {
         </Pressable>
       </ScrollView>
     </SafeAreaView >
+    </SafeAreaProvider>
   );
 }
 

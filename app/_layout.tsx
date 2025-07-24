@@ -6,7 +6,7 @@ import {
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
@@ -192,7 +192,7 @@ const MainLayout = () => {
           headerRight: () => <ConnectionIcon />
         }}
         drawerContent={(props) => {
-          return <VehicleSelector />
+          return <VehicleSelector navigation={props.navigation} />
         }}>
       </Drawer>
     </>
