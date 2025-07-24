@@ -6,7 +6,7 @@ import {
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
@@ -26,10 +26,16 @@ import { selectHasStandardMetrics, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
 import { isRunningInExpoGo } from 'expo';
+// Conditionally import notifications to avoid warnings in Expo Go
+let Notifications: any = null;
+if (!isRunningInExpoGo()) {
+  Notifications = require('expo-notifications');
+}
 import * as Updates from 'expo-updates';
 import * as Network from 'expo-network';
+import { setToken, setUniqueID } from '@/store/notificationSlice';
+import * as Application from 'expo-application';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -57,21 +63,28 @@ Sentry.init({
   enableNativeFramesTracking: !isRunningInExpoGo(),
 });
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+if (Notifications) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 function handleRegistrationError(errorMessage: string) {
   alert(errorMessage);
   throw new Error(errorMessage);
 }
 
-async function registerForPushNotificationsAsync() {
+async function registerForPushNotificationsAsync(dispatch: any) {
+  if (!Notifications) {
+    console.log('[registerForPushNotificationsAsync] Notifications not available');
+    return;
+  }
+
   if (Platform.OS === "web") {
     console.log('[registerForPushNotificationsAsync] Web platform, no push notifications');
     return;
@@ -109,6 +122,7 @@ async function registerForPushNotificationsAsync() {
         })
       ).data;
       console.log('[registerForPushNotificationsAsync] pushTokenString', pushTokenString);
+      dispatch(setToken(pushTokenString));
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
@@ -124,10 +138,45 @@ const MainLayout = () => {
   const selectedVehicle = useSelector(getSelectedVehicle);
   const hasStandardMetrics = useSelector(selectHasStandardMetrics);
   const dispatch = useDispatch();
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState<any | undefined>(
+    undefined
+  );
+  
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      Application.getIosIdForVendorAsync().then((id) => 
+        dispatch(setUniqueID(id || 'unknown')));
+    } else if (Platform.OS === 'android') {
+      dispatch(setUniqueID(Application.getAndroidId() || 'unknown'));
+    }
+  }, []);
 
   if (!hasStandardMetrics) {
     dispatch(metricsSlice.actions.resetToStandardMetrics());
   }
+
+  useEffect(() => {
+    if (Notifications) {
+      registerForPushNotificationsAsync(dispatch)
+        .then(token => setExpoPushToken(token ?? ''))
+        .catch((error: any) => setExpoPushToken(`${error}`));
+
+      const notificationListener = Notifications.addNotificationReceivedListener((notification: any) => {
+        console.log('[notificationListener] notification', notification);
+        setNotification(notification);
+      });
+
+      const responseListener = Notifications.addNotificationResponseReceivedListener((response: any) => {
+        console.log(response);
+      });
+
+      return () => {
+        notificationListener.remove();
+        responseListener.remove();
+      };
+    }
+  }, [dispatch]);
 
   return (
     <>
@@ -143,7 +192,7 @@ const MainLayout = () => {
           headerRight: () => <ConnectionIcon />
         }}
         drawerContent={(props) => {
-          return <VehicleSelector />
+          return <VehicleSelector navigation={props.navigation} />
         }}>
       </Drawer>
     </>
@@ -154,7 +203,7 @@ export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+  const [notification, setNotification] = useState<any | undefined>(
     undefined
   );
 
@@ -176,26 +225,6 @@ export default Sentry.wrap(function RootLayout() {
 
     return () => {
       if (unsubscribe) unsubscribe.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    registerForPushNotificationsAsync()
-      .then(token => setExpoPushToken(token ?? ''))
-      .catch((error: any) => setExpoPushToken(`${error}`));
-
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      console.log('[notificationListener] notification', notification);
-      setNotification(notification);
-    });
-
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
-
-    return () => {
-      notificationListener.remove();
-      responseListener.remove();
     };
   }, []);
 

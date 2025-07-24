@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import MapView, { AnimatedRegion, Marker } from "react-native-maps";
+import MapView, { AnimatedRegion, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { CarMarker } from "./CarMarker";
 import { useSelector } from "react-redux";
 import { selectMetricValue } from "@/store/metricsSlice";
@@ -40,7 +40,8 @@ export function Map() {
       onRegionChangeComplete={setRegion}
       rotateEnabled={false}
       showsTraffic={false}
-      style={{ flex: 1 }}>
+      style={{ flex: 1 }}
+      provider={PROVIDER_GOOGLE}>
       <CarMarker />
     </MapView>
   );

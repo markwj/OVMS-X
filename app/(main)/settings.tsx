@@ -18,6 +18,8 @@ import { os } from "@/utils/platform";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as Updates from 'expo-updates';
 import * as Application from 'expo-application';
+import { notificationsEnabled, notificationsToken } from "@/store/notificationSlice";
+
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
@@ -48,6 +50,8 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const dispatch = useDispatch()
   const { isChecking, currentlyRunning } = Updates.useUpdates();
+  const notificationEnabled = useSelector(notificationsEnabled);
+  const notificationToken = useSelector(notificationsToken);
 
   const theme = useTheme()
 
@@ -67,8 +71,11 @@ export default function SettingsScreen() {
     (!__DEV__ &&
       !(Constants.executionEnvironment == ExecutionEnvironment.StoreClient) &&
       Platform.OS !== 'web' &&
-      typeof currentlyRunning !== 'undefined')
-      ? currentlyRunning?.createdAt + "\n" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion
+      typeof currentlyRunning !== 'undefined' &&
+      typeof currentlyRunning?.createdAt !== 'undefined' &&
+      typeof currentlyRunning?.channel !== 'undefined' &&
+      typeof currentlyRunning?.runtimeVersion !== 'undefined')
+      ? currentlyRunning?.createdAt + "(" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion + ')'
       : undefined;
 
   return (
@@ -81,18 +88,34 @@ export default function SettingsScreen() {
       <ScrollView style={styles.scrollview}>
 
         {(os !== 'web') && (
-          <Card>
-            <Card.Title
-              title={'App: ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
-              subtitle={'Build: ' + os + ' ' + Application?.nativeBuildVersion +
-                (typeof updateVersion !== 'undefined' ? "\n" + updateVersion : "")}
-              subtitleNumberOfLines={(typeof updateVersion !== 'undefined') ? 3 : 1}
-              left={(props) => <Icon {...props} source="application-cog" />}
-            />
-          </Card>
+          <>
+            <Card>
+              <Card.Title
+                title={'App: ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
+                subtitle={'Build: ' + os + ' ' + Application?.nativeBuildVersion +
+                  (typeof updateVersion !== 'undefined' ? "\nUpdate: " + updateVersion : "")}
+                subtitleNumberOfLines={(typeof updateVersion !== 'undefined') ? 3 : 1}
+                left={(props) => <Icon {...props} source="application-cog" />}
+              />
+            </Card>
+            <View style={{ height: 10 }} />
+          </>
         )}
 
-        <View style={{ height: 10 }} />
+        {(notificationEnabled) && (
+          <>
+            <View style={{ height: 10 }} />
+            <Card>
+              <Card.Title
+                title={'Notification Token: '}
+                subtitle={notificationToken}
+                subtitleNumberOfLines={1}
+                left={(props) => <Icon {...props} source="bell" />}
+              />
+            </Card>
+            <View style={{ height: 10 }} />
+          </>
+        )}
 
         <SettingsSection title={"Metrics"}>
 

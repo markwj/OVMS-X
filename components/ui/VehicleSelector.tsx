@@ -1,24 +1,33 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, RefObject } from "react";
 import { Image, View, Pressable, ScrollView, StyleSheet } from "react-native";
 import { router, useRouter } from "expo-router";
 import { Text, Card, Button, IconButton } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedVehicle, selectionSlice,  } from "@/store/selectionSlice";
-import {getVehicles, Vehicle, vehiclesSlice} from "@/store/vehiclesSlice"
+import { getSelectedVehicle, selectionSlice, } from "@/store/selectionSlice";
+import { getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice"
 import { useTranslation } from "react-i18next";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+interface VehicleSelectorProps {
+  navigation?: any;
+}
 
-function VehicleList() {
+function VehicleList({ navigation }: { navigation?: any }) {
   const router = useRouter();
   const vehicleList = useSelector(getVehicles);
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
 
+  console.log("[VehicleList] navigation", navigation);
   const onVehiclePress = (key: string) => {
     dispatch(metricsSlice.actions.clearAll());
-    dispatch(selectionSlice.actions.selectVehicle(key))
+    dispatch(selectionSlice.actions.selectVehicle(key));
+    console.log("closing drawer with navigation", navigation);
+    if (navigation) {
+      navigation.closeDrawer();
+    }
   }
 
   if (typeof vehicleList === 'undefined') {
@@ -27,40 +36,46 @@ function VehicleList() {
     return (
       <>
         {vehicleList.map((vehicle: Vehicle, index: number) => (
-          <Pressable
+          <Card
             key={`vehicle-${vehicle.key}`}
-            onPress={() => { onVehiclePress(vehicle.key) }}>
-            <Card
-              style={styles.container}
-              mode={selectedVehicle?.key === vehicle.key ? 'outlined' : 'elevated'}
-              contentStyle={{
-                opacity: selectedVehicle?.key === vehicle.key ? 1.0 : 0.5
-              }}>
-              <Card.Content>
+            style={styles.container}
+            mode={selectedVehicle?.key === vehicle.key ? 'outlined' : 'elevated'}
+            contentStyle={{
+              opacity: selectedVehicle?.key === vehicle.key ? 1.0 : 0.5
+            }}>
+            <Card.Content>
+              <Pressable
+                onPress={() => { onVehiclePress(vehicle.key) }}>
                 <VehicleSideImage image={vehicle.image} />
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 30 }}>
-                  <Text style={{ alignSelf: "center" }}>{vehicle.name}</Text>
-                  <View style={{ alignSelf: "center" }}>
-                    <IconButton icon='pencil' size={20} onPress={() => { 
-                      router.back();
-                      setTimeout(() => {
-                        router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key } }) 
-                      }, 100);
-                    }} />
-                  </View>
+              </Pressable>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 30 }}>
+                <Text style={{ alignSelf: "center" }}>{vehicle.name}</Text>
+                <View style={{ alignSelf: "center" }}>
+                  {selectedVehicle?.key == vehicle.key && (
+                    <IconButton
+                      icon='pencil'
+                      size={20} onPress={() => {
+                        router.back();
+                        setTimeout(() => {
+                          router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key } })
+                        }, 100);
+                      }} />
+                  )}
                 </View>
-              </Card.Content>
-            </Card>
-          </Pressable>
+              </View>
+            </Card.Content>
+          </Card>
         ))}
       </>
     );
   }
 }
 
-export function VehicleSelector() {
+export function VehicleSelector({ navigation }: VehicleSelectorProps) {
   const router = useRouter();
   const { t } = useTranslation();
+
+  console.log("[VehicleSelector] navigation", navigation);
 
   const handleAddNewPlatform = () => {
     // Close the drawer first by going back
@@ -72,18 +87,20 @@ export function VehicleSelector() {
   };
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
-      <ScrollView>
-        <VehicleList />
-        <Pressable onPress={handleAddNewPlatform}>
-          <Card style={styles.container}>
-            <Card.Content>
-              <Text>{t('Add a new platform')}</Text>
-            </Card.Content>
-          </Card>
-        </Pressable>
-      </ScrollView>
-    </SafeAreaView >
+    <SafeAreaProvider>
+      <SafeAreaView style={{ height: '100%' }}>
+        <ScrollView>
+          <VehicleList navigation={navigation} />
+          <Pressable onPress={handleAddNewPlatform}>
+            <Card style={styles.container}>
+              <Card.Content>
+                <Text>{t('Add a new platform')}</Text>
+              </Card.Content>
+            </Card>
+          </Pressable>
+        </ScrollView>
+      </SafeAreaView >
+    </SafeAreaProvider>
   );
 }
 

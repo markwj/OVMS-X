@@ -18,6 +18,7 @@ import {
   REGISTER,
 } from 'redux-persist'
 import { securePersistStorage } from '@/store/persistStorage';
+import notificationReducer from '@/store/notificationSlice';
 
 const vehiclesPersistConfig = {
   key: 'ovms_vehicles',
@@ -48,6 +49,7 @@ export const store = configureStore({
     spinner: spinnerReducer,
     metrics: metricsReducer,
     connection: connectionReducer,
+    notification: notificationReducer,
     [ovmsv2wsApi.reducerPath]: ovmsv2wsApi.reducer,
     [ovmsv2httpApi.reducerPath]: ovmsv2httpApi.reducer,
     //@ts-ignore

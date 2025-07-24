@@ -4,7 +4,7 @@ import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router"
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next";
-import { selectVehicle, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
+import { getVehicles, selectVehicle, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
 import { VehicleMapImage, VehicleSideImage, VehicleTopImage, VehicleTypes } from "@/components/ui/VehicleImages";
 import ColorPicker from 'react-native-wheel-color-picker'
 import { TextInput, Text, IconButton } from "react-native-paper";
@@ -234,6 +234,12 @@ export default function EditVehicleScreen() {
                   dispatch(selectionSlice.actions.unselectVehicle())
                 }
                 dispatch(vehiclesSlice.actions.removeVehicle(vehicleKey))
+
+                const firstVehicleKey = getVehicles(store.getState())[0].key
+                if(firstVehicleKey != null) {
+                  dispatch(selectionSlice.actions.selectVehicle(firstVehicleKey))
+                }
+
                 router.back()
               },
               "Warning!",
