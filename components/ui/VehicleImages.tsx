@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ImageBackground, View, Image, StyleSheet } from "react-native"
 import { VehicleImage } from "@/store/vehiclesSlice"
 import { GetCurrentUTCTimeStamp } from "../utils/datetime"
@@ -77,21 +77,30 @@ export const GetVehicleName = (type: string) => {
   return null
 }
 
-export function VehicleSideImage({ image }: { image: VehicleImage }): React.JSX.Element {
+export function VehicleSideImage({ image }: { image: VehicleImage, continuouslyPollSource?: boolean }): React.JSX.Element {
   const ASPECT_RATIO = 654 / 302
 
   const [customVehicleImageSource, setCustomVehicleImageSource] = useState(undefinedCarImages.side)
 
   if (image == null) { return (<View></View>); }
 
-  if (image.imageName == "custom") {
-    const getCustomImageSource = async () => {
-      if ((await FileSystem.getInfoAsync(image.customPath + "/side")).exists) {
-        setCustomVehicleImageSource({ uri: image.customPath + "/side?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
-      }
+  const getCustomImageSource = async () => {
+    if ((await FileSystem.getInfoAsync(image.customPath + "/side")).exists) {
+      setCustomVehicleImageSource({ uri: image.customPath + "/side?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
+    } else {
+      setCustomVehicleImageSource(undefinedCarImages.side)
     }
+  }
 
-    getCustomImageSource()
+  useEffect(() => {
+    if (image.imageName == "custom") {
+      getCustomImageSource()
+    } 
+  }, [image])
+
+  if (image.imageName == "custom") {
+
+    console.log(customVehicleImageSource)
 
     return (<Image
       style={{
@@ -136,14 +145,21 @@ export function VehicleTopImage({ image }: { image: VehicleImage }): React.JSX.E
 
   if (image == null) { return (<View></View>); }
 
-  if (image.imageName == "custom") {
-    const getCustomImageSource = async () => {
-      if ((await FileSystem.getInfoAsync(image.customPath + "/top")).exists) {
-        setCustomVehicleImageSource({ uri: image.customPath + "/top?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
-      }
+  const getCustomImageSource = async () => {
+    if ((await FileSystem.getInfoAsync(image.customPath + "/top")).exists) {
+      setCustomVehicleImageSource({ uri: image.customPath + "/top?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
+    } else {
+      setCustomVehicleImageSource(undefinedCarImages.top)
     }
+  }
 
-    getCustomImageSource()
+  useEffect(() => {
+    if (image.imageName == "custom") {
+      getCustomImageSource()
+    } 
+  }, [image])
+
+  if (image.imageName == "custom") {
 
     return (<Image
       style={{
@@ -187,14 +203,21 @@ export function VehicleMapImage({ image }: { image: VehicleImage }): React.JSX.E
 
   if (image == null) { return (<View></View>); }
 
-  if (image.imageName == "custom") {
-    const getCustomImageSource = async () => {
-      if ((await FileSystem.getInfoAsync(image.customPath + "/map")).exists) {
-        setCustomVehicleImageSource({ uri: image.customPath + "/map?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
-      }
+  const getCustomImageSource = async () => {
+    if ((await FileSystem.getInfoAsync(image.customPath + "/map")).exists) {
+      setCustomVehicleImageSource({ uri: image.customPath + "/map?timestamp=" + encodeURI(GetCurrentUTCTimeStamp()) })
+    } else {
+      setCustomVehicleImageSource(undefinedCarImages.map)
     }
+  }
 
-    getCustomImageSource()
+  useEffect(() => {
+    if (image.imageName == "custom") {
+      getCustomImageSource()
+    } 
+  }, [image])
+
+  if (image.imageName == "custom") {
 
     return (<Image
       style={{

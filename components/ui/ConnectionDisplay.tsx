@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { Icon, Text } from "react-native-paper"
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated"
 import { useSelector } from "react-redux"
+import { numericalUnitConvertor } from "../utils/numericalUnitConverter"
 
 const GREEN = "#00ff00ff"
 const ORANGE = "#ff8000ff"
@@ -26,17 +27,17 @@ export function ConnectionDisplay(): React.JSX.Element {
 
   useEffect(() => {
     opacity.value = withRepeat(
-      withTiming(0.3, { duration: 500 }), 
-      -1, 
-      true 
+      withTiming(0.3, { duration: 500 }),
+      -1,
+      true
     );
   }, []);
 
   const connectionState = useSelector(getConnectionState)
   const carConnected = useSelector(getCarConnected)
 
-  if(connectionState == VehicleConnectionState.CONNECTED) {
-    if(carConnected) {
+  if (connectionState == VehicleConnectionState.CONNECTED) {
+    if (carConnected) {
       color = GREEN
       flashing = false
     } else {
@@ -51,14 +52,14 @@ export function ConnectionDisplay(): React.JSX.Element {
     flashing = true
   }
 
-  if(flashing) {
+  if (flashing) {
     return (
       <Animated.View style={animatedStyle}>
-        <Icon source={source} size={20} color={color}/>
+        <Icon source={source} size={20} color={color} />
       </Animated.View>
     )
   }
-  return <Icon source={source} size={20} color={color}/>
+  return <Icon source={source} size={20} color={color} />
 }
 
 export function ConnectionText() {
@@ -69,18 +70,36 @@ export function ConnectionText() {
   const connectionState = useSelector(getConnectionState)
   const carConnected = useSelector(getCarConnected)
 
-  const dataAgeSeconds = Date.now()/1000 - lastUpdated
+  const dataAgeSeconds = Date.now() / 1000 - lastUpdated
 
   let textContent;
   let textColor = "white";
 
-  if(connectionState == VehicleConnectionState.CONNECTED) {
-    if(carConnected) {
-      textContent = `${vEAwake ? t('Awake') : t('Sleeping')}, ${GetConnectionStatusText(dataAgeSeconds, t)}`
+  let displayText
+  try {
+    let displayAge = numericalUnitConvertor(dataAgeSeconds).from("s").toBest({ exclude: ['ms', 'ns', 'mu', 'year'] })!
+    displayAge.val = Math.floor(displayAge.val)
+
+    //@ts-ignore
+    if (displayAge.unit == 's') {
+      displayText = t("live")
+    } else {
+      displayText = `${displayAge.val} ${t(displayAge.val == 1 ? displayAge.singular : displayAge.plural)}`
+    }
+  } catch (error) {
+    console.log(error)
+    textColor = RED
+    displayText = error
+  }
+
+
+  if (connectionState == VehicleConnectionState.CONNECTED) {
+    if (carConnected) {
+      textContent = `${vEAwake ? t('Awake') : t('Sleeping')}, ${displayText}`
       textColor = "white"
     } else {
       textColor = ORANGE
-      textContent = t("Vehicle disconnected") + " " + GetConnectionStatusText(dataAgeSeconds, t)
+      textContent = t("Vehicle disconnected") + " " + displayText
     }
   } else if (connectionState == VehicleConnectionState.AUTHENTICATING) {
     textContent = t("Authenticating...")
@@ -90,16 +109,5 @@ export function ConnectionText() {
     textColor = RED
   }
 
-  return <Text style={{color: textColor}}>{textContent}</Text>
-}
-
-function GetConnectionStatusText(dataAgeSeconds : number, t : any) {
-  const minutes = dataAgeSeconds / 60
-  const hours = minutes / 60
-  const days = hours / 24
-
-  if(days >= 1) {return `${Math.floor(days)} ${days >= 2 ? t('days') : t('day')}`}
-  if(hours >= 1) {return `${Math.floor(hours)} ${hours >= 2 ? t('hours') : t('hour')}`}
-  if(minutes >= 1) {return `${Math.floor(minutes)} ${minutes >= 2 ? t('minutes') : t('minute')}`}
-  return "live"
+  return <Text style={{ color: textColor }}>{textContent}</Text>
 }

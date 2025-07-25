@@ -164,7 +164,7 @@ export default function EditVehicleScreen() {
                     type: "side"
                   })
                 }}>
-                <VehicleSideImage image={carImage}></VehicleSideImage>
+                <VehicleSideImage image={carImage} continuouslyPollSource={false}></VehicleSideImage>
                 <Text variant="labelMedium" style={{ alignSelf: 'center' }}>Side view</Text>
               </TouchableOpacity>
 

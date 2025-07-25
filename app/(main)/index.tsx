@@ -15,6 +15,7 @@ import { store } from "@/store/root";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { getVehicleCount } from "@/store/vehiclesSlice";
+import { ParkingTimer } from "@/components/ui/ParkingTimer";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -55,10 +56,13 @@ export default function HomeScreen() {
 
           {/* Top status (battery, range, connection status) */}
           <View style={{ flex: 1, zIndex: 1, flexDirection: 'row', width: '100%', position: 'absolute', left: 0, top: 20 }}>
-            <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10 }}>
-              <View style={{ flex: 1, flexDirection: 'row', flexGrow: 1 }}>
+            <View style={{ flex: 1, flexDirection: 'column', flexGrow: 1, alignItems: 'flex-start', marginLeft: 10, gap: 10 }}>
+              <View style={{ flexDirection: 'row', flex : 1 }}>
                 <BatteryIcon />
                 <MetricValue style={{ marginStart: 10 }} metricKey={"v.b.range.est"} />
+              </View>
+              <View style={{ flexDirection: 'row', flex: 1 }}>
+                <ParkingTimer />
               </View>
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
