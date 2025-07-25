@@ -1,24 +1,54 @@
-import React, { JSX } from "react";
+import React, { ComponentProps } from "react";
 import { useTheme, Text, IconButton, Icon } from 'react-native-paper';
-import { View, StyleSheet, StyleProp } from 'react-native';
+import { View, StyleSheet, StyleProp, Modal, Alert } from 'react-native';
 import { VehicleTopImage } from "@/components/ui/VehicleImages";
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
-import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { store } from "@/store/root";
-import { selectLocalisedMetricValue, selectMetricIsStale } from "@/store/metricsSlice";
+import { selectLocalisedMetricValue, selectMetricIsStale, selectMetricValue } from "@/store/metricsSlice";
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
-import { transform } from "@babel/core";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
+
+const auxBattery = require("@/assets/images/aux_battery.png")
 
 export default function ControlsScreen() {
   const vehicle = useSelector(getSelectedVehicle)
 
+  const carLocked = useSelector(selectMetricValue('v.e.locked'))
+  const valetMode = useSelector(selectMetricValue('v.e.valet'))
+
+  const theme = useTheme()
+
+  const getPIN = () => {
+    return new Promise((resolve, reject) => {
+      Alert.prompt(
+        'Enter PIN',
+        '',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => reject('User canceled'),
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: (text) => resolve(text),
+          },
+        ],
+        'secure-text',
+        '',
+        'numeric'
+      );
+    });
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.primaryContainer}>
+
         {vehicle != null &&
           <View style={styles.screenContainer}>
 
@@ -68,11 +98,79 @@ export default function ControlsScreen() {
             </View>
 
             {/* Lock Display */}
-            <View style={{ ...styles.absoluteCentering, left: '50%', top: '5%' }}>
-              <MetricIconDisplay
-                metricName={"v.e.locked"}
-                icon={(value) => value == "locked" ? "lock" : "lock-open"}
-                iconSize={50}
+            <View style={{ position: 'absolute', left: '50%', top: '0%', transform: [{translateX: '-50%'}] }}>
+              <MetricIcon
+                metricKey={"v.e.locked"}
+                icon={(v) => v == "locked" ? "lock" : 'lock-open'}
+                size={50}
+                onPress={async () => {
+                  const pin = await getPIN()
+                  if(pin == "User cancelled") { return }
+                  if (carLocked) {
+                    await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.UNLOCK_CAR, params: [pin]})
+                    return
+                  }
+                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.LOCK_CAR, params: [pin]})
+                }}
+              />
+            </View>
+
+            {/* Valet Display */}
+            <View style={{ position: 'absolute', left: '35%', top: '0%', transform: [{translateX: '-50%'}]}}>
+              <MetricIcon
+                metricKey={"v.e.valet"}
+                icon={'bow-tie'}
+                iconColor={(v) => v == "yes" ? "green" : 'red'}
+                size={50}
+                onPress={async () => {
+                  const pin = await getPIN()
+                  if(pin == "User cancelled") { return }
+                  if (valetMode) {
+                    await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.ACTIVATE_VALET_MODE, params: [pin]})
+                    return
+                  }
+                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.DEACTIVATE_VALET_MODE, params: [pin]})
+                }}
+              />
+            </View>
+
+            {/* 12v Battery Display */}
+            <View style={{ position: 'absolute', left: '15%', top: '2.5%', transform: [{translateX: '-50%'}]}}>
+              <Icon size={50} source={auxBattery}/>
+              <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.12v.voltage"} style={{...styles.absoluteCentering, top: '33%', left: '20%'}}></MetricValue>
+            </View>
+
+            {/* Odometer */}
+            <View style={{ ...styles.absoluteCentering, left: '50%', top: '15%' }}>
+              <MetricValue variant="labelLarge" metricKey={"v.p.odometer"} />
+            </View>
+
+            {/*Homelink buttons*/}
+            <View style={{ position: 'absolute', right: '20%', top: '0%' }}>
+              <IconButton
+                icon={'home-floor-0'}
+                size={35}
+                onPress={async () => {
+                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: [0]})
+                }}
+              />
+            </View>
+            <View style={{ position: 'absolute', right: '10%', top: '0%' }}>
+              <IconButton
+                icon={'home-floor-1'}
+                size={35}
+                onPress={async () => {
+                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: [1]})
+                }}
+              />
+            </View>
+            <View style={{ position: 'absolute', right: '0%', top: '0%' }}>
+              <IconButton
+                icon={'home-floor-2'}
+                size={35}
+                onPress={async () => {
+                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: [2]})
+                }}
               />
             </View>
 
@@ -83,21 +181,25 @@ export default function ControlsScreen() {
   );
 }
 
-function MetricIconDisplay({ metricName, icon, iconSize, style, onPress }: { metricName: string, icon: string | ((value: string, unit: string) => string), iconSize: number, style?: any, onPress?: () => void }) {
-  const { value, unit } = store.dispatch(selectLocalisedMetricValue(metricName))
-  const stale = useSelector(selectMetricIsStale(metricName, GetCurrentUTCTimeStamp()))
+type MetricIconProps = Omit<ComponentProps<typeof IconButton>, 'icon' | 'iconColor'> & { 
+  metricKey: string, 
+  icon: string | ((value: string, unit: string) => string) 
+  iconColor?: string | ((value: string, unit: string) => string) 
+}
 
-  if (value == null) { return <></> }
+function MetricIcon(props: MetricIconProps) {
+  const { value, unit } = store.dispatch(selectLocalisedMetricValue(props.metricKey))
+  const stale = useSelector(selectMetricIsStale(props.metricKey, GetCurrentUTCTimeStamp()))
 
   return (
-    <View style={{ ...style }}>
-      <IconButton
-        icon={typeof icon === 'string' ? icon : icon(value, unit)}
-        size={iconSize}
-        iconColor={stale ? 'grey' : 'white'}
-        onPress={onPress}
-      />
-    </View>
+    <IconButton
+      {...props}
+      icon={typeof props.icon == 'string' ? props.icon : props.icon(value, unit)}
+      iconColor={props.iconColor != undefined ? 
+        typeof props.iconColor == 'string' ? props.iconColor : props.iconColor(value, unit)
+        : (stale ? 'grey' : 'white')
+      }
+    ></IconButton>
   )
 }
 
@@ -106,7 +208,7 @@ const styles = StyleSheet.create({
   screenContainer: { width: '100%', height: '100%', borderWidth: 0, borderColor: 'blue' },
   vehicleImageBoundary: { position: 'absolute', left: '20%', top: '15%', width: '60%', height: '70%', borderWidth: 0, borderColor: 'blue' },
   vehicleImageContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  metricValue: { fontSize: 20, padding: 5 },
+  metricValue: { fontSize: 15, padding: 5 },
 
   absoluteCentering: { position: 'absolute', transform: [{ 'translateX': '-50%' }, { 'translateY': "-50%" }] }
 })

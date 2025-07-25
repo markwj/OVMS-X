@@ -9,7 +9,7 @@ import { DefaultConnectionIcon } from "./default"
 import { InactiveConnectionIcon } from "./inactive"
 
 // Standard Commands
-enum CommandCode {
+export enum CommandCode {
   REQUEST_FEATURE_LIST = 1,           // Params: none
   SET_FEATURE = 2,                    // Params: feature, value
   REQUEST_PARAMETER_LIST = 3,         // Params: none
@@ -39,7 +39,7 @@ enum CommandCode {
   SEND_RAW_AT_COMMAND = 49,           // Params: atcommand (the AT command to send - including the AT prefix)
 }
 
-export async function ConnectionStandardCommand(vehicle: Vehicle | null, command: any): Promise<string> {
+export async function ConnectionStandardCommand(vehicle: Vehicle | null, command: {commandCode : CommandCode, params? : any[]}): Promise<string> {
   if (vehicle == null) {
     throw new Error("Vehicle is not selected");
   }

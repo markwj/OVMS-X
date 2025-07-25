@@ -76,7 +76,7 @@ export default function EditVehicleScreen() {
       <SafeAreaView style={styles.container}>
         <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
           <View style={{ flexShrink: 1, marginRight: '5%' }}>
-            <Text style={{ color: 'white', fontSize: 15, fontWeight: 'bold' }}>Name: </Text>
+            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Name: </Text>
           </View>
           <View style={{ flexGrow: 4 }}>
             <Controller
@@ -104,7 +104,7 @@ export default function EditVehicleScreen() {
         </View>
         <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
           <View style={{ flexShrink: 1, marginRight: '5%' }}>
-            <Text style={{ color: 'white', fontSize: 15, fontWeight: 'bold' }}>Type: </Text>
+            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Type: </Text>
           </View>
           <View style={{ flexGrow: 4 }}>
             <Controller
@@ -164,7 +164,7 @@ export default function EditVehicleScreen() {
                     type: "side"
                   })
                 }}>
-                <VehicleSideImage image={carImage}></VehicleSideImage>
+                <VehicleSideImage image={carImage} continuouslyPollSource={false}></VehicleSideImage>
                 <Text variant="labelMedium" style={{ alignSelf: 'center' }}>Side view</Text>
               </TouchableOpacity>
 
