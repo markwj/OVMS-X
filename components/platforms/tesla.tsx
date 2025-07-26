@@ -3,6 +3,7 @@ import { Icon } from "react-native-paper"
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { ConnectionDisplay } from "../ui/ConnectionDisplay";
+import { Vehicle } from "@/store/vehiclesSlice";
 
 /**
  * Sends a textual command to Tesla platform
@@ -24,6 +25,12 @@ export async function sendTeslaStandardCommand(command: any): Promise<string> {
     reject(new Error("Not implemented"));
     return;
   });
+}
+
+export function handleTeslaNotificationResponse(response: any, vehicles: Vehicle[], dispatch: any) {
+}
+
+export function handleTeslaNotificationIncoming(notification: any, vehicles: Vehicle[], dispatch: any) {
 }
 
 export function TeslaConnectionIcon(): React.JSX.Element {

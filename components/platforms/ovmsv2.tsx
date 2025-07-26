@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react"
 import { Icon } from "react-native-paper"
 import { useDispatch, useSelector } from "react-redux";
-import { getSelectedVehicle } from "@/store/selectionSlice";
-import { vehiclesSlice } from "@/store/vehiclesSlice";
+import { selectionSlice, getSelectedVehicle } from "@/store/selectionSlice";
+import { getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice";
 import { metricsSlice } from "@/store/metricsSlice";
 import { VehicleConnectionState, connectionSlice, setConnectionState, setLastUpdateTime } from "@/store/connectionSlice";
 import { GetCurrentUTCTimeStamp } from "../utils/datetime";
 import { useInterval } from "@/hooks/useInterval";
-import { messagesSlice } from "@/store/messagesSlice";
+import { addVehicleMessage, messagesSlice } from "@/store/messagesSlice";
 import { ConnectionDisplay } from "../ui/ConnectionDisplay";
 import { notificationsEnabled, notificationsToken, notificationsUniqueID } from "@/store/notificationSlice";
+import { store } from "@/store/root";
 
 let connection: WebSocket | null = null;
 
@@ -79,6 +80,27 @@ export async function sendOVMSv2StandardCommand(command: any): Promise<string> {
     reject(new Error("Not implemented"));
     return;
   });
+}
+
+export function handleOVMSv2NotificationResponse(response: any, vehicles: Vehicle[], dispatch: any) {
+  const vehicleid = response.data?.vehicleid;
+  const message = response.body;
+
+  const vehicle = vehicles.find((v: Vehicle) => ((v.platform === "ovmsv2api") && (v.platformParameters.id === vehicleid)));
+  if (vehicle) {
+    dispatch(selectionSlice.actions.selectVehicle(vehicle.key));
+  }
+}
+
+export function handleOVMSv2NotificationIncoming(notification: any, vehicles: Vehicle[], dispatch: any) {
+  const vehicleid = notification.data?.vehicleid;
+  const message = notification.body;
+
+  const vehicle = vehicles.find((v: Vehicle) => ((v.platform === "ovmsv2api") && (v.platformParameters.id === vehicleid)));
+  if (vehicle) {
+    dispatch(messagesSlice.actions.addVehicleMessage({
+       text: message, vehicleKey: vehicle.key, vehicleName: vehicle.name }))
+  }
 }
 
 export function OVMSv2ConnectionIcon(): React.JSX.Element {
@@ -415,7 +437,8 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const message = event.data.substring(2)
         console.log('[connection OVMSv2] rx MESSAGE(PUSH)', type, message)
 
-        dispatch(messagesSlice.actions.addVehicleMessage({ text: message, vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }))
+        // Assume this arrives as a push notification, so don't add the message directly
+        // dispatch(messagesSlice.actions.addVehicleMessage({ text: message, vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }))
 
       } else if (event.data.startsWith('c')) {
 

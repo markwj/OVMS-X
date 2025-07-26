@@ -21,7 +21,7 @@ import { Platform, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/selectionSlice';
-import { ConnectionIcon } from '@/components/platforms/connection';
+import { ConnectionIcon, HandleNotificationIncoming, HandleNotificationResponse } from '@/components/platforms/connection';
 import { selectHasStandardMetrics, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
@@ -36,6 +36,7 @@ import * as Updates from 'expo-updates';
 import * as Network from 'expo-network';
 import { setToken, setUniqueID } from '@/store/notificationSlice';
 import * as Application from 'expo-application';
+import { getVehicles } from '@/store/vehiclesSlice';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -137,6 +138,7 @@ const MainLayout = () => {
   const isLargeScreen = dimensions.width >= 768;
   const selectedVehicle = useSelector(getSelectedVehicle);
   const hasStandardMetrics = useSelector(selectHasStandardMetrics);
+  const vehicles = useSelector(getVehicles);
   const dispatch = useDispatch();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState<any | undefined>(
@@ -163,12 +165,13 @@ const MainLayout = () => {
         .catch((error: any) => setExpoPushToken(`${error}`));
 
       const notificationListener = Notifications.addNotificationReceivedListener((notification: any) => {
-        console.log('[notificationListener] notification', notification);
-        setNotification(notification);
+        console.log('[notificationListener] notification', JSON.stringify(notification?.request?.content));
+        HandleNotificationIncoming(notification?.request?.content, vehicles, dispatch);
       });
 
       const responseListener = Notifications.addNotificationResponseReceivedListener((response: any) => {
-        console.log(response);
+        console.log(JSON.stringify(response?.notification?.request?.content));
+        HandleNotificationResponse(response?.notification?.request?.content, vehicles, dispatch);
       });
 
       return () => {
@@ -203,9 +206,6 @@ export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<any | undefined>(
-    undefined
-  );
 
   // This code is to check if the device is connected to the internet.
   const [isConnected, setIsConnected] = useState(true);

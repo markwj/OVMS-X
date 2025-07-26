@@ -3,10 +3,15 @@ import { AppState } from "react-native"
 import { useSelector } from "react-redux"
 import { getSelectedVehicle } from "@/store/selectionSlice"
 import { Vehicle } from "@/store/vehiclesSlice"
-import { OVMSv2ConnectionIcon, sendOVMSv2TextCommand, sendOVMSv2StandardCommand } from "./ovmsv2"
-import { TeslaConnectionIcon, sendTeslaTextCommand, sendTeslaStandardCommand } from "./tesla"
+import { OVMSv2ConnectionIcon,
+  sendOVMSv2TextCommand, sendOVMSv2StandardCommand,
+  handleOVMSv2NotificationResponse, handleOVMSv2NotificationIncoming } from "./ovmsv2"
+import { TeslaConnectionIcon,
+  sendTeslaTextCommand, sendTeslaStandardCommand,
+  handleTeslaNotificationResponse, handleTeslaNotificationIncoming } from "./tesla"
 import { DefaultConnectionIcon } from "./default"
 import { InactiveConnectionIcon } from "./inactive"
+import { handleUrlParams } from "expo-router/build/fork/getStateFromPath-forks"
 
 // Standard Commands
 export enum CommandCode {
@@ -37,6 +42,16 @@ export enum CommandCode {
   SEND_SMS = 40,                      // Params: number (telephone number to send sms to), message (sms message to be sent)
   SEND_USSD_CODE = 41,                // Params: ussdcode (the ussd code to send)
   SEND_RAW_AT_COMMAND = 49,           // Params: atcommand (the AT command to send - including the AT prefix)
+}
+
+export function HandleNotificationResponse(response: any, vehicles: Vehicle[], dispatch: any) {
+  handleOVMSv2NotificationResponse(response, vehicles, dispatch);
+  handleTeslaNotificationResponse(response, vehicles, dispatch);
+}
+
+export function HandleNotificationIncoming(notification: any, vehicles: Vehicle[], dispatch: any) {
+  handleOVMSv2NotificationIncoming(notification, vehicles, dispatch);
+  handleTeslaNotificationIncoming(notification, vehicles, dispatch);
 }
 
 export async function ConnectionStandardCommand(vehicle: Vehicle | null, command: {commandCode : CommandCode, params? : any[]}): Promise<string> {
