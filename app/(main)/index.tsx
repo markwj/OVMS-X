@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, ScrollView, RefreshControl, SafeAreaView } from "react-native";
-import { useTheme, Text, Icon, ProgressBar } from 'react-native-paper';
+import { useTheme, Text, Icon, ProgressBar, IconButton } from 'react-native-paper';
 import { Stack, usePathname, useRouter } from "expo-router";
 import { ControlButton, ControlIcon, controlType } from "@/components/ui/ControlButtons";
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ import { MetricValue } from "@/components/ui/MetricValue";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
+import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -27,7 +28,7 @@ export default function HomeScreen() {
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const vehicleCount = useSelector(getVehicleCount)
-  const lastUpdated = useSelector(getLastUpdateTime)
+  const vEAwake = useSelector(selectMetricValue("v.e.awake12"))
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -67,6 +68,11 @@ export default function HomeScreen() {
             </View>
             <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 10 }}>
               <ConnectionText />
+              {!vEAwake &&
+                <IconButton size={20} icon={"sleep"} onPress={() => {
+                  ConnectionStandardCommand(selectedVehicle, {commandCode: CommandCode.WAKEUP_CAR})
+                }}></IconButton>
+              }
             </View>
           </View>
 

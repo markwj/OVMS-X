@@ -25,15 +25,17 @@ export function Map() {
     return (<></>);
   }
 
-  if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
-    //@ts-ignore
-    mapRef.current?.animateToRegion({
-      latitude: vPLatitude,
-      longitude: vPLongitude,
-      latitudeDelta: region.latitudeDelta,
-      longitudeDelta: region.longitudeDelta
-    }, 500)
-  }
+  useEffect(() => {
+    if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
+      //@ts-ignore
+      mapRef.current?.animateToRegion({
+        latitude: vPLatitude,
+        longitude: vPLongitude,
+        latitudeDelta: region.latitudeDelta,
+        longitudeDelta: region.longitudeDelta
+      }, 500)
+    }
+  }, [vPLatitude, vPLongitude, region])
 
   return (
     <View style={{ flexGrow: 1 }}>
@@ -41,11 +43,7 @@ export function Map() {
         ref={mapRef}
         region={region}
         initialRegion={INITIAL_REGION}
-        onRegionChangeComplete={(r, v) => {
-          if (v.isGesture) {
-            setRegion(r)
-          }
-        }}
+        onRegionChangeComplete={(r) => setRegion(r)}
         style={{ flex: 1 }}
         rotateEnabled={false}
         showsTraffic={false}>

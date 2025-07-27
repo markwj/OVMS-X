@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from 'react-native';
+//@ts-ignore
 import { Map } from "@/components/ui/Map";
 
 

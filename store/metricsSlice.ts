@@ -73,14 +73,25 @@ export const metricsSlice = createSlice({
           break
         case MetricType.NUMBER:
           let v = +params.value;
-          if (isNaN(v)) { metric.value = "NaN"; break; }
 
-          if (params.unit && metric.unit && GetUnitAbbr(params.unit) != GetUnitAbbr(metric.unit)) {
-            try {
-              v = numericalUnitConvertor(v).from(GetUnitAbbr(params.unit)).to(GetUnitAbbr(metric.unit))
-              console.log(`[metricsSlice] Converted ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`)
-            } catch (error) {
-              console.error(`[metricsSlice] Error converting ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`, error)
+          if (isNaN(v) && metric.unit == "DateLocal") { //Manual override for trialing converting DateLocal string into number
+            //While this can deal with most date formats, several localised date formats cannot be parsed by this
+            //It will be necessary to develop a format identifier and parser here for those
+            v = Date.parse(params.value)
+          }
+
+          if (isNaN(v)) {
+            metric.value = "NaN"; break;
+          }
+
+          if (metric.unit) {
+            if (params.unit && GetUnitAbbr(params.unit) != GetUnitAbbr(metric.unit)) {
+              try {
+                v = numericalUnitConvertor(v).from(GetUnitAbbr(params.unit)).to(GetUnitAbbr(metric.unit))
+                console.log(`[metricsSlice] Converted ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`)
+              } catch (error) {
+                console.error(`[metricsSlice] Error converting ${params.key} from ${params.value} ${params.unit} to ${v} ${metric.unit}`, error)
+              }
             }
           }
 
@@ -126,11 +137,15 @@ export const selectMetricValue = (key: string, unit?: string) => {
           return metric.falseStatement ?? "no"
         }
       case MetricType.NUMBER:
-        if (unit && metric?.unit && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
-          try {
-            v = numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
-          } catch (error) {
-            console.error(error)
+        if (metric?.unit) {
+          if (unit && GetUnitAbbr(unit) != GetUnitAbbr(metric.unit)) {
+            try {
+              v = numericalUnitConvertor(metric.value).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(unit))
+            } catch (error) {
+              console.error(error)
+            }
+          } else if (metric?.unit == "DateLocal") { //Required manual override for number -> string conversion
+            v = new Date(metric.value).toLocaleString()
           }
         }
         if (metric.precision != null && +v) {

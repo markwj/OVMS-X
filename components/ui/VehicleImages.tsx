@@ -100,8 +100,6 @@ export function VehicleSideImage({ image }: { image: VehicleImage, continuouslyP
 
   if (image.imageName == "custom") {
 
-    console.log(customVehicleImageSource)
-
     return (<Image
       style={{
         aspectRatio: ASPECT_RATIO,

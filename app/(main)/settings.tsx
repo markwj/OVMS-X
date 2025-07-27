@@ -1,6 +1,7 @@
-import React from "react";
-import { useTheme, Text, Button, SegmentedButtons, Card, Icon } from 'react-native-paper';
-import { KeyboardAvoidingView, ScrollView, Platform, StyleSheet, View } from 'react-native';
+import React, { useRef, useState } from "react";
+import { useTheme, Text, Button, SegmentedButtons, Card, Icon, List, DataTable, IconButton, Portal, Modal } from 'react-native-paper';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity, TextInput } from 'react-native';
+import { ScrollView } from "react-native-gesture-handler"
 import { useSelector, useDispatch } from "react-redux";
 import {
   getTemperaturePreference, getDistancePreference, getPressurePreference,
@@ -10,15 +11,13 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useTranslation } from "react-i18next";
-import { GetUnitAbbr, numericalUnitConvertor } from "@/components/utils/numericalUnitConverter";
-import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
-import { messagesSlice } from "@/store/messagesSlice";
-import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { os } from "@/utils/platform";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as Updates from 'expo-updates';
 import * as Application from 'expo-application';
 import { notificationsEnabled, notificationsToken } from "@/store/notificationSlice";
+import StoredCommandsTable from "@/components/ui/StoredCommandsTable";
+import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedCommandsSlice";
 
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
@@ -54,6 +53,9 @@ export default function SettingsScreen() {
   const notificationToken = useSelector(notificationsToken);
 
   const theme = useTheme()
+  const [mainScrollEnabled, setMainScrollEnabled] = useState(true)
+  const storedCommands = useSelector(getCommands)
+  const [editCommandModalParams, setEditCommandModalParams] = useState<{ index: number, command: StoredCommand } | null>(null)
 
   const temperaturePreference = useSelector(getTemperaturePreference)
   const distancePreference = useSelector(getDistancePreference)
@@ -78,6 +80,11 @@ export default function SettingsScreen() {
       ? currentlyRunning?.createdAt + "(" + currentlyRunning?.channel + ' / ' + currentlyRunning?.runtimeVersion + ')'
       : undefined;
 
+  const openEditCommandModal = async (index: number, command: StoredCommand) => {
+    setEditCommandModalParams({ index: index, command: command })
+
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -85,7 +92,52 @@ export default function SettingsScreen() {
       enabled={true}
       style={styles.container}>
 
-      <ScrollView style={styles.scrollview}>
+      {/* Editing custom command display */}
+      <Portal>
+        <Modal 
+        visible={editCommandModalParams != null} 
+        contentContainerStyle={{ backgroundColor: theme.colors.backdrop, padding: 20, borderColor: 'grey', borderWidth: 5, gap: 10 }} 
+        onDismiss={() => setEditCommandModalParams(null)}
+        
+        >
+          <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <Text variant="titleMedium">{t("Edit custom command")}</Text>
+          </View>
+          <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Text variant="labelLarge">{t("Name: ")}</Text>
+            <TextInput
+              value={editCommandModalParams?.command.name}
+              onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, name: t } })}
+              style={{ color: 'white', flexDirection: 'row', backgroundColor: 'dimgrey', padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
+              placeholder="Name"
+            />
+          </View>
+          <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
+            <Text variant="labelLarge">{t("Command: ")}</Text>
+            <TextInput
+              value={editCommandModalParams?.command.command}
+              onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, command: t } })}
+              style={{ color: 'white', flexDirection: 'row', backgroundColor: 'dimgrey', padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
+              placeholder="Command"
+              autoCapitalize="none"
+            />
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
+            <View style={{ flex: 1 }}>
+              <Button onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>Submit</Button>
+            </View>
+            {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
+              <IconButton
+                style={{ position: 'absolute', right: '0%' }}
+                icon={"delete"}
+                onPress={() => { dispatch(storedCommandsSlice.actions.removeCommand(editCommandModalParams!.index)); setEditCommandModalParams(null) }}
+              ></IconButton>
+            }
+          </View>
+        </Modal>
+      </Portal>
+
+      <ScrollView style={styles.scrollview} nestedScrollEnabled={true} scrollEnabled={mainScrollEnabled}>
 
         {(os !== 'web') && (
           <>
@@ -170,31 +222,24 @@ export default function SettingsScreen() {
           />
         </SettingsSection>
 
-        <SettingsSection title={""}>
-          <Button textColor="red" onPress={() => ConfirmationMessage(
-            () => {dispatch(messagesSlice.actions.wipeMessages())},
-            "Warning!",
-            "Do you want to delete all your messages? This action cannot be undone.",
-            "Delete"
-          )}>DELETE MESSAGES</Button>
-          <Button textColor="red" onPress={() => ConfirmationMessage(
-            () => {dispatch(vehiclesSlice.actions.wipeVehicles())},
-            "Warning!",
-            "Do you want to delete all your vehicles? This action cannot be undone.",
-            "Delete"
-          )}>DELETE ALL VEHICLES</Button>
+        <SettingsSection title={"Stored Commands"} headerRight={() => <IconButton size={15} icon={"plus"} onPress={() => openEditCommandModal(storedCommands.length, { name: "New Command", command: "", key: 0 })}></IconButton>}>
+          <StoredCommandsTable setMainScrollEnabled={setMainScrollEnabled} openEditMenu={openEditCommandModal} />
         </SettingsSection>
+
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
-function SettingsSection({ title, children }: { title?: string, children?: any }) {
+function SettingsSection({ title, children, headerRight }: { title?: string, children?: any, headerRight?: () => React.JSX.Element }) {
   const { t } = useTranslation()
 
   return (
     <View style={styles.settingsSection}>
-      {title && <Text variant="titleLarge" style={{ paddingBottom: 10 }}>{t(title)}</Text>}
+      <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10 }}>
+        {title && <Text variant="titleLarge">{t(title)}</Text>}
+        {headerRight && headerRight()}
+      </View>
       {children}
     </View>
   )
@@ -210,11 +255,29 @@ const styles = StyleSheet.create({
     padding: 20
   },
   settingsSection: {
+    flex: 1,
+    flexDirection: 'column',
     backgroundColor: "rgba(50,47,55,0.4)",
     padding: 10,
     paddingBottom: 20,
     gap: 10,
     marginBottom: 30,
     alignItems: 'flex-start'
-  }
+  },
+  headerRow: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  headerText: {
+    flex: 1,
+    flexDirection: 'row',
+    color: 'white',
+  },
+  valueRow: {
+    flex: 1,
+  },
+  valueText: {
+    flex: 1,
+    color: 'white',
+  },
 });

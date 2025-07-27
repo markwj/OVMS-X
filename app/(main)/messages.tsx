@@ -1,5 +1,5 @@
 import BottomSheet from "@gorhom/bottom-sheet";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { GiftedChat, IMessage } from 'react-native-gifted-chat'
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, View } from "react-native";
@@ -8,9 +8,14 @@ import { addAppMessage, addVehicleMessage, selectVehicleMessages } from "@/store
 import { ConnectionTextualCommand } from "@/components/platforms/connection";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
-import { Icon } from "react-native-paper";
+import { Icon, IconButton, Menu } from "react-native-paper";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { selectVehicle } from "@/store/vehiclesSlice";
+import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { TextInput } from "react-native-gesture-handler";
+import { StatusBar } from "expo-status-bar";
+import { getCommands } from "@/store/storedCommandsSlice";
 
 export default function MessagesScreen() {
   const insets = useSafeAreaInsets();
@@ -18,6 +23,13 @@ export default function MessagesScreen() {
   const selectedVehicle = useSelector(getSelectedVehicle)
   const connectionState = useSelector(getConnectionState)
   const messages = useSelector(selectVehicleMessages(selectedVehicle?.key ?? ""))
+
+  const [text, setText] = useState("")
+
+  const [commandsVisible, setCommandsVisible] = useState(false)
+  const storedCommands = useSelector(getCommands)
+
+  const { t } = useTranslation()
 
   const onSend = async (newMessage: IMessage) => {
     dispatch(addAppMessage({ text: newMessage.text, vehicleKey: selectedVehicle?.key }));
@@ -39,14 +51,17 @@ export default function MessagesScreen() {
   if (selectedVehicle == null) { return null }
   return (
     <KeyboardAvoidingView style={{ flex: 1, marginBottom: insets.bottom }}>
+      <StatusBar translucent={true}></StatusBar>
       <GiftedChat
         messages={messages}
+        text={text}
+        onInputTextChanged={(t) => {setText(t)}}
         timeFormat="LT"
         showUserAvatar={true}
         dateFormat="ddd D MMMM, YYYY"
         onSend={m => onSend(m[0])}
         user={{
-          _id: "APP_"+selectedVehicle.key,
+          _id: "APP_" + selectedVehicle.key,
           name: "command",
         }}
         renderAvatar={(props) => {
@@ -77,6 +92,20 @@ export default function MessagesScreen() {
         }
         }
       />
+
+      <Stack.Screen options={{
+        headerRight: () => (
+          <Menu
+            visible={commandsVisible}
+            onDismiss={() => setCommandsVisible(false)}
+            anchor={<IconButton onPress={() => setCommandsVisible(true)} size={20} icon={'keyboard'} />}
+            anchorPosition="bottom">
+            {storedCommands.map((c) => <Menu.Item key={`${c.name}-${c.command}`} onPress={() => {setText(c.command); setCommandsVisible(false)}} title={c.name} />)}
+          </Menu>
+        )
+      }}>
+
+      </Stack.Screen>
     </KeyboardAvoidingView>
   )
 }

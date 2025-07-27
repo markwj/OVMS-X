@@ -11,16 +11,25 @@ import { MetricValue } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
+import { useTranslation } from "react-i18next";
 
 const auxBattery = require("@/assets/images/aux_battery.png")
 
 export default function ControlsScreen() {
   const vehicle = useSelector(getSelectedVehicle)
 
+  const {t} = useTranslation()
+
   const carLocked = useSelector(selectMetricValue('v.e.locked'))
   const valetMode = useSelector(selectMetricValue('v.e.valet'))
 
-  const theme = useTheme()
+  const vDFL = useSelector(selectMetricValue("v.d.fl")) == "open"
+  const vDFR = useSelector(selectMetricValue("v.d.fr")) == "open"
+  const vDRL = useSelector(selectMetricValue("v.d.rl")) == "open"
+  const vDRR = useSelector(selectMetricValue("v.d.rr")) == "open"
+  const vDHood = useSelector(selectMetricValue("v.d.hood")) == "open"
+  const vDTrunk = useSelector(selectMetricValue("v.d.trunk")) == "open"
+  const vDChargeport = useSelector(selectMetricValue("v.d.chargeport")) == "open"
 
   const getPIN = () => {
     return new Promise((resolve, reject) => {
@@ -81,7 +90,7 @@ export default function ControlsScreen() {
             </View>
 
             {/* Temperature displays */}
-            <View style={{ ...styles.absoluteCentering, left: '70%', top: '92.5%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: 'white', borderWidth: 2 }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <BatteryIcon />
                 <Text style={{ marginLeft: 5 }}>Battery</Text>
@@ -89,13 +98,51 @@ export default function ControlsScreen() {
               <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.b.temp"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '30%', top: '92.5%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '20%', top: '92.5%', borderColor: 'white', borderWidth: 2 }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <Icon size={20} source={"axis-x-rotate-clockwise"} />
                 <Text style={{ marginLeft: 5 }}>Motor</Text>
               </View>
               <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.m.temp"} />
             </View>
+
+            {/* Door displays */}
+            {vDTrunk &&
+              <View style={{...styles.absoluteCentering, left: '50%', top: '90%' }}>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
+            {vDHood &&
+              <View style={{...styles.absoluteCentering, left: '50%', top: '12%' }}>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
+            {vDChargeport &&
+              <View style={{...styles.absoluteCentering, left: '10%', top: '72%', flexDirection: 'row', alignItems: 'center' }}>
+                <Icon size={20} source={"ev-plug-type2"}></Icon>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
+            {vDRL &&
+              <View style={{...styles.absoluteCentering, left: '10%', top: '60%' }}>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
+            {vDFL &&
+              <View style={{...styles.absoluteCentering, left: '10%', top: '40%' }}>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
+            {vDRR &&
+              <View style={{...styles.absoluteCentering, left: '90%', top: '60%' }}>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
+            {vDFR &&
+              <View style={{...styles.absoluteCentering, left: '90%', top: '40%' }}>
+                <Text variant="headlineSmall">{t('OPEN')}</Text>
+              </View>
+            }
 
             {/* Lock Display */}
             <View style={{ position: 'absolute', left: '50%', top: '0%', transform: [{translateX: '-50%'}] }}>
@@ -137,12 +184,7 @@ export default function ControlsScreen() {
             {/* 12v Battery Display */}
             <View style={{ position: 'absolute', left: '15%', top: '2.5%', transform: [{translateX: '-50%'}]}}>
               <Icon size={50} source={auxBattery}/>
-              <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.12v.voltage"} style={{...styles.absoluteCentering, top: '33%', left: '20%'}}></MetricValue>
-            </View>
-
-            {/* Odometer */}
-            <View style={{ ...styles.absoluteCentering, left: '50%', top: '15%' }}>
-              <MetricValue variant="labelLarge" metricKey={"v.p.odometer"} />
+              <MetricValue metricKey={"v.b.12v.voltage"} style={{position: 'absolute', top: '35%', left: '20%'}}></MetricValue>
             </View>
 
             {/*Homelink buttons*/}
