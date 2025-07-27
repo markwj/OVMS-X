@@ -14,14 +14,14 @@ import { store } from "@/store/root";
 
 let connection: WebSocket | null = null;
 
-// Queue for pending command promises
-interface PendingCommand {
+// Queue for pending text command promises
+interface PendingTextCommand {
   resolve: (value: string) => void;
   reject: (reason: any) => void;
   timeoutId: number;
 }
 
-let pendingCommands: PendingCommand[] = [];
+let PendingTextCommands: PendingTextCommand[] = [];
 
 /**
  * Sends a textual command to OVMSv2 platform via WebSocket
@@ -41,15 +41,15 @@ export async function sendOVMSv2TextCommand(commandText: string): Promise<string
     const timeoutId = setTimeout(() => {
       // Remove this command from the queue
       console.log('[sendOVMSv2TextCommand] command timed out', timeoutId)
-      const index = pendingCommands.findIndex(cmd => cmd.timeoutId === timeoutId);
+      const index = PendingTextCommands.findIndex(cmd => cmd.timeoutId === timeoutId);
       if (index !== -1) {
-        pendingCommands[index].resolve('ERROR: command timed out');
-        pendingCommands.splice(index, 1);
+        PendingTextCommands[index].resolve('ERROR: command timed out');
+        PendingTextCommands.splice(index, 1);
       }
     }, 10000); // 10 second timeout
 
     // Add command to the queue
-    pendingCommands.push({ resolve, reject, timeoutId });
+    PendingTextCommands.push({ resolve, reject, timeoutId });
 
     // Send the command in OVMSv2 format: 'C' + command code + comma + parameters
     // For textual commands, use code 7
@@ -60,13 +60,13 @@ export async function sendOVMSv2TextCommand(commandText: string): Promise<string
 }
 
 /**
- * Resolves the next pending command with the given response
+ * Resolves the next pending text command with the given response
  * @param response - The response from the vehicle
  */
-function resolveNextPendingCommand(response: string) {
-  console.log('[resolveNextPendingCommand] response', response)
-  if (pendingCommands.length > 0) {
-    const nextCommand = pendingCommands.shift();
+function resolveNextPendingTextCommand(response: string) {
+  console.log('[resolveNextPendingTextCommand] response', response)
+  if (PendingTextCommands.length > 0) {
+    const nextCommand = PendingTextCommands.shift();
     if (nextCommand) {
       clearTimeout(nextCommand.timeoutId);
       nextCommand.resolve(response);
@@ -462,7 +462,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
             if (commandCode === '7') {
               if (result === 0) {
                 // Success - resolve with the parameters (which contain the textual response)
-                resolveNextPendingCommand(parameters)
+                resolveNextPendingTextCommand(parameters)
               } else {
                 // Command failed - reject with appropriate error message
                 let errorMessage = "Command failed"
@@ -479,7 +479,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
                   default:
                     errorMessage = `Command failed with result code ${result}`
                 }
-                resolveNextPendingCommand(`ERROR: ${errorMessage}`)
+                resolveNextPendingTextCommand(`ERROR: ${errorMessage}`)
               }
 
             } else {
