@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { useTranslation } from 'react-i18next';
+import { useSelector } from "react-redux";
+import { getColorScheme } from "@/store/preferencesSlice";
+import { Appearance } from "react-native";
 
 export default function SubscreenStack() {
   const { t } = useTranslation();
+
+  //Sets color scheme according to stored color scheme
+  const reduxColorScheme = useSelector(getColorScheme)
+  useEffect(() => {
+    Appearance.setColorScheme(reduxColorScheme)
+  }, [])
   
   return (
     <Stack

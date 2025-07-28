@@ -1,14 +1,16 @@
 import React, { useRef, useState } from "react";
-import { useTheme, Text, Button, SegmentedButtons, Card, Icon, List, DataTable, IconButton, Portal, Modal } from 'react-native-paper';
-import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity, TextInput } from 'react-native';
+import { useTheme, Text, Button, SegmentedButtons, Card, Icon, List, DataTable, IconButton, Portal, Modal, Switch } from 'react-native-paper';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity, TextInput, StyleProp, ViewStyle, Appearance, useColorScheme } from 'react-native';
 import { ScrollView } from "react-native-gesture-handler"
 import { useSelector, useDispatch } from "react-redux";
 import {
   getTemperaturePreference, getDistancePreference, getPressurePreference,
   TemperatureChoiceType, DistanceChoiceType, PressureChoiceType,
-  setTemperaturePreference, setPressurePreference, setDistancePreference
+  setTemperaturePreference, setPressurePreference, setDistancePreference,
+  getColorScheme,
+  preferencesSlice
 } from "@/store/preferencesSlice";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, ControllerFieldState, ControllerRenderProps, FieldValues, UseFormStateReturn } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useTranslation } from "react-i18next";
 import { os } from "@/utils/platform";
@@ -23,6 +25,7 @@ interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
   pressurePreference: PressureChoiceType;
+  colorMode: "light" | "dark"
 }
 
 const TEMPERATURE_BUTTONS = [
@@ -60,12 +63,14 @@ export default function SettingsScreen() {
   const temperaturePreference = useSelector(getTemperaturePreference)
   const distancePreference = useSelector(getDistancePreference)
   const pressurePreference = useSelector(getPressurePreference)
+  const colorMode = useSelector(getColorScheme)
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
       temperaturePreference: temperaturePreference,
       distancePreference: distancePreference,
-      pressurePreference: pressurePreference
+      pressurePreference: pressurePreference,
+      colorMode: colorMode ?? (useTheme().dark ? "dark" : "light")
     }
   });
 
@@ -82,7 +87,6 @@ export default function SettingsScreen() {
 
   const openEditCommandModal = async (index: number, command: StoredCommand) => {
     setEditCommandModalParams({ index: index, command: command })
-
   }
 
   return (
@@ -94,11 +98,10 @@ export default function SettingsScreen() {
 
       {/* Editing custom command display */}
       <Portal>
-        <Modal 
-        visible={editCommandModalParams != null} 
-        contentContainerStyle={{ backgroundColor: theme.colors.backdrop, padding: 20, borderColor: 'grey', borderWidth: 5, gap: 10 }} 
-        onDismiss={() => setEditCommandModalParams(null)}
-        
+        <Modal
+          visible={editCommandModalParams != null}
+          contentContainerStyle={{ backgroundColor: theme.colors.elevation.level5, padding: 20, borderColor: theme.colors.outlineVariant, borderWidth: 5, gap: 10 }}
+          onDismiss={() => setEditCommandModalParams(null)}
         >
           <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
             <Text variant="titleMedium">{t("Edit custom command")}</Text>
@@ -108,8 +111,7 @@ export default function SettingsScreen() {
             <TextInput
               value={editCommandModalParams?.command.name}
               onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, name: t } })}
-              style={{ color: 'white', flexDirection: 'row', backgroundColor: 'dimgrey', padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
-              placeholder="Name"
+              style={{ color: theme.dark ? "white" : "black", flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant, padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
             />
           </View>
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
@@ -117,8 +119,7 @@ export default function SettingsScreen() {
             <TextInput
               value={editCommandModalParams?.command.command}
               onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, command: t } })}
-              style={{ color: 'white', flexDirection: 'row', backgroundColor: 'dimgrey', padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
-              placeholder="Command"
+              style={{ color: theme.dark ? "white" : "black", flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant, padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
               autoCapitalize="none"
             />
           </View>
@@ -168,6 +169,27 @@ export default function SettingsScreen() {
             <View style={{ height: 10 }} />
           </>
         )}
+
+        <SettingsSection title={"Appearance"}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text variant="labelMedium">{t("Dark mode")}</Text>
+              <Controller
+                control={control}
+                name="colorMode"
+                render={({ field: { value } }) => (
+                  <Switch
+                    value={value == "dark"}
+                    onValueChange={(v) => {
+                      setValue("colorMode", v ? "dark" : "light");
+                      dispatch(preferencesSlice.actions.setColorScheme(v ? "dark" : "light"))
+                    }}
+                  />
+                )}
+              />
+            </View>
+          </View>
+        </SettingsSection>
 
         <SettingsSection title={"Metrics"}>
 
@@ -233,9 +255,10 @@ export default function SettingsScreen() {
 
 function SettingsSection({ title, children, headerRight }: { title?: string, children?: any, headerRight?: () => React.JSX.Element }) {
   const { t } = useTranslation()
+  const theme = useTheme()
 
   return (
-    <View style={styles.settingsSection}>
+    <View style={[styles.settingsSection, { backgroundColor: theme.colors.elevation.level4 }]}>
       <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10 }}>
         {title && <Text variant="titleLarge">{t(title)}</Text>}
         {headerRight && headerRight()}
@@ -257,7 +280,6 @@ const styles = StyleSheet.create({
   settingsSection: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: "rgba(50,47,55,0.4)",
     padding: 10,
     paddingBottom: 20,
     gap: 10,

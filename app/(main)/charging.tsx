@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Text, Icon, Button, IconButton } from 'react-native-paper';
+import { Text, Icon, Button, IconButton, useTheme } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { HorizontalBatteryIcon } from "@/components/ui/BatteryIcon";
@@ -39,6 +39,8 @@ export default function ChargingScreen() {
       chargeMode: useSelector(selectMetricValue("v.c.mode")),
     }
   });
+
+  const theme = useTheme()
 
   return (
     <SafeAreaProvider>
@@ -125,13 +127,13 @@ export default function ChargingScreen() {
                     render={({ field: { value } }) => {
                       return (
                         <Dropdown
-                          iconColor='white'
-                          selectedTextStyle={{ color: 'white' }}
-                          itemTextStyle={{ color: 'white' }}
-                          containerStyle={{ backgroundColor: 'grey' }}
-                          itemContainerStyle={{ backgroundColor: 'grey' }}
-                          activeColor="dimgrey"
-                          style={{ backgroundColor: 'dimgrey', borderColor: 'black', borderWidth: 2, padding: 5 }}
+                          iconColor={theme.colors.secondary}
+                          selectedTextStyle={{ color: theme.colors.secondary }}
+                          itemTextStyle={{ color: theme.colors.secondary }}
+                          containerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                          itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                          activeColor={theme.colors.surface}
+                          style={{ backgroundColor: theme.colors.surface, borderColor: theme.colors.secondary, borderWidth: 2, padding: 5 }}
                           value={value}
                           onChange={(v) => {
                             setValue('chargeMode', v.value)

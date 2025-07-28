@@ -1,7 +1,7 @@
 import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedCommandsSlice";
 import React, { useRef, useState } from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
-import { DataTable, IconButton } from "react-native-paper";
+import { DataTable, IconButton, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { t } from "i18next";
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
@@ -14,6 +14,7 @@ import { NestableScrollContainer, NestableDraggableFlatList, ScaleDecorator } fr
 export default function StoredCommandsTable({ setMainScrollEnabled, openEditMenu }: { setMainScrollEnabled?: any, openEditMenu?: (index: number, command: StoredCommand) => void }) {
   const storedCommands = useSelector(getCommands)
   const dispatch = useDispatch()
+  const theme = useTheme()
 
   const CommandItem = (params: { index: number, item: StoredCommand, drag: () => void }) => {
     const del = () => dispatch(storedCommandsSlice.actions.removeCommand(params.index))
@@ -37,11 +38,11 @@ export default function StoredCommandsTable({ setMainScrollEnabled, openEditMenu
               flex: 1,
               alignItems: 'flex-start',
               justifyContent: 'center',
-              backgroundColor: 'darkred',
+              backgroundColor: theme.colors.errorContainer,
               width: 50
             }
             }>
-            <IconButton icon={"delete"} onPress={del}></IconButton>
+            <IconButton icon={"delete"} onPress={del} iconColor={'white'}></IconButton>
           </View>
         </Reanimated.View>
       );
@@ -108,17 +109,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     padding: 20
   },
-  settingsSection: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: "rgba(50,47,55,0.4)",
-    overflow: 'hidden',
-    padding: 10,
-    paddingBottom: 20,
-    gap: 10,
-    marginBottom: 30,
-    alignItems: 'flex-start'
-  },
   headerRow: {
     flex: 1,
     flexDirection: 'row',
@@ -130,7 +120,6 @@ const styles = StyleSheet.create({
   },
   valueRow: {
     flex: 1,
-    backgroundColor: "rgba(37,35,39,1)",
     overflow: 'hidden'
   },
   valueText: {

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Button, IconButton } from 'react-native-paper';
+import { Button, IconButton, useTheme } from 'react-native-paper';
 import { router } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import { CommandCode, ConnectionStandardCommand } from "../platforms/connection";
@@ -97,13 +97,14 @@ export function ControlIcon({ type }: { type: controlType }): React.JSX.Element 
 
 export function ControlButton({ type }: { type: controlType }): React.JSX.Element | null {
   const { t } = useTranslation();
+  const theme = useTheme()
   switch (type) {
     case controlType.Controls:
       return (
         <Button
           icon='car'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/(main)/controls'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Controls')}
@@ -114,7 +115,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='air-conditioner'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/(main)/climate'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Climate')}
@@ -125,7 +126,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='ev-plug-type2'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/(main)/charging'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Charging')}
@@ -136,7 +137,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='map-marker'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/location'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Location')}
@@ -147,7 +148,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='chat'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/(main)/messages'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Messages')}
@@ -158,7 +159,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='electric-bolt'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Controls')}
@@ -169,7 +170,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='lock'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Security')}
@@ -180,7 +181,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='hammer-wrench'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/(main)/settings'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Settings')}
@@ -191,7 +192,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
         <Button
           icon='developer-board'
           mode='contained-tonal'
-          dark={true}
+          dark={theme.dark}
           onPress={() => { router.push('/(main)/developer/metrics'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           Developer

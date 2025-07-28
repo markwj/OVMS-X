@@ -5,10 +5,11 @@ import { useSelector } from "react-redux";
 import { selectMetricValue } from "@/store/metricsSlice";
 import { Animated, useColorScheme, View } from "react-native";
 import { getSelectedVehicle } from "@/store/selectionSlice";
+import { useTheme } from "react-native-paper";
 
 export function Map() {
   const mapRef = useRef(null)
-  const colorScheme = useColorScheme();
+  const theme = useTheme()
   const vPLatitude = useSelector(selectMetricValue("v.p.latitude"))
   const vPLongitude = useSelector(selectMetricValue("v.p.longitude"))
 
@@ -20,10 +21,6 @@ export function Map() {
   };
 
   const [region, setRegion] = useState(INITIAL_REGION)
-
-  if (vPLatitude == null || vPLongitude == null) {
-    return (<></>);
-  }
 
   useEffect(() => {
     if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
@@ -37,6 +34,11 @@ export function Map() {
     }
   }, [vPLatitude, vPLongitude, region])
 
+
+  if (vPLatitude == null || vPLongitude == null) {
+    return (<></>);
+  }
+
   return (
     <View style={{ flexGrow: 1 }}>
       <MapView
@@ -46,6 +48,7 @@ export function Map() {
         onRegionChangeComplete={(r) => setRegion(r)}
         style={{ flex: 1 }}
         rotateEnabled={false}
+        userInterfaceStyle={theme.dark ? "dark" : "light"}
         showsTraffic={false}>
         <CarMarker />
       </MapView>

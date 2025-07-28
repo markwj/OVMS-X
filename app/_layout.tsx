@@ -17,7 +17,7 @@ import { Provider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { VehicleSelector } from '@/components/ui/VehicleSelector';
 import { Drawer } from 'expo-router/drawer';
-import { Platform, useWindowDimensions } from 'react-native';
+import { Appearance, Platform, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/selectionSlice';
@@ -37,6 +37,7 @@ import * as Network from 'expo-network';
 import { setToken, setUniqueID } from '@/store/notificationSlice';
 import * as Application from 'expo-application';
 import { getVehicles } from '@/store/vehiclesSlice';
+import { getColorScheme } from '@/store/preferencesSlice';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -144,10 +145,10 @@ const MainLayout = () => {
   const [notification, setNotification] = useState<any | undefined>(
     undefined
   );
-  
+
   useEffect(() => {
     if (Platform.OS === 'ios') {
-      Application.getIosIdForVendorAsync().then((id) => 
+      Application.getIosIdForVendorAsync().then((id) =>
         dispatch(setUniqueID(id || 'unknown')));
     } else if (Platform.OS === 'android') {
       dispatch(setUniqueID(Application.getAndroidId() || 'unknown'));
@@ -260,12 +261,7 @@ export default Sentry.wrap(function RootLayout() {
     materialLight: MD3LightTheme
   });
   //@ts-ignore
-  const { theme } = (colorScheme === 'dark')
-    //@ts-ignore
-    ? { ...MD3DarkTheme, colors: MD3DarkTheme.dark }
-    //@ts-ignore
-    : { ...MD3LightTheme, colors: MD3LightTheme.light };
-  (colorScheme === 'dark') ? DarkTheme : NavigationDefaultTheme;
+  const theme = (colorScheme == 'dark') ? { ...MD3DarkTheme, colors: MD3DarkTheme.colors } : { ...MD3LightTheme, colors: MD3LightTheme.colors };
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);
 
   return (

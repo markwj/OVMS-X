@@ -1,6 +1,6 @@
 import React, { ComponentProps } from "react";
 import { useTheme, Text, IconButton, Icon } from 'react-native-paper';
-import { View, StyleSheet, StyleProp, Modal, Alert } from 'react-native';
+import { View, StyleSheet, StyleProp, Image, Alert } from 'react-native';
 import { VehicleTopImage } from "@/components/ui/VehicleImages";
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
@@ -17,6 +17,7 @@ const auxBattery = require("@/assets/images/aux_battery.png")
 
 export default function ControlsScreen() {
   const vehicle = useSelector(getSelectedVehicle)
+  const theme = useTheme()
 
   const {t} = useTranslation()
 
@@ -69,41 +70,41 @@ export default function ControlsScreen() {
             </View>
 
             {/* TPMS displays */}
-            <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: theme.colors.primary, borderWidth: 2 }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.fl.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.tp.fl.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.primary, borderTopWidth: 1 }} metricKey={"v.tp.fl.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: theme.colors.primary, borderWidth: 2 }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.fr.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.tp.fr.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.primary, borderTopWidth: 1 }} metricKey={"v.tp.fr.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: theme.colors.primary, borderWidth: 2 }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.rl.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.tp.rl.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.primary, borderTopWidth: 1 }} metricKey={"v.tp.rl.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: theme.colors.primary, borderWidth: 2 }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.rr.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.tp.rr.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.primary, borderTopWidth: 1 }} metricKey={"v.tp.rr.p"} />
             </View>
 
             {/* Temperature displays */}
-            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: theme.colors.primary, borderWidth: 2 }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <BatteryIcon />
                 <Text style={{ marginLeft: 5 }}>Battery</Text>
               </View>
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.b.temp"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.primary, borderTopWidth: 1 }} metricKey={"v.b.temp"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '20%', top: '92.5%', borderColor: 'white', borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '20%', top: '92.5%', borderColor: theme.colors.primary, borderWidth: 2 }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <Icon size={20} source={"axis-x-rotate-clockwise"} />
                 <Text style={{ marginLeft: 5 }}>Motor</Text>
               </View>
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'white', borderTopWidth: 1 }} metricKey={"v.m.temp"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.primary, borderTopWidth: 1 }} metricKey={"v.m.temp"} />
             </View>
 
             {/* Door displays */}
@@ -183,7 +184,7 @@ export default function ControlsScreen() {
 
             {/* 12v Battery Display */}
             <View style={{ position: 'absolute', left: '15%', top: '2.5%', transform: [{translateX: '-50%'}]}}>
-              <Icon size={50} source={auxBattery}/>
+              <Image width={50} height={50} source={auxBattery} tintColor={theme.colors.primary}/>
               <MetricValue metricKey={"v.b.12v.voltage"} style={{position: 'absolute', top: '35%', left: '20%'}}></MetricValue>
             </View>
 
@@ -232,15 +233,14 @@ type MetricIconProps = Omit<ComponentProps<typeof IconButton>, 'icon' | 'iconCol
 function MetricIcon(props: MetricIconProps) {
   const { value, unit } = store.dispatch(selectLocalisedMetricValue(props.metricKey))
   const stale = useSelector(selectMetricIsStale(props.metricKey, GetCurrentUTCTimeStamp()))
+  const theme = useTheme()
 
   return (
     <IconButton
       {...props}
       icon={typeof props.icon == 'string' ? props.icon : props.icon(value, unit)}
-      iconColor={props.iconColor != undefined ? 
-        typeof props.iconColor == 'string' ? props.iconColor : props.iconColor(value, unit)
-        : (stale ? 'grey' : 'white')
-      }
+      iconColor={props.iconColor != undefined ? (typeof props.iconColor == 'string' ? props.iconColor : props.iconColor(value, unit)) : undefined}
+      style={stale && {opacity: 0.5}}
     ></IconButton>
   )
 }

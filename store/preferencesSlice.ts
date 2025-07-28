@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root'
 import { getLocales } from 'expo-localization'
+import { Appearance, useColorScheme } from 'react-native'
 
 export enum TemperatureChoiceType {
   SYSTEM = "system",
@@ -26,12 +27,14 @@ interface PreferencesState {
   temperatureChoice: TemperatureChoiceType,
   distanceChoice: DistanceChoiceType,
   pressureChoice: PressureChoiceType,
+  colorMode: "light" | "dark" | null
 }
 
 const initialState: PreferencesState = {
   temperatureChoice: TemperatureChoiceType.SYSTEM,
   distanceChoice: DistanceChoiceType.SYSTEM,
   pressureChoice: PressureChoiceType.SYSTEM,
+  colorMode: null
 }
 
 export const preferencesSlice = createSlice({
@@ -46,6 +49,10 @@ export const preferencesSlice = createSlice({
     },
     setPressurePreference: (state, action: PayloadAction<PressureChoiceType>) => {
       state.pressureChoice = action.payload
+    },
+    setColorScheme: (state, action : PayloadAction<"light" | "dark">) => {
+      Appearance.setColorScheme(action.payload)
+      state.colorMode = action.payload
     }
   },
 })
@@ -99,6 +106,10 @@ export const getPressureUnit = (state: RootState) => {
   } else {
     return state.preferences.pressureChoice.toString();
   }
+}
+
+export const getColorScheme = (state : RootState) => {
+  return state.preferences.colorMode
 }
 
 export const { setTemperaturePreference, setDistancePreference, setPressurePreference } = preferencesSlice.actions

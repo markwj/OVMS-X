@@ -1,5 +1,5 @@
 import React, { ComponentProps } from 'react'
-import { Text } from 'react-native-paper'
+import { Text, useTheme } from 'react-native-paper'
 import { StyleSheet } from 'react-native'
 import { GetCurrentUTCTimeStamp } from '../utils/datetime'
 import { useSelector } from 'react-redux'
@@ -13,6 +13,7 @@ type Props = Omit<ComponentProps<typeof Text>, 'children'> & { metricKey: string
 export function MetricValue(props : Props) {
   const stale = useSelector(selectMetricIsStale(props.metricKey, GetCurrentUTCTimeStamp()))
   const {t} = useTranslation()
+  const theme = useTheme()
 
   let {value, unit} = store.dispatch(selectLocalisedMetricValue(props.metricKey))
 
@@ -31,7 +32,7 @@ export function MetricValue(props : Props) {
   }
 
   return (
-    <Text {...props} style={StyleSheet.compose({ color: stale ? "grey" : "rgba(230,225,229,1)" }, props.style)}>
+    <Text {...props} style={[props.style, (stale && {opacity: 0.5})]}>
       {value != null ? value + (addSpace ? " " : "") + (showUnit ? (unit ?? "") : "") : (t(props.emptyOverride ?? ""))}
     </Text>
   )
