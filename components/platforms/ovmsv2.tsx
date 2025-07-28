@@ -186,6 +186,15 @@ function resolveNextPendingCommand(commandCode: number, result: number, paramete
   }
 }
 
+function cleanupPendingCommands() {
+  PendingCommands.forEach((pendingCommands, commandCode) => {
+    pendingCommands.forEach((pendingCommand) => {
+      clearTimeout(pendingCommand.timeoutId);
+      pendingCommand.reject(new Error(`Vehicle disconnected`));
+    });
+  });
+}
+
 export function handleOVMSv2NotificationResponse(response: any, vehicles: Vehicle[], dispatch: any) {
   const vehicleid = response.data?.vehicleid;
   const message = response.body;
@@ -584,6 +593,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         connection.removeEventListener('open', openListener)
         connection.removeEventListener('message', messageListener)
         connection.removeEventListener('close', closeListener)
+        cleanupPendingCommands()
         connection.close()
         connection = null
       }
