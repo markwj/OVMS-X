@@ -28,7 +28,7 @@ interface PreferencesState {
   temperatureChoice: TemperatureChoiceType,
   distanceChoice: DistanceChoiceType,
   pressureChoice: PressureChoiceType,
-  colorMode: "light" | "dark" | null,
+  colorMode: "light" | "dark" | "null",
   language: TSupportedLanguages | null
 }
 
@@ -36,7 +36,7 @@ const initialState: PreferencesState = {
   temperatureChoice: TemperatureChoiceType.SYSTEM,
   distanceChoice: DistanceChoiceType.SYSTEM,
   pressureChoice: PressureChoiceType.SYSTEM,
-  colorMode: null,
+  colorMode: "null",
   language: null
 }
 

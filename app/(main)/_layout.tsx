@@ -19,13 +19,9 @@ export default function SubscreenStack() {
   useEffect(() => {
     if(reduxColorScheme != null) {
       Appearance.setColorScheme(reduxColorScheme)
-    } else {
-      dispatch(setColorScheme(theme.dark ? "dark" : "light"))
     }
     if(reduxLanguage != null) {
       i18n.changeLanguage(reduxLanguage)
-    } else {
-      dispatch(setLanguage(i18n.language as TSupportedLanguages))
     }
   }, [])
   

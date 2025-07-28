@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useTheme, Text, Button, SegmentedButtons, Card, Icon, List, DataTable, IconButton, Portal, Modal, Switch } from 'react-native-paper';
-import { KeyboardAvoidingView, Platform, StyleSheet, View, TextInput, Appearance} from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TextInput, Appearance } from 'react-native';
 import { ScrollView } from "react-native-gesture-handler"
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -10,7 +10,8 @@ import {
   getColorScheme,
   preferencesSlice,
   getLanguage,
-  setLanguage
+  setLanguage,
+  setColorScheme
 } from "@/store/preferencesSlice";
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
@@ -24,12 +25,13 @@ import StoredCommandsTable from "@/components/ui/StoredCommandsTable";
 import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedCommandsSlice";
 import { Dropdown } from "react-native-element-dropdown";
 import { resources, SupportedLanguages, TSupportedLanguages } from "@/i18n";
+import { getLocales } from "expo-localization";
 
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
   pressurePreference: PressureChoiceType;
-  colorMode: "light" | "dark" | null,
+  colorMode: "light" | "dark" | "null",
   language: TSupportedLanguages | null
 }
 
@@ -97,6 +99,11 @@ export default function SettingsScreen() {
     setEditCommandModalParams({ index: index, command: command })
   }
 
+  const LanguageOptions = [...SupportedLanguages.map((k) => {
+    const displayName = resources[k].name
+    return { key: displayName, value: k }
+  }), { key: "System", value: "null" }]
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -133,7 +140,7 @@ export default function SettingsScreen() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
             <View style={{ flex: 1 }}>
-              <Button onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>{t("Submit")}</Button>
+              <Button onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>{t("Save")}</Button>
             </View>
             {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
               <IconButton
@@ -152,8 +159,8 @@ export default function SettingsScreen() {
           <>
             <Card>
               <Card.Title
-                title={t("App")+': ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
-                subtitle={t("Build")+': ' + os + ' ' + Application?.nativeBuildVersion +
+                title={t("App") + ': ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
+                subtitle={t("Build") + ': ' + os + ' ' + Application?.nativeBuildVersion +
                   (typeof updateVersion !== 'undefined' ? "\nUpdate: " + updateVersion : "")}
                 subtitleNumberOfLines={(typeof updateVersion !== 'undefined') ? 3 : 1}
                 left={(props) => <Icon {...props} source="application-cog" />}
@@ -182,7 +189,7 @@ export default function SettingsScreen() {
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text variant="labelMedium">{t("Language")}</Text>
-              <View style={{flex: 1, flexDirection: 'row'}}>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
                 <Controller
                   control={control}
                   name="language"
@@ -195,14 +202,15 @@ export default function SettingsScreen() {
                       itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                       activeColor={theme.colors.surfaceVariant}
                       style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
-                      data={SupportedLanguages.map((k) => {
-                        const displayName = resources[k].name
-                        return {key: displayName, value: k}
-                      })}
+                      data={LanguageOptions}
                       onChange={async (v) => {
                         setValue("language", v.value)
                         dispatch(setLanguage(v.value))
-                        i18n.changeLanguage(v.value)                  
+                        if (v == null) {
+                          i18n.changeLanguage(v.value)
+                        } else {
+                          i18n.changeLanguage(getLocales()[0].languageCode ?? undefined)
+                        }
                       }}
                       labelField={"key"} valueField={"value"}
                       value={value}
@@ -222,13 +230,26 @@ export default function SettingsScreen() {
                 control={control}
                 name="colorMode"
                 render={({ field: { value } }) => (
-                  <Switch
-                    value={value == "dark"}
-                    onValueChange={(v) => {
-                      setValue("colorMode", v ? "dark" : "light");
-                      Appearance.setColorScheme(v ? "dark" : "light")
-                      dispatch(preferencesSlice.actions.setColorScheme(v ? "dark" : "light"))
+                  <Dropdown
+                    iconColor={theme.colors.secondary}
+                    selectedTextStyle={{ color: theme.colors.secondary }}
+                    itemTextStyle={{ color: theme.colors.secondary }}
+                    containerStyle={{ backgroundColor: theme.colors.secondary }}
+                    itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                    activeColor={theme.colors.surfaceVariant}
+                    style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
+                    data={[{ key: t("Light"), value: "light" }, { key: t("Dark"), value: "dark" }, { key: t("System"), value: "null" }]}
+                    onChange={async (v) => {
+                      setValue("colorMode", v.value)
+                      if(v.value != "null") {
+                        Appearance.setColorScheme(v.value)
+                      } else {
+                        Appearance.setColorScheme(undefined)
+                      }
+                      dispatch(setColorScheme(v.value))
                     }}
+                    labelField={"key"} valueField={"value"}
+                    value={value}
                   />
                 )}
               />
