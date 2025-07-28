@@ -8,7 +8,8 @@ import { Controller, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { Dropdown } from "react-native-element-dropdown";
-import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
+import { ConnectionCommand } from "@/components/platforms/connection";
+import { CommandCode } from "@/components/platforms/Commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { useTranslation } from "react-i18next";
 import { store } from "@/store/root";
@@ -69,7 +70,7 @@ export default function ChargingScreen() {
               style={[styles.button, (!charging ? styles.buttonActive : styles.buttonInactive)]}
               onPress={() => {
                 if (charging) { return; }
-                ConnectionStandardCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
+                ConnectionCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
               }}
             >
               <Text style={styles.buttonText}>{t('START CHARGING')}</Text>
@@ -78,7 +79,7 @@ export default function ChargingScreen() {
               style={[styles.button, (charging ? styles.buttonActive : styles.buttonInactive)]}
               onPress={() => {
                 if (!charging) { return; }
-                ConnectionStandardCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
+                ConnectionCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
               }}
             >
               <Text style={styles.buttonText}>{t('STOP CHARGING')}</Text>
@@ -126,7 +127,7 @@ export default function ChargingScreen() {
                         value={value}
                         onChange={(v) => {
                           setValue('chargeMode', v.value)
-                          ConnectionStandardCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
+                          ConnectionCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: {mode: v.value} })
                         }}
                         data={vCModes}
                         labelField={"label"}

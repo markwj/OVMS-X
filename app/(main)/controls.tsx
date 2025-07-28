@@ -10,7 +10,8 @@ import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
+import { ConnectionCommand } from "@/components/platforms/connection";
+import { CommandCode } from "@/components/platforms/Commands";
 
 const auxBattery = require("@/assets/images/aux_battery.png")
 
@@ -107,10 +108,10 @@ export default function ControlsScreen() {
                   const pin = await getPIN()
                   if(pin == "User cancelled") { return }
                   if (carLocked) {
-                    await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.UNLOCK_CAR, params: [pin]})
+                    await ConnectionCommand(vehicle, {commandCode: CommandCode.UNLOCK_CAR, params: {pin: pin}})
                     return
                   }
-                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.LOCK_CAR, params: [pin]})
+                  await ConnectionCommand(vehicle, {commandCode: CommandCode.LOCK_CAR, params: {pin: pin}})
                 }}
               />
             </View>
@@ -126,10 +127,10 @@ export default function ControlsScreen() {
                   const pin = await getPIN()
                   if(pin == "User cancelled") { return }
                   if (valetMode) {
-                    await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.ACTIVATE_VALET_MODE, params: [pin]})
+                    await ConnectionCommand(vehicle, {commandCode: CommandCode.ACTIVATE_VALET_MODE, params: {pin: pin}})
                     return
                   }
-                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.DEACTIVATE_VALET_MODE, params: [pin]})
+                  await ConnectionCommand(vehicle, {commandCode: CommandCode.DEACTIVATE_VALET_MODE, params: {pin: pin}})
                 }}
               />
             </View>
@@ -151,7 +152,7 @@ export default function ControlsScreen() {
                 icon={'home-floor-0'}
                 size={35}
                 onPress={async () => {
-                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: [0]})
+                  await ConnectionCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: {button: 0}})
                 }}
               />
             </View>
@@ -160,7 +161,7 @@ export default function ControlsScreen() {
                 icon={'home-floor-1'}
                 size={35}
                 onPress={async () => {
-                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: [1]})
+                  await ConnectionCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: {button: 1}})
                 }}
               />
             </View>
@@ -169,7 +170,7 @@ export default function ControlsScreen() {
                 icon={'home-floor-2'}
                 size={35}
                 onPress={async () => {
-                  await ConnectionStandardCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: [2]})
+                  await ConnectionCommand(vehicle, {commandCode: CommandCode.HOME_LINK, params: {button: 2}})
                 }}
               />
             </View>

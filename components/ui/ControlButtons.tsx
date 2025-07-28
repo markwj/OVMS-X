@@ -2,7 +2,8 @@ import React, { useState, useRef } from "react";
 import { Button, IconButton } from 'react-native-paper';
 import { router } from "expo-router";
 import { useTranslation } from 'react-i18next';
-import { CommandCode, ConnectionStandardCommand } from "../platforms/connection";
+import { ConnectionCommand } from "@/components/platforms/connection";
+import { CommandCode } from "@/components/platforms/Commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { store } from "@/store/root";
 import { selectMetricValue } from "@/store/metricsSlice";
@@ -77,10 +78,10 @@ export function ControlIcon({ type }: { type: controlType }): React.JSX.Element 
           const vehicle = getSelectedVehicle(store.getState())
           if (pin == "User cancelled") { return }
           if (selectMetricValue("v.e.locked")(store.getState())) {
-            await ConnectionStandardCommand(vehicle, { commandCode: CommandCode.UNLOCK_CAR, params: [pin] })
+            await ConnectionCommand(vehicle, { commandCode: CommandCode.UNLOCK_CAR, params: {pin: pin} })
             return
           }
-          await ConnectionStandardCommand(vehicle, { commandCode: CommandCode.LOCK_CAR, params: [pin] })
+          await ConnectionCommand(vehicle, { commandCode: CommandCode.LOCK_CAR, params: {pin: pin} })
         }} />
       );
     case controlType.Settings:

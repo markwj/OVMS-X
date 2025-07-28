@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { addAppMessage, addVehicleMessage, selectVehicleMessages } from "@/store/messagesSlice";
-import { ConnectionTextualCommand } from "@/components/platforms/connection";
+import { ConnectionCommand } from "@/components/platforms/connection";
+import { CommandCode } from "@/components/platforms/Commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
 import { Icon } from "react-native-paper";
@@ -26,7 +27,8 @@ export default function MessagesScreen() {
       dispatch(addVehicleMessage({ text: "Vehicle is not connected", vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }));
     } else {
       try {
-        const response = await ConnectionTextualCommand(selectedVehicle, newMessage.text);
+        const command = {commandCode: CommandCode.EXECUTE_SMS_COMMAND, params: {text: newMessage.text}};
+        const response = await ConnectionCommand(selectedVehicle, command);
         dispatch(addVehicleMessage({ text: response, vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }));
       } catch (error) {
         console.error('[MessagesScreen] Error sending command:', error);
