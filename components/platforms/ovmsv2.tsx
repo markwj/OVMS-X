@@ -572,7 +572,9 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
             console.log('[connection OVMSv2] rx COMMAND RESPONSE', commandCode, result, parameters)
             resolveNextPendingCommand(commandCode, result, parameters);
           } else {
-            console.log('[connection OVMSv2] Invalid command response format:', event.data)
+            const result = parseInt(afterCommandCode.substring(0, secondCommaIndex))
+            console.log('[connection OVMSv2] rx COMMAND RESPONSE (no parameters)', commandCode, result)
+            resolveNextPendingCommand(commandCode, result, "");
           }
         } else {
           console.log('[connection OVMSv2] Invalid command response format:', event.data)
