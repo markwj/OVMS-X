@@ -13,7 +13,6 @@ import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { selectVehicle } from "@/store/vehiclesSlice";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { TextInput } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { getCommands } from "@/store/storedCommandsSlice";
 
@@ -100,7 +99,7 @@ export default function MessagesScreen() {
             onDismiss={() => setCommandsVisible(false)}
             anchor={<IconButton onPress={() => setCommandsVisible(true)} size={20} icon={'keyboard'} />}
             anchorPosition="bottom">
-            {storedCommands.map((c) => <Menu.Item key={`${c.name}-${c.command}`} onPress={() => {setText(c.command); setCommandsVisible(false)}} title={c.name} />)}
+            {storedCommands.map((c) => <Menu.Item key={c.key} onPress={() => {setText(c.command); setCommandsVisible(false)}} title={c.name} />)}
           </Menu>
         )
       }}>

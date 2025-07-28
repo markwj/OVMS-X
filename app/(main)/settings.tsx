@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useTheme, Text, Button, SegmentedButtons, Card, Icon, List, DataTable, IconButton, Portal, Modal, Switch } from 'react-native-paper';
-import { KeyboardAvoidingView, Platform, StyleSheet, View, TouchableOpacity, TextInput, StyleProp, ViewStyle, Appearance, useColorScheme } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, TextInput, Appearance} from 'react-native';
 import { ScrollView } from "react-native-gesture-handler"
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -8,9 +8,11 @@ import {
   TemperatureChoiceType, DistanceChoiceType, PressureChoiceType,
   setTemperaturePreference, setPressurePreference, setDistancePreference,
   getColorScheme,
-  preferencesSlice
+  preferencesSlice,
+  getLanguage,
+  setLanguage
 } from "@/store/preferencesSlice";
-import { useForm, Controller, ControllerFieldState, ControllerRenderProps, FieldValues, UseFormStateReturn } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useTranslation } from "react-i18next";
 import { os } from "@/utils/platform";
@@ -20,12 +22,15 @@ import * as Application from 'expo-application';
 import { notificationsEnabled, notificationsToken } from "@/store/notificationSlice";
 import StoredCommandsTable from "@/components/ui/StoredCommandsTable";
 import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedCommandsSlice";
+import { Dropdown } from "react-native-element-dropdown";
+import { resources, SupportedLanguages, TSupportedLanguages } from "@/i18n";
 
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
   pressurePreference: PressureChoiceType;
-  colorMode: "light" | "dark"
+  colorMode: "light" | "dark",
+  language: TSupportedLanguages
 }
 
 const TEMPERATURE_BUTTONS = [
@@ -49,7 +54,8 @@ const PRESSURE_BUTTONS = [
 
 export default function SettingsScreen() {
   const height = useHeaderHeight()
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
   const dispatch = useDispatch()
   const { isChecking, currentlyRunning } = Updates.useUpdates();
   const notificationEnabled = useSelector(notificationsEnabled);
@@ -64,12 +70,14 @@ export default function SettingsScreen() {
   const distancePreference = useSelector(getDistancePreference)
   const pressurePreference = useSelector(getPressurePreference)
   const colorMode = useSelector(getColorScheme)
+  const language = useSelector(getLanguage)
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
       temperaturePreference: temperaturePreference,
       distancePreference: distancePreference,
       pressurePreference: pressurePreference,
+      language: language,
       colorMode: colorMode ?? (useTheme().dark ? "dark" : "light")
     }
   });
@@ -107,7 +115,7 @@ export default function SettingsScreen() {
             <Text variant="titleMedium">{t("Edit custom command")}</Text>
           </View>
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text variant="labelLarge">{t("Name: ")}</Text>
+            <Text variant="labelLarge">{t("Name")}: </Text>
             <TextInput
               value={editCommandModalParams?.command.name}
               onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, name: t } })}
@@ -115,7 +123,7 @@ export default function SettingsScreen() {
             />
           </View>
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
-            <Text variant="labelLarge">{t("Command: ")}</Text>
+            <Text variant="labelLarge">{t("Command")}: </Text>
             <TextInput
               value={editCommandModalParams?.command.command}
               onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, command: t } })}
@@ -125,7 +133,7 @@ export default function SettingsScreen() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
             <View style={{ flex: 1 }}>
-              <Button onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>Submit</Button>
+              <Button onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>{t("Submit")}</Button>
             </View>
             {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
               <IconButton
@@ -144,8 +152,8 @@ export default function SettingsScreen() {
           <>
             <Card>
               <Card.Title
-                title={'App: ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
-                subtitle={'Build: ' + os + ' ' + Application?.nativeBuildVersion +
+                title={t("App")+': ' + Application?.applicationName + ' v' + Application?.nativeApplicationVersion}
+                subtitle={t("Build")+': ' + os + ' ' + Application?.nativeBuildVersion +
                   (typeof updateVersion !== 'undefined' ? "\nUpdate: " + updateVersion : "")}
                 subtitleNumberOfLines={(typeof updateVersion !== 'undefined') ? 3 : 1}
                 left={(props) => <Icon {...props} source="application-cog" />}
@@ -170,6 +178,42 @@ export default function SettingsScreen() {
           </>
         )}
 
+        <SettingsSection title={"Language"}>
+          <View style={{ flex: 1, flexDirection: 'row' }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text variant="labelMedium">{t("Language")}</Text>
+              <View style={{flex: 1, flexDirection: 'row'}}>
+                <Controller
+                  control={control}
+                  name="language"
+                  render={({ field: { value } }) => (
+                    <Dropdown
+                      iconColor={theme.colors.secondary}
+                      selectedTextStyle={{ color: theme.colors.secondary }}
+                      itemTextStyle={{ color: theme.colors.secondary }}
+                      containerStyle={{ backgroundColor: theme.colors.secondary }}
+                      itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                      activeColor={theme.colors.surface}
+                      style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.secondary, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
+                      data={SupportedLanguages.map((k) => {
+                        const displayName = resources[k].name
+                        return {key: displayName, value: k}
+                      })}
+                      onChange={async (v) => {
+                        setValue("language", v.value)
+                        dispatch(setLanguage(v.value))
+                        i18n.changeLanguage(v.value)                  
+                      }}
+                      labelField={"key"} valueField={"value"}
+                      value={value}
+                    />
+                  )}
+                />
+              </View>
+            </View>
+          </View>
+        </SettingsSection>
+
         <SettingsSection title={"Appearance"}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -182,6 +226,7 @@ export default function SettingsScreen() {
                     value={value == "dark"}
                     onValueChange={(v) => {
                       setValue("colorMode", v ? "dark" : "light");
+                      Appearance.setColorScheme(v ? "dark" : "light")
                       dispatch(preferencesSlice.actions.setColorScheme(v ? "dark" : "light"))
                     }}
                   />

@@ -69,12 +69,12 @@ export default function ChargingScreen() {
           </View>
 
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{t('Trip odometer: ')}</Text>
+            <Text>{t('Trip odometer')}: </Text>
             <MetricValue metricKey={"v.p.trip"}></MetricValue>
           </View>
 
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{t('Last charge: ')}</Text>
+            <Text>{t('Last charge')}: ß</Text>
             <MetricValue metricKey={"v.c.timestamp"} showUnit={false}></MetricValue>
           </View>
 
@@ -139,7 +139,7 @@ export default function ChargingScreen() {
                             setValue('chargeMode', v.value)
                             ConnectionStandardCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
                           }}
-                          data={vCModes}
+                          data={vCModes.map((v) => {return {...v, label: t(v.label)}})}
                           labelField={"label"}
                           valueField={"value"}
                         />
@@ -288,67 +288,67 @@ export default function ChargingScreen() {
 
               <Section title={"Charger"}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
-                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t('State: ')}</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t('State')}: </Text>
                   <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.state"} emptyOverride="N/A"></MetricValue>
                 </View>
                 <View style={{ flex: 1, flexDirection: 'row', marginLeft: 10 }}>
-                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t('Substate: ')}</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t('Substate')}: </Text>
                   <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.substate"} emptyOverride="N/A"></MetricValue>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t('Current: ')}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t('Current')}: </Text>
                     <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.current"} emptyOverride="N/A"></MetricValue>
                   </View>
                   <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>({t('Maximum: ')}</Text>
+                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>({t('Maximum')}: </Text>
                     <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.climit"} emptyOverride="N/A"></MetricValue>
                     <Text numberOfLines={1} adjustsFontSizeToFit={true}>)</Text>
                   </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Voltage: ")}</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Voltage")}: </Text>
                   <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.voltage"} emptyOverride="N/A"></MetricValue>
                 </View>
                 <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 5 }}>
-                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Energy: ")}</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Energy")}: </Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
                     <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Sum: ")}</Text>
                     <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.kwh"} emptyOverride="N/A"></MetricValue>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                      <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Drawn: ")}</Text>
+                      <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Drawn")}: </Text>
                       <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.kwh.grid"} emptyOverride="N/A"></MetricValue>
                     </View>
                     <View style={{ flex: 1, flexDirection: 'row' }}>
-                      <Text numberOfLines={1} adjustsFontSizeToFit={true}> ({t('Lifetime: ')}</Text>
+                      <Text numberOfLines={1} adjustsFontSizeToFit={true}> ({t('Lifetime')}: </Text>
                       <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.kwh.grid.total"} emptyOverride="N/A"></MetricValue>
                       <Text numberOfLines={1} adjustsFontSizeToFit={true}>)</Text>
                     </View>
                   </View>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Efficiency: ")}</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Efficiency")}: </Text>
                   <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.c.efficiency"} emptyOverride="N/A"></MetricValue>
                 </View>
               </Section>
 
               <Section title={"12V DC/DC Converter"} visibilityToggle={true}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text>{t("Current: ")}</Text>
+                  <Text>{t("Current")}: </Text>
                   <MetricValue metricKey={"v.c.12v.current"} emptyOverride="N/A"></MetricValue>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text>{t("Power: ")}</Text>
+                  <Text>{t("Power")}: </Text>
                   <MetricValue metricKey={"v.c.12v.power"} emptyOverride="N/A"></MetricValue>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text>{t("Temperature: ")}</Text>
+                  <Text>{t("Temperature")}: </Text>
                   <MetricValue metricKey={"v.c.12v.temp"} emptyOverride="N/A"></MetricValue>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text>{t("Voltage: ")}</Text>
+                  <Text>{t("Voltage")}: </Text>
                   <MetricValue metricKey={"v.c.12v.voltage"} emptyOverride="N/A"></MetricValue>
                 </View>
               </Section>

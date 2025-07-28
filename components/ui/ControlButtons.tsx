@@ -21,18 +21,20 @@ export enum controlType {
 }
 
 const getPIN = () => {
+  const {t} = useTranslation()
+
   return new Promise((resolve, reject) => {
     Alert.prompt(
-      'Enter PIN',
+      t('Enter PIN'),
       '',
       [
         {
-          text: 'Cancel',
+          text: t('Cancel'),
           onPress: () => reject('User canceled'),
           style: 'cancel',
         },
         {
-          text: 'OK',
+          text: t('OK'),
           onPress: (text) => resolve(text),
         },
       ],
@@ -195,7 +197,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           dark={theme.dark}
           onPress={() => { router.push('/(main)/developer/metrics'); }}
           style={{ width: '80%', marginBottom: 10 }}>
-          Developer
+          {t("Developer")}
         </Button>
       );
   }

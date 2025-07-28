@@ -35,16 +35,16 @@ export default function ControlsScreen() {
   const getPIN = () => {
     return new Promise((resolve, reject) => {
       Alert.prompt(
-        'Enter PIN',
+        t('Enter PIN'),
         '',
         [
           {
-            text: 'Cancel',
+            text: t('Cancel'),
             onPress: () => reject('User canceled'),
             style: 'cancel',
           },
           {
-            text: 'OK',
+            text: t('OK'),
             onPress: (text) => resolve(text),
           },
         ],

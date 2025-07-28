@@ -75,7 +75,7 @@ export default function EditVehicleScreen() {
       <SafeAreaView style={styles.container}>
         <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
           <View style={{ flexShrink: 1, marginRight: '5%' }}>
-            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Name: </Text>
+            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Name")}: </Text>
           </View>
           <View style={{ flexGrow: 4 }}>
             <Controller
@@ -103,7 +103,7 @@ export default function EditVehicleScreen() {
         </View>
         <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
           <View style={{ flexShrink: 1, marginRight: '5%' }}>
-            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Type: </Text>
+            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Type")}: </Text>
           </View>
           <View style={{ flexGrow: 4 }}>
             <Controller
@@ -118,7 +118,7 @@ export default function EditVehicleScreen() {
                   itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                   activeColor={theme.colors.surface}
                   style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.secondary, borderWidth: 2, padding: 10 }}
-                  data={vehicleImageNames}
+                  data={vehicleImageNames.map((v) => {return {...v, key: t(v.key)}})}
                   onChange={(v) => onChange(v.value)}
                   labelField={"key"} valueField={"value"}
                   value={value}
@@ -164,7 +164,7 @@ export default function EditVehicleScreen() {
                   })
                 }}>
                 <VehicleSideImage image={carImage} continuouslyPollSource={false}></VehicleSideImage>
-                <Text variant="labelMedium" style={{ alignSelf: 'center' }}>Side view</Text>
+                <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Side view")}</Text>
               </TouchableOpacity>
 
               <View style={{ flexDirection: 'row', flex: 1, width: '100%' }}>
@@ -180,7 +180,7 @@ export default function EditVehicleScreen() {
                     })
                   }}>
                     <VehicleTopImage image={carImage}></VehicleTopImage>
-                    <Text variant="labelMedium">Top view</Text>
+                    <Text style={{ alignSelf: 'center' }} variant="labelMedium">{t("Top view")}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -195,7 +195,7 @@ export default function EditVehicleScreen() {
                     })
                   }}>
                     <VehicleMapImage image={carImage}></VehicleMapImage>
-                    <Text variant="labelMedium" style={{ alignSelf: 'center' }}>Map icon</Text>
+                    <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Map icon")}</Text>
                   </TouchableOpacity>
                 </View>
 

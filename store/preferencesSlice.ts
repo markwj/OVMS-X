@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './root'
 import { getLocales } from 'expo-localization'
 import { Appearance, useColorScheme } from 'react-native'
+import { fallbackLng, TSupportedLanguages } from '@/i18n'
 
 export enum TemperatureChoiceType {
   SYSTEM = "system",
@@ -27,14 +28,16 @@ interface PreferencesState {
   temperatureChoice: TemperatureChoiceType,
   distanceChoice: DistanceChoiceType,
   pressureChoice: PressureChoiceType,
-  colorMode: "light" | "dark" | null
+  colorMode: "light" | "dark" | null,
+  language: TSupportedLanguages
 }
 
 const initialState: PreferencesState = {
   temperatureChoice: TemperatureChoiceType.SYSTEM,
   distanceChoice: DistanceChoiceType.SYSTEM,
   pressureChoice: PressureChoiceType.SYSTEM,
-  colorMode: null
+  colorMode: null,
+  language: fallbackLng
 }
 
 export const preferencesSlice = createSlice({
@@ -51,8 +54,10 @@ export const preferencesSlice = createSlice({
       state.pressureChoice = action.payload
     },
     setColorScheme: (state, action : PayloadAction<"light" | "dark">) => {
-      Appearance.setColorScheme(action.payload)
       state.colorMode = action.payload
+    },
+    setLanguage: (state, action : PayloadAction<TSupportedLanguages>) => {
+      state.language = action.payload
     }
   },
 })
@@ -112,6 +117,10 @@ export const getColorScheme = (state : RootState) => {
   return state.preferences.colorMode
 }
 
-export const { setTemperaturePreference, setDistancePreference, setPressurePreference } = preferencesSlice.actions
+export const getLanguage = (state : RootState) => {
+  return state.preferences.language
+}
+
+export const { setTemperaturePreference, setDistancePreference, setPressurePreference, setColorScheme, setLanguage } = preferencesSlice.actions
 
 export default preferencesSlice.reducer
