@@ -1,19 +1,32 @@
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { useTranslation } from 'react-i18next';
-import { useSelector } from "react-redux";
-import { getColorScheme, getLanguage } from "@/store/preferencesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getColorScheme, getLanguage, setColorScheme, setLanguage } from "@/store/preferencesSlice";
 import { Appearance } from "react-native";
+import { useTheme } from "react-native-paper";
+import { TSupportedLanguages } from "@/i18n";
 
 export default function SubscreenStack() {
   const { t, i18n } = useTranslation();
+  const dispatch = useDispatch()
+  const theme = useTheme()
 
   //Sets settings according to stored redux settings
   const reduxColorScheme = useSelector(getColorScheme)
   const reduxLanguage = useSelector(getLanguage)
+
   useEffect(() => {
-    Appearance.setColorScheme(reduxColorScheme)
-    i18n.changeLanguage(reduxLanguage)
+    if(reduxColorScheme != null) {
+      Appearance.setColorScheme(reduxColorScheme)
+    } else {
+      dispatch(setColorScheme(theme.dark ? "dark" : "light"))
+    }
+    if(reduxLanguage != null) {
+      i18n.changeLanguage(reduxLanguage)
+    } else {
+      dispatch(setLanguage(i18n.language as TSupportedLanguages))
+    }
   }, [])
   
   return (

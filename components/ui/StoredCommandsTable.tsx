@@ -63,7 +63,7 @@ export default function StoredCommandsTable({ setMainScrollEnabled, openEditMenu
             key={params.item.key}
             overshootRight={false}
           >
-            <DataTable.Row key={params.item.key} style={styles.valueRow}>
+            <DataTable.Row key={params.item.key} style={[styles.valueRow, {backgroundColor: theme.colors.elevation.level4}]}>
               <DataTable.Cell style={styles.valueText}>{params.item.name}</DataTable.Cell>
               <DataTable.Cell style={styles.valueText}>{params.item.command}</DataTable.Cell>
             </DataTable.Row>

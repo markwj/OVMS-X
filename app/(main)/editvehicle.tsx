@@ -117,7 +117,7 @@ export default function EditVehicleScreen() {
                   containerStyle={{ backgroundColor: theme.colors.secondary }}
                   itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                   activeColor={theme.colors.surface}
-                  style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.secondary, borderWidth: 2, padding: 10 }}
+                  style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10 }}
                   data={vehicleImageNames.map((v) => {return {...v, key: t(v.key)}})}
                   onChange={(v) => onChange(v.value)}
                   labelField={"key"} valueField={"value"}
@@ -153,7 +153,7 @@ export default function EditVehicleScreen() {
           {customImage &&
             <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'center' }}>
               <TouchableOpacity
-                style={{ borderWidth: 2, borderColor: 'white', alignItems: 'center' }}
+                style={{ borderWidth: 2, borderColor: theme.colors.secondary, alignItems: 'center' }}
                 onPress={async () => {
                   const image = await pickImageAsync()
                   if (image == null) { return }
@@ -170,7 +170,7 @@ export default function EditVehicleScreen() {
               <View style={{ flexDirection: 'row', flex: 1, width: '100%' }}>
 
                 <View style={{ flex: 1 }}>
-                  <TouchableOpacity style={{ borderWidth: 2, borderColor: 'white' }} onPress={async () => {
+                  <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
                     const image = await pickImageAsync()
                     if (image == null) { return }
                     setCroppingImageParams({
@@ -185,7 +185,7 @@ export default function EditVehicleScreen() {
                 </View>
 
                 <View style={{ flex: 1 }}>
-                  <TouchableOpacity style={{ borderWidth: 2, borderColor: 'white' }} onPress={async () => {
+                  <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
                     const image = await pickImageAsync()
                     if (image == null) { return }
                     setCroppingImageParams({

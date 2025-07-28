@@ -74,13 +74,13 @@ export default function ChargingScreen() {
           </View>
 
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text>{t('Last charge')}: ß</Text>
+            <Text>{t('Last charge')}: </Text>
             <MetricValue metricKey={"v.c.timestamp"} showUnit={false}></MetricValue>
           </View>
 
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
             <Button
-              style={[styles.button, (!charging ? styles.buttonActive : styles.buttonInactive)]}
+              style={[styles.button, (!charging ? {backgroundColor: theme.colors.primaryContainer} : {backgroundColor: theme.colors.surfaceDisabled})]}
               onPress={() => {
                 if (charging) { return; }
                 ConnectionStandardCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
@@ -89,7 +89,7 @@ export default function ChargingScreen() {
               <Text style={styles.buttonText}>{t('START CHARGING')}</Text>
             </Button>
             <Button
-              style={[styles.button, (charging ? styles.buttonActive : styles.buttonInactive)]}
+              style={[styles.button, (charging ? {backgroundColor: theme.colors.primaryContainer} : {backgroundColor: theme.colors.surfaceDisabled})]}
               onPress={() => {
                 if (!charging) { return; }
                 ConnectionStandardCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
@@ -133,7 +133,7 @@ export default function ChargingScreen() {
                           containerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                           itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                           activeColor={theme.colors.surface}
-                          style={{ backgroundColor: theme.colors.surface, borderColor: theme.colors.secondary, borderWidth: 2, padding: 5 }}
+                          style={{ backgroundColor: theme.colors.surface, borderColor: 'grey', borderWidth: 2, padding: 5 }}
                           value={value}
                           onChange={(v) => {
                             setValue('chargeMode', v.value)
@@ -412,12 +412,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "black",
     borderWidth: 2,
-  },
-  buttonActive: {
-    backgroundColor: 'green',
-  },
-  buttonInactive: {
-    opacity: 0.5
   },
   buttonText: {
     color: 'white'

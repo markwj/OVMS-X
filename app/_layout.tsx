@@ -37,7 +37,8 @@ import * as Network from 'expo-network';
 import { setToken, setUniqueID } from '@/store/notificationSlice';
 import * as Application from 'expo-application';
 import { getVehicles } from '@/store/vehiclesSlice';
-import { getColorScheme } from '@/store/preferencesSlice';
+
+import MaterialTheme from "@/assets/MaterialTheme.json"
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -257,11 +258,11 @@ export default Sentry.wrap(function RootLayout() {
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavigationDarkTheme,
     reactNavigationLight: NavigationDefaultTheme,
-    materialDark: MD3DarkTheme,
-    materialLight: MD3LightTheme
+    materialDark: {...MD3DarkTheme, colors: {...MD3DarkTheme.colors, ...MaterialTheme.dark.colors}},
+    materialLight: {...MD3LightTheme, colors: {...MD3LightTheme.colors, ...MaterialTheme.light.colors}}
   });
   //@ts-ignore
-  const theme = (colorScheme == 'dark') ? { ...MD3DarkTheme, colors: MD3DarkTheme.colors } : { ...MD3LightTheme, colors: MD3LightTheme.colors };
+  const theme = (colorScheme == 'dark') ? {...MD3DarkTheme, colors: {...MD3DarkTheme.colors, ...MaterialTheme.dark.colors}} : {...MD3LightTheme, colors:{...MD3LightTheme.colors, ...MaterialTheme.light.colors}};
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);
 
   return (

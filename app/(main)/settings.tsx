@@ -29,8 +29,8 @@ interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
   pressurePreference: PressureChoiceType;
-  colorMode: "light" | "dark",
-  language: TSupportedLanguages
+  colorMode: "light" | "dark" | null,
+  language: TSupportedLanguages | null
 }
 
 const TEMPERATURE_BUTTONS = [
@@ -112,7 +112,7 @@ export default function SettingsScreen() {
           onDismiss={() => setEditCommandModalParams(null)}
         >
           <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-            <Text variant="titleMedium">{t("Edit custom command")}</Text>
+            <Text variant="titleMedium">{t("Edit stored command")}</Text>
           </View>
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <Text variant="labelLarge">{t("Name")}: </Text>
@@ -193,8 +193,8 @@ export default function SettingsScreen() {
                       itemTextStyle={{ color: theme.colors.secondary }}
                       containerStyle={{ backgroundColor: theme.colors.secondary }}
                       itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
-                      activeColor={theme.colors.surface}
-                      style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.secondary, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
+                      activeColor={theme.colors.surfaceVariant}
+                      style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
                       data={SupportedLanguages.map((k) => {
                         const displayName = resources[k].name
                         return {key: displayName, value: k}
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 20,
     gap: 10,
-    marginBottom: 30,
+    marginBottom: 20,
     alignItems: 'flex-start'
   },
   headerRow: {

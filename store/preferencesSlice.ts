@@ -29,7 +29,7 @@ interface PreferencesState {
   distanceChoice: DistanceChoiceType,
   pressureChoice: PressureChoiceType,
   colorMode: "light" | "dark" | null,
-  language: TSupportedLanguages
+  language: TSupportedLanguages | null
 }
 
 const initialState: PreferencesState = {
@@ -37,7 +37,7 @@ const initialState: PreferencesState = {
   distanceChoice: DistanceChoiceType.SYSTEM,
   pressureChoice: PressureChoiceType.SYSTEM,
   colorMode: null,
-  language: fallbackLng
+  language: null
 }
 
 export const preferencesSlice = createSlice({
