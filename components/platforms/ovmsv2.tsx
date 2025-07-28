@@ -140,7 +140,7 @@ export async function sendOVMSv2Command(command: { commandCode: CommandCode, par
  * @param response - The response from the vehicle
  */
 function resolveNextPendingCommand(commandCode: number, result: number, parameters: string) {
-  console.log('[resolveNextPendingCommand] response', CommandCode[commandCode], result, parameters)
+  console.log('[resolveNextPendingCommand] response', commandCode, result, parameters)
   const pendingCommands = PendingCommands.get(commandCode) || [];
   if (pendingCommands.length > 0) {
     const nextCommand = pendingCommands.shift();
@@ -572,7 +572,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
             console.log('[connection OVMSv2] rx COMMAND RESPONSE', commandCode, result, parameters)
             resolveNextPendingCommand(commandCode, result, parameters);
           } else {
-            const result = parseInt(afterCommandCode.substring(0, secondCommaIndex))
+            const result = parseInt(afterCommandCode)
             console.log('[connection OVMSv2] rx COMMAND RESPONSE (no parameters)', commandCode, result)
             resolveNextPendingCommand(commandCode, result, "");
           }
