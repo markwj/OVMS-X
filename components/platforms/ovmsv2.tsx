@@ -11,74 +11,187 @@ import { addVehicleMessage, messagesSlice } from "@/store/messagesSlice";
 import { ConnectionDisplay } from "../ui/ConnectionDisplay";
 import { notificationsEnabled, notificationsToken, notificationsUniqueID } from "@/store/notificationSlice";
 import { store } from "@/store/root";
+import { CommandCode } from "./Commands"
 
+const COMMAND_TIMEOUT = 10000; // 10 seconds
 let connection: WebSocket | null = null;
 
-// Queue for pending text command promises
-interface PendingTextCommand {
-  resolve: (value: string) => void;
+// Queue for pending command promises, indexed by command type
+interface PendingCommand {
+  resolve: (value: any | null) => void;
   reject: (reason: any) => void;
   timeoutId: number;
 }
 
-let PendingTextCommands: PendingTextCommand[] = [];
+let PendingCommands: Map<CommandCode, PendingCommand[]> = new Map();
 
-/**
- * Sends a textual command to OVMSv2 platform via WebSocket
- * @param commandText - The command text to send
- * @returns Promise<string> - The textual result of the command
- */
-export async function sendOVMSv2TextCommand(commandText: string): Promise<string> {
+export async function sendOVMSv2Command(command: { commandCode: CommandCode, params?: any }): Promise<string> {
   return new Promise((resolve, reject) => {
-    console.log('[sendOVMSv2TextCommand] commandText', commandText)
+    console.log('[sendOVMSv2Command] command', command.commandCode, command.params || {})
     if (!connection || connection.readyState !== WebSocket.OPEN) {
-      console.log('[sendOVMSv2TextCommand] connection is not available')
-      reject(new Error("OVMSv2 WebSocket connection is not available"));
+      console.log('[sendOVMSv2Command] not connected to vehicle')
+      reject(new Error("OVMSv2 not connected to vehicle"));
       return;
     }
 
     // Set up timeout for this command
     const timeoutId = setTimeout(() => {
       // Remove this command from the queue
-      console.log('[sendOVMSv2TextCommand] command timed out', timeoutId)
-      const index = PendingTextCommands.findIndex(cmd => cmd.timeoutId === timeoutId);
+      console.log('[sendOVMSv2Command] command timed out', timeoutId)
+      const pendingCommands = PendingCommands.get(command.commandCode) || [];
+      const index = pendingCommands.findIndex((cmd: PendingCommand) => cmd.timeoutId === timeoutId);
       if (index !== -1) {
-        PendingTextCommands[index].resolve('ERROR: command timed out');
-        PendingTextCommands.splice(index, 1);
+        pendingCommands[index].resolve('ERROR: command timed out');
+        pendingCommands.splice(index, 1);
+        PendingCommands.set(command.commandCode, pendingCommands);
       }
-    }, 10000); // 10 second timeout
-
-    // Add command to the queue
-    PendingTextCommands.push({ resolve, reject, timeoutId });
+    }, COMMAND_TIMEOUT);
 
     // Send the command in OVMSv2 format: 'C' + command code + comma + parameters
-    // For textual commands, use code 7
-    const commandMessage = `C7,${commandText}`;
-    console.log(`[sendOVMSv2TextCommand] Sending command: ${commandMessage}`);
-    connection.send(commandMessage);
+    var commandMessage: string | undefined;
+    switch (command.commandCode) {
+      case CommandCode.SET_FEATURE:
+        commandMessage = `C2,${command.params?.feature},${command.params?.value}`;
+        break;
+      case CommandCode.SET_PARAMETER:
+        commandMessage = `C4,${command.params?.parameter},${command.params?.value}`;
+        break;
+      case CommandCode.REBOOT:
+        commandMessage = `C5`;
+        break;
+      case CommandCode.CHARGE_ALERT:
+        commandMessage = `C6`;
+        break;
+      case CommandCode.EXECUTE_SMS_COMMAND:
+        commandMessage = `C7,${command.params?.text}`;
+        break;
+      case CommandCode.SET_CHARGE_MODE:
+        commandMessage = `C10,${command.params?.mode}`;
+        break;
+      case CommandCode.START_CHARGE:
+        commandMessage = `C11`;
+        break;
+      case CommandCode.STOP_CHARGE:
+        commandMessage = `C12`;
+        break;
+      case CommandCode.SET_CHARGE_CURRENT:
+        commandMessage = `C15,${command.params?.current}`;
+        break;
+      case CommandCode.SET_CHARGE_MODE_AND_CURRENT:
+        commandMessage = `C16,${command.params?.mode},${command.params?.current}`;
+        break;
+      case CommandCode.SET_CHARGE_TIMER_MODE_TIME:
+        commandMessage = `C17,${command.params?.timer},${command.params?.start}`;
+        break;
+      case CommandCode.WAKEUP_CAR:
+        commandMessage = `C18`;
+        break;
+      case CommandCode.WAKEUP_TEMPERATURE_SUBSYSTEM:
+        commandMessage = `C19`;
+        break;
+      case CommandCode.LOCK_CAR:
+        commandMessage = `C20,${command.params?.pin}`;
+        break;
+      case CommandCode.ACTIVATE_VALET_MODE:
+        commandMessage = `C21,${command.params?.pin}`;
+        break;
+      case CommandCode.UNLOCK_CAR:
+        commandMessage = `C22,${command.params?.pin}`;
+        break;
+      case CommandCode.DEACTIVATE_VALET_MODE:
+        commandMessage = `C23,${command.params?.pin}`;
+        break;
+      case CommandCode.HOME_LINK:
+        commandMessage = `C24,${command.params?.button}`;
+        break;
+      case CommandCode.COOLDOWN:
+        commandMessage = `C30`;
+        break;
+      case CommandCode.SEND_SMS:
+        commandMessage = `C40,${command.params?.number},${command.params?.message}`;
+        break;
+      case CommandCode.SEND_USSD_CODE:
+        commandMessage = `C41,${command.params?.ussdcode}`;
+        break;
+      case CommandCode.SEND_RAW_AT_COMMAND:
+        commandMessage = `C49,${command.params?.atcommand}`;
+        break;
+    };
+    console.log('[sendOVMSv2Command] PendingCommands size:', PendingCommands.size,
+      'for command code:', command.commandCode,
+      'pending count:', PendingCommands.get(command.commandCode)?.length || 0)
+    if (commandMessage !== undefined) {
+      // Add command to the queue
+      const pendingCommands = PendingCommands.get(command.commandCode) || [];
+      pendingCommands.push({ resolve, reject, timeoutId });
+      PendingCommands.set(command.commandCode, pendingCommands);
+      // Send the command
+      console.log(`[sendOVMSv2Command] Sending command: ${commandMessage}`);
+      connection.send(commandMessage);
+    } else {
+      reject(new Error("Unsupported command code"));
+    }
   });
 }
 
 /**
- * Resolves the next pending text command with the given response
+ * Resolves the next pending command of the specified type with the given response
+ * @param commandType - The command type (e.g., 7 for text commands)
  * @param response - The response from the vehicle
  */
-function resolveNextPendingTextCommand(response: string) {
-  console.log('[resolveNextPendingTextCommand] response', response)
-  if (PendingTextCommands.length > 0) {
-    const nextCommand = PendingTextCommands.shift();
+function resolveNextPendingCommand(commandCode: number, result: number, parameters: string) {
+  console.log('[resolveNextPendingCommand] response', commandCode, result, parameters)
+  const pendingCommands = PendingCommands.get(commandCode) || [];
+  if (pendingCommands.length > 0) {
+    const nextCommand = pendingCommands.shift();
+    if (pendingCommands.length > 0) {
+      PendingCommands.set(commandCode, pendingCommands);
+    }
+    else {
+      PendingCommands.delete(commandCode);
+    }
+    console.log('[resolveNextPendingCommand] PendingCommands size:', PendingCommands.size,
+      'for command code:', commandCode, 'pending count:',
+      PendingCommands.get(commandCode)?.length || 0)
     if (nextCommand) {
       clearTimeout(nextCommand.timeoutId);
-      nextCommand.resolve(response);
+      switch (result) {
+        case 0: // Success!
+          switch (commandCode) {
+            case CommandCode.EXECUTE_SMS_COMMAND:
+              nextCommand.resolve(parameters);
+              break
+            default:
+              // Default (for most commands) is no result
+              nextCommand.resolve(null);
+              break
+          }
+          break
+        case 1: // Command failed
+          nextCommand.reject(new Error(`Command failed`));
+          break;
+        case 2: // Command unsupported
+          nextCommand.reject(new Error(`Command unsupported`));
+          break
+        case 3: // Command unimplemented
+          nextCommand.reject(new Error(`Command unimplemented`));
+          break
+        default: // Command failed
+          nextCommand.reject(new Error(`Command failed with result code ${result}`));
+      }
     }
+  }
+  else {
+    console.log('[resolveNextPendingCommand] no pending commands for command code', commandCode)
   }
 }
 
-export async function sendOVMSv2StandardCommand(command: any): Promise<string> {
-  return new Promise((resolve, reject) => {
-    console.log('[sendOVMSv2StandardCommand] command', command)
-    reject(new Error("Not implemented"));
-    return;
+function cleanupPendingCommands() {
+  PendingCommands.forEach((pendingCommands, commandCode) => {
+    pendingCommands.forEach((pendingCommand) => {
+      clearTimeout(pendingCommand.timeoutId);
+      pendingCommand.reject(new Error(`Vehicle disconnected`));
+    });
   });
 }
 
@@ -99,7 +212,8 @@ export function handleOVMSv2NotificationIncoming(notification: any, vehicles: Ve
   const vehicle = vehicles.find((v: Vehicle) => ((v.platform === "ovmsv2api") && (v.platformParameters.id === vehicleid)));
   if (vehicle) {
     dispatch(messagesSlice.actions.addVehicleMessage({
-       text: message, vehicleKey: vehicle.key, vehicleName: vehicle.name }))
+      text: message, vehicleKey: vehicle.key, vehicleName: vehicle.name
+    }))
   }
 }
 
@@ -358,16 +472,16 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         console.log('[connection OVMSv2] rx DOORS', parts)
 
         const frontLeftDoorState = (1 & parts[0]) != 0
-        const frontRightDoorState = (1<<1 & parts[0]) != 0
-        const ChargePortState = (1<<2 & parts[0]) != 0
-        const pilotState = (1<<3 & parts[0]) != 0
-        const chargingState = (1<<4 & parts[0]) != 0
-        const handbrakeState = (1<<6 & parts[0]) != 0
-        const carOnState = (1<<7 & parts[0]) != 0
-        const carLockedState = (1<<3 & parts[1]) != 0
-        const carValetState = (1<<4 & parts[1]) != 0
-        const carHoodState = (1<<6 & parts[1]) != 0
-        const carTrunkState = (1<<7& parts[1]) != 0
+        const frontRightDoorState = (1 << 1 & parts[0]) != 0
+        const ChargePortState = (1 << 2 & parts[0]) != 0
+        const pilotState = (1 << 3 & parts[0]) != 0
+        const chargingState = (1 << 4 & parts[0]) != 0
+        const handbrakeState = (1 << 6 & parts[0]) != 0
+        const carOnState = (1 << 7 & parts[0]) != 0
+        const carLockedState = (1 << 3 & parts[1]) != 0
+        const carValetState = (1 << 4 & parts[1]) != 0
+        const carHoodState = (1 << 6 & parts[1]) != 0
+        const carTrunkState = (1 << 7 & parts[1]) != 0
         const pemTemperature = parts[3]
         const motorTemperature = parts[4]
         const batteryTemperature = parts[5]
@@ -377,20 +491,20 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const carParkingTimer = parts[9]
         const ambientTemperature = parts[10]
         const carAwakeState = (1 & parts[11]) != 0
-        const carCoolingState = (1<<1 & parts[11]) != 0
-        const carLoggedInState = (1<<6 & parts[11]) != 0
-        const carConfigState = (1<<7 & parts[11]) != 0
+        const carCoolingState = (1 << 1 & parts[11]) != 0
+        const carLoggedInState = (1 << 6 & parts[11]) != 0
+        const carConfigState = (1 << 7 & parts[11]) != 0
         const staleTemperatures = parts[12] < 0 ? undefined : (parts[8] == 0)
         const staleAmbientTemperature = parts[12] < 0 ? undefined : (parts[8] == 0)
         const vehicle12VLineVoltage = parts[14]
-        const alarmSoundingState = (1<<2 & parts[15]) != 0
+        const alarmSoundingState = (1 << 2 & parts[15]) != 0
         const vehicle12VReferenceVoltage = parts[16]
         const rearLeftDoorState = (1 & parts[17]) != 0
-        const rearRightDoorState = (1<<1 & parts[17]) != 0
-        const frunkState = (1<<2 & parts[17]) != 0
-        const charging12vState = (1<<4 & parts[17]) != 0
-        const aux12VState = (1<<5 & parts[17]) != 0
-        const hvacState = (1<<7 & parts[17]) != 0
+        const rearRightDoorState = (1 << 1 & parts[17]) != 0
+        const frunkState = (1 << 2 & parts[17]) != 0
+        const charging12vState = (1 << 4 & parts[17]) != 0
+        const aux12VState = (1 << 5 & parts[17]) != 0
+        const hvacState = (1 << 7 & parts[17]) != 0
         const vehicleChargerTemperature = parts[18]
         const vehicle12VCurrent = parts[19]
         const vehicleCabinTemperature = parts[20]
@@ -448,44 +562,15 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         const afterC = event.data.substring(1) // Everything after 'c'
         const firstCommaIndex = afterC.indexOf(',')
         if (firstCommaIndex !== -1) {
-          const commandCode = afterC.substring(0, firstCommaIndex) // Get the command code (can be multi-digit)
+          const commandCodeStr = afterC.substring(0, firstCommaIndex) // Get the command code (can be multi-digit)
+          const commandCode = parseInt(commandCodeStr) // Convert to number for Map lookup
           const afterCommandCode = afterC.substring(firstCommaIndex + 1) // Everything after the command code and first comma
-          console.log('[connection OVMSv2] rx COMMAND RESPONSE', commandCode, afterCommandCode)
-          // Find the second comma to separate result from parameters
-          const secondCommaIndex = afterCommandCode.indexOf(',')
+          const secondCommaIndex = afterCommandCode.indexOf(',') // Find the second comma to separate result from parameters
           if (secondCommaIndex !== -1) {
             const result = parseInt(afterCommandCode.substring(0, secondCommaIndex))
             const parameters = afterCommandCode.substring(secondCommaIndex + 1) // Everything after the second comma
-            console.log('[connection OVMSv2] rx COMMAND RESPONSE', result, parameters)
-
-            // Handle textual commands (code 7)
-            if (commandCode === '7') {
-              if (result === 0) {
-                // Success - resolve with the parameters (which contain the textual response)
-                resolveNextPendingTextCommand(parameters)
-              } else {
-                // Command failed - reject with appropriate error message
-                let errorMessage = "Command failed"
-                switch (result) {
-                  case 1:
-                    errorMessage = "Command failed"
-                    break
-                  case 2:
-                    errorMessage = "Command unsupported"
-                    break
-                  case 3:
-                    errorMessage = "Command unimplemented"
-                    break
-                  default:
-                    errorMessage = `Command failed with result code ${result}`
-                }
-                resolveNextPendingTextCommand(`ERROR: ${errorMessage}`)
-              }
-
-            } else {
-              // Non-textual command - just log for now
-              console.log(`[connection OVMSv2] Non-textual command response: code=${commandCode}, result=${result}, params=${parameters}`)
-            }
+            console.log('[connection OVMSv2] rx COMMAND RESPONSE', commandCode, result, parameters)
+            resolveNextPendingCommand(commandCode, result, parameters);
           } else {
             console.log('[connection OVMSv2] Invalid command response format:', event.data)
           }
@@ -508,6 +593,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
         connection.removeEventListener('open', openListener)
         connection.removeEventListener('message', messageListener)
         connection.removeEventListener('close', closeListener)
+        cleanupPendingCommands()
         connection.close()
         connection = null
       }

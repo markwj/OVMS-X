@@ -8,7 +8,8 @@ import { Controller, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { Dropdown } from "react-native-element-dropdown";
-import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
+import { ConnectionCommand } from "@/components/platforms/connection";
+import { CommandCode } from "@/components/platforms/Commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { useTranslation } from "react-i18next";
 import { store } from "@/store/root";
@@ -83,7 +84,7 @@ export default function ChargingScreen() {
               style={[styles.button, (!charging ? {backgroundColor: theme.colors.primaryContainer} : {backgroundColor: theme.colors.surfaceDisabled})]}
               onPress={() => {
                 if (charging) { return; }
-                ConnectionStandardCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
+                ConnectionCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
               }}
             >
               <Text style={styles.buttonText}>{t('START CHARGING')}</Text>
@@ -92,7 +93,7 @@ export default function ChargingScreen() {
               style={[styles.button, (charging ? {backgroundColor: theme.colors.primaryContainer} : {backgroundColor: theme.colors.surfaceDisabled})]}
               onPress={() => {
                 if (!charging) { return; }
-                ConnectionStandardCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
+                ConnectionCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
               }}
             >
               <Text style={styles.buttonText}>{t('STOP CHARGING')}</Text>
@@ -121,145 +122,39 @@ export default function ChargingScreen() {
             <Section title="Charge Mode" visibilityToggle={false}>
               <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 1 }}>
-                  <Controller
-                    control={control}
-                    name={"chargeMode"}
-                    render={({ field: { value } }) => {
-                      return (
-                        <Dropdown
-                          iconColor={theme.colors.secondary}
-                          selectedTextStyle={{ color: theme.colors.secondary }}
-                          itemTextStyle={{ color: theme.colors.secondary }}
-                          containerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
-                          itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
-                          activeColor={theme.colors.surface}
-                          style={{ backgroundColor: theme.colors.surface, borderColor: 'grey', borderWidth: 2, padding: 5 }}
-                          value={value}
-                          onChange={(v) => {
-                            setValue('chargeMode', v.value)
-                            ConnectionStandardCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
-                          }}
-                          data={vCModes.map((v) => {return {...v, label: t(v.label)}})}
-                          labelField={"label"}
-                          valueField={"value"}
-                        />
-                      )
-                    }
-                    }
-                  />
-                </View>
-              </View>
-            </Section>
-
-            {/*
-            Though these were in the android app, these are only applicable to certain cars
-
-            <Section title={"Sufficient Range"} visibilityToggle={false}>
-              <View style={{ flexGrow: 1, flexDirection: 'row' }}>
-                <Slider
-                  style={{ flex: 1 }}
-                  value={sufficientRange}
-                  maximumValue={fullRange}
-                  minimumValue={0}
-                  lowerLimit={0}
-                  step={1}
-                  StepMarker={({ stepMarked, currentValue }) => {
-                    if (!stepMarked) { return <></> }
+                <Controller
+                  control={control}
+                  name={"chargeMode"}
+                  render={({ field: { value } }) => {
                     return (
-                      <Text style={{ transform: [{ translateY: -40 }], backgroundColor: 'grey', padding: 5 }}>{currentValue} {t(fullRangeUnit)}</Text>
+                      <Dropdown
+                        iconColor='white'
+                        selectedTextStyle={{ color: 'white' }}
+                        itemTextStyle={{ color: 'white' }}
+                        containerStyle={{ backgroundColor: 'grey' }}
+                        itemContainerStyle={{ backgroundColor: 'grey' }}
+                        activeColor="dimgrey"
+                        style={{ backgroundColor: 'dimgrey', borderColor: 'black', borderWidth: 2, padding: 5 }}
+                        value={value}
+                        onChange={(v) => {
+                          setValue('chargeMode', v.value)
+                          ConnectionCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
+                        }}
+                        data={vCModes}
+                        labelField={"label"}
+                        valueField={"value"}
+                      />
                     )
-                  }}
-                  onSlidingComplete={(v: number) => {
-                    if (v == +sufficientSOC) { return }
-                    console.error("Need to define setting of sufficient range!")
-                  }}
-                ></Slider>
+                  }
+                  }
+                />
               </View>
-              <View style={{ height: 10 }}></View>
-            </Section>
+            </View>
 
-            <Section title={"Sufficient SOC"} visibilityToggle={false}>
-              <View style={{ flexGrow: 1, flexDirection: 'row' }}>
-                <Slider
-                  style={{ flex: 1 }}
-                  value={sufficientSOC}
-                  maximumValue={100}
-                  minimumValue={0}
-                  lowerLimit={20}
-                  step={1}
-                  StepMarker={({ stepMarked, currentValue }) => {
-                    if (!stepMarked) { return <></> }
-                    return (
-                      <Text style={{ transform: [{ translateY: -40 }], backgroundColor: 'grey', padding: 5 }}>{currentValue}%</Text>
-                    )
-                  }}
-                  onSlidingComplete={(v: number) => {
-                    if (v == +sufficientSOC) { return }
-                    console.error("Need to define setting of sufficient SOC!")
-                  }}
-                ></Slider>
-              </View>
-              <View style={{ height: 10 }}></View>
-            </Section> */}
-
-            <Section title={"Charge Current"} visibilityToggle={true}>
-              <Text style={{ color: 'red' }}>{t("Incorrect settings may damage electric systems.")}</Text>
-              <View style={{ flexGrow: 1, flexDirection: 'row' }}>
-                <Slider
-                  style={{ flex: 1 }}
-                  value={chargeCurrent}
-                  maximumValue={70}
-                  minimumValue={0}
-                  lowerLimit={10}
-                  step={1}
-                  StepMarker={({ stepMarked, currentValue }) => {
-                    if (!stepMarked) { return <></> }
-                    return (
-                      <Text style={{ transform: [{ translateY: 30 }], backgroundColor: 'grey', padding: 5 }}>{currentValue} {t(chargeCurrentUnit)}</Text>
-                    )
-                  }}
-                  onSlidingComplete={(v: number) => {
-                    const A = numericalUnitConvertor(v).from(chargeCurrentUnit).to("A")
-                    ConfirmationMessage(() => {
-                      ConnectionStandardCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_CURRENT, params: [numericalUnitConvertor(v).from(chargeCurrentUnit).to("A")] })
-                    }, "Warning!", `Are you sure you want to set the charge current to ${v} ${chargeCurrentUnit} (${A} amps)?`)
-                  }}
-                ></Slider>
-              </View>
-              <View style={{ height: 10 }}></View>
-            </Section>
-
-            <Section title={"Energy"}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Consumption: ")}</Text>
-                <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.consumption"} emptyOverride="N/A"></MetricValue>
-              </View>
-
-              <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 5 }}>
-                <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Energy: ")}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-                  <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Consumed: ")}</Text>
-                    <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.energy.used"} emptyOverride="N/A"></MetricValue>
-                  </View>
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}> ({t('Lifetime: ')}</Text>
-                    <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.energy.used.total"} emptyOverride="N/A"></MetricValue>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>)</Text>
-                  </View>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-                  <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Recovered: ")}</Text>
-                    <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.energy.recd"} emptyOverride="N/A"></MetricValue>
-                  </View>
-                  <View style={{ flex: 1, flexDirection: 'row' }}>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}> ({t('Lifetime: ')}</Text>
-                    <MetricValue numberOfLines={1} adjustsFontSizeToFit={true} metricKey={"v.b.energy.recd.total"} emptyOverride="N/A"></MetricValue>
-                    <Text numberOfLines={1} adjustsFontSizeToFit={true}>)</Text>
-                  </View>
-                </View>
-              </View>
+            <View style={styles.sectionContainer}>
+              <Text style={{ flexShrink: 1 }} variant="labelMedium">Charge Power Limit</Text>
+              <Text>Pretend there's a slider here for now...</Text>
+            </View>
 
               <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 5 }}>
                 <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Power: ")}</Text>
