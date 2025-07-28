@@ -27,7 +27,7 @@ let PendingCommands: Map<CommandCode, PendingCommand[]> = new Map();
 
 export async function sendOVMSv2Command(command: { commandCode: CommandCode, params?: any }): Promise<string> {
   return new Promise((resolve, reject) => {
-    console.log('[sendOVMSv2Command] command', command.commandCode, command.params || {})
+    console.log('[sendOVMSv2Command] command', CommandCode[command.commandCode], command.params || {})
     if (!connection || connection.readyState !== WebSocket.OPEN) {
       console.log('[sendOVMSv2Command] not connected to vehicle')
       reject(new Error("OVMSv2 not connected to vehicle"));
@@ -140,7 +140,7 @@ export async function sendOVMSv2Command(command: { commandCode: CommandCode, par
  * @param response - The response from the vehicle
  */
 function resolveNextPendingCommand(commandCode: number, result: number, parameters: string) {
-  console.log('[resolveNextPendingCommand] response', commandCode, result, parameters)
+  console.log('[resolveNextPendingCommand] response', CommandCode[commandCode], result, parameters)
   const pendingCommands = PendingCommands.get(commandCode) || [];
   if (pendingCommands.length > 0) {
     const nextCommand = pendingCommands.shift();

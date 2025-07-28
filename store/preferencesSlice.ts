@@ -53,7 +53,7 @@ export const preferencesSlice = createSlice({
     setPressurePreference: (state, action: PayloadAction<PressureChoiceType>) => {
       state.pressureChoice = action.payload
     },
-    setColorScheme: (state, action : PayloadAction<"light" | "dark">) => {
+    setColorScheme: (state, action : PayloadAction<"light" | "dark" | "null">) => {
       state.colorMode = action.payload
     },
     setLanguage: (state, action : PayloadAction<TSupportedLanguages>) => {

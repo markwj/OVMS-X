@@ -69,10 +69,11 @@ export default function AboutMetricScreen() {
                   value={(tempValue ?? "").toString()}
                   onChangeText={setTempValue}
                   onSubmitEditing={(value) => dispatch(metricsSlice.actions.setMetric({ key: metricName, value: value.nativeEvent.text, currentTime: GetCurrentUTCTimeStamp() }))}
-                  style={[styles.rowEntry, {color: theme.colors.primary}]}
-                  placeholder="undefined"
+                  placeholder={t('undefined')}
                   placeholderTextColor={theme.colors.primary}
                   autoCapitalize="none"
+                  clearButtonMode="always"
+                  style={{flex: 1, flexDirection: 'row', color: theme.dark ? "white" : "black"}}
                 />
                 {metricUnit != null && <Text>{metricUnit}</Text>}
               </View>
