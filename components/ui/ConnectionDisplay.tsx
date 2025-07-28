@@ -2,7 +2,7 @@ import { getCarConnected, getConnectionState, getLastUpdateTime, VehicleConnecti
 import { selectMetricValue } from "@/store/metricsSlice"
 import React, { useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import { Icon, Text } from "react-native-paper"
+import { Icon, Text, useTheme } from "react-native-paper"
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated"
 import { useSelector } from "react-redux"
 import { numericalUnitConvertor } from "../utils/numericalUnitConverter"
@@ -69,11 +69,12 @@ export function ConnectionText() {
 
   const connectionState = useSelector(getConnectionState)
   const carConnected = useSelector(getCarConnected)
+  const theme = useTheme()
 
   const dataAgeSeconds = Date.now() / 1000 - lastUpdated
 
   let textContent;
-  let textColor = "white";
+  let textColor = (theme.dark ? "white" : "black");
 
   let displayText
   try {
@@ -96,7 +97,7 @@ export function ConnectionText() {
   if (connectionState == VehicleConnectionState.CONNECTED) {
     if (carConnected) {
       textContent = `${vEAwake ? t('Awake') : t('Sleeping')}, ${displayText}`
-      textColor = "white"
+      textColor = (theme.dark ? "white" : "black")
     } else {
       textColor = ORANGE
       textContent = t("Vehicle disconnected") + " " + displayText

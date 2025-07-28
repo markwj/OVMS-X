@@ -1,17 +1,18 @@
 import { selectMetricValue } from "@/store/metricsSlice"
 import React, { useRef } from "react"
 import { ImageBackground, Image, View } from "react-native"
-import { Icon, Text } from "react-native-paper"
+import { Icon, Text, useTheme } from "react-native-paper"
 import { FlipInEasyX } from "react-native-reanimated"
 import { useSelector } from "react-redux"
 
 export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: number, batteryCharging?: boolean }): React.JSX.Element {
   let batteryIconSource = ''
+  const theme = useTheme()
 
   batterySOC ??= useSelector(selectMetricValue("v.b.soc"))
   batteryCharging ??= useSelector(selectMetricValue('v.c.inprogress')) == "yes"
 
-  let batteryColor = "#ffffff"
+  let batteryColor = theme.dark ? "white" : "black"
 
   if (batterySOC == undefined) {
     batteryIconSource = "battery-unknown"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, KeyboardAvoidingView, View, TextInput, RefreshControl } from 'react-native';
-import { Text, DataTable } from "react-native-paper";
+import { Text, DataTable, useTheme } from "react-native-paper";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectMetric, selectMetricIsStale, metricsSlice, selectLocalisedMetricValue, selectMetricLastModified, selectMetricIsDefined } from "@/store/metricsSlice";
@@ -13,6 +13,7 @@ import { ScrollView } from "react-native-gesture-handler";
 export default function AboutMetricScreen() {
   const { metricName } = useLocalSearchParams<{ metricName: string }>();
   const dispatch = useDispatch();
+  const theme = useTheme()
 
   const metric = useSelector(selectMetric(metricName)) as Metric;
   const metricIsStale = useSelector(selectMetricIsStale(metricName, GetCurrentUTCTimeStamp()));
@@ -68,8 +69,9 @@ export default function AboutMetricScreen() {
                   value={(tempValue ?? "").toString()}
                   onChangeText={setTempValue}
                   onSubmitEditing={(value) => dispatch(metricsSlice.actions.setMetric({ key: metricName, value: value.nativeEvent.text, currentTime: GetCurrentUTCTimeStamp() }))}
-                  style={styles.rowEntry}
+                  style={[styles.rowEntry, {color: theme.colors.primary}]}
                   placeholder="undefined"
+                  placeholderTextColor={theme.colors.primary}
                   autoCapitalize="none"
                 />
                 {metricUnit != null && <Text>{metricUnit}</Text>}
@@ -140,6 +142,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     color: 'white',
   },
-  rowEntry: { flex: 10, color: 'white', textDecorationLine: "underline" }
+  rowEntry: { flex: 10, textDecorationLine: "underline" }
 });
 

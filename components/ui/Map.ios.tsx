@@ -5,10 +5,11 @@ import { useSelector } from "react-redux";
 import { selectMetricValue } from "@/store/metricsSlice";
 import { Animated, useColorScheme, View } from "react-native";
 import { getSelectedVehicle } from "@/store/selectionSlice";
+import { useTheme } from "react-native-paper";
 
 export function Map() {
   const mapRef = useRef(null)
-  const colorScheme = useColorScheme();
+  const theme = useTheme()
   const vPLatitude = useSelector(selectMetricValue("v.p.latitude"))
   const vPLongitude = useSelector(selectMetricValue("v.p.longitude"))
 
@@ -21,18 +22,21 @@ export function Map() {
 
   const [region, setRegion] = useState(INITIAL_REGION)
 
+  useEffect(() => {
+    if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
+      //@ts-ignore
+      mapRef.current?.animateToRegion({
+        latitude: vPLatitude,
+        longitude: vPLongitude,
+        latitudeDelta: region.latitudeDelta,
+        longitudeDelta: region.longitudeDelta
+      }, 500)
+    }
+  }, [vPLatitude, vPLongitude, region])
+
+
   if (vPLatitude == null || vPLongitude == null) {
     return (<></>);
-  }
-
-  if (Math.abs(vPLatitude - region.latitude) > region.latitudeDelta / 2 || Math.abs(vPLongitude - region.longitude) > region.longitudeDelta / 2) {
-    //@ts-ignore
-    mapRef.current?.animateToRegion({
-      latitude: vPLatitude,
-      longitude: vPLongitude,
-      latitudeDelta: region.latitudeDelta,
-      longitudeDelta: region.longitudeDelta
-    }, 500)
   }
 
   return (
@@ -41,13 +45,10 @@ export function Map() {
         ref={mapRef}
         region={region}
         initialRegion={INITIAL_REGION}
-        onRegionChangeComplete={(r, v) => {
-          if (v.isGesture) {
-            setRegion(r)
-          }
-        }}
+        onRegionChangeComplete={(r) => setRegion(r)}
         style={{ flex: 1 }}
         rotateEnabled={false}
+        userInterfaceStyle={theme.dark ? "dark" : "light"}
         showsTraffic={false}>
         <CarMarker />
       </MapView>
