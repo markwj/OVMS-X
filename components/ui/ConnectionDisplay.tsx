@@ -65,7 +65,7 @@ export function ConnectionDisplay(): React.JSX.Element {
 export function ConnectionText() {
   const { t } = useTranslation()
   const lastUpdated = useSelector(getLastUpdateTime)
-  const vEAwake = useSelector(selectMetricValue("v.e.awake12"))
+  const vEAwake = useSelector(selectMetricValue("v.e.awake12")) === "awake"
 
   const connectionState = useSelector(getConnectionState)
   const carConnected = useSelector(getCarConnected)

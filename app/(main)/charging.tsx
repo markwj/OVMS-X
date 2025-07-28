@@ -81,7 +81,8 @@ export default function ChargingScreen() {
 
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
             <Button
-              style={[styles.button, (!charging ? {backgroundColor: theme.colors.primaryContainer} : {backgroundColor: theme.colors.surfaceDisabled})]}
+              mode="elevated"
+              style={(charging ? { backgroundColor: theme.colors.primaryContainer } : { backgroundColor: theme.colors.surfaceDisabled })}
               onPress={() => {
                 if (charging) { return; }
                 ConnectionCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
@@ -90,7 +91,8 @@ export default function ChargingScreen() {
               <Text style={styles.buttonText}>{t('START CHARGING')}</Text>
             </Button>
             <Button
-              style={[styles.button, (charging ? {backgroundColor: theme.colors.primaryContainer} : {backgroundColor: theme.colors.surfaceDisabled})]}
+              mode="elevated"
+              style={(!charging ? { backgroundColor: theme.colors.primaryContainer } : { backgroundColor: theme.colors.surfaceDisabled })}
               onPress={() => {
                 if (!charging) { return; }
                 ConnectionCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
@@ -122,40 +124,37 @@ export default function ChargingScreen() {
             <Section title="Charge Mode" visibilityToggle={false}>
               <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 1 }}>
-                <Controller
-                  control={control}
-                  name={"chargeMode"}
-                  render={({ field: { value } }) => {
-                    return (
-                      <Dropdown
-                        iconColor='white'
-                        selectedTextStyle={{ color: 'white' }}
-                        itemTextStyle={{ color: 'white' }}
-                        containerStyle={{ backgroundColor: 'grey' }}
-                        itemContainerStyle={{ backgroundColor: 'grey' }}
-                        activeColor="dimgrey"
-                        style={{ backgroundColor: 'dimgrey', borderColor: 'black', borderWidth: 2, padding: 5 }}
-                        value={value}
-                        onChange={(v) => {
-                          setValue('chargeMode', v.value)
-                          ConnectionCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
-                        }}
-                        data={vCModes}
-                        labelField={"label"}
-                        valueField={"value"}
-                      />
-                    )
-                  }
-                  }
-                />
+                  <Controller
+                    control={control}
+                    name={"chargeMode"}
+                    render={({ field: { value } }) => {
+                      return (
+                        <Dropdown
+                          iconColor='white'
+                          selectedTextStyle={{ color: 'white' }}
+                          itemTextStyle={{ color: 'white' }}
+                          containerStyle={{ backgroundColor: 'grey' }}
+                          itemContainerStyle={{ backgroundColor: 'grey' }}
+                          activeColor="dimgrey"
+                          style={{ backgroundColor: 'dimgrey', borderColor: 'black', borderWidth: 2, padding: 5 }}
+                          value={value}
+                          onChange={(v) => {
+                            setValue('chargeMode', v.value)
+                            ConnectionCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
+                          }}
+                          data={vCModes}
+                          labelField={"label"}
+                          valueField={"value"}
+                        />
+                      )
+                    }
+                    }
+                  />
+                </View>
               </View>
-            </View>
+            </Section>
 
-            <View style={styles.sectionContainer}>
-              <Text style={{ flexShrink: 1 }} variant="labelMedium">Charge Power Limit</Text>
-              <Text>Pretend there's a slider here for now...</Text>
-            </View>
-
+            <Section title={"Power"}>
               <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 5 }}>
                 <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Power: ")}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>

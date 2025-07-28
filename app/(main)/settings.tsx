@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { useTheme, Text, Button, SegmentedButtons, Card, Icon, List, DataTable, IconButton, Portal, Modal, Switch } from 'react-native-paper';
-import { KeyboardAvoidingView, Platform, StyleSheet, View, TextInput, Appearance } from 'react-native';
+import { useTheme, Text, Button, SegmentedButtons, Card, Icon, TextInput, DataTable, IconButton, Portal, Modal, Switch } from 'react-native-paper';
+import { KeyboardAvoidingView, Platform, StyleSheet, View, Appearance } from 'react-native';
 import { ScrollView } from "react-native-gesture-handler"
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -99,10 +99,10 @@ export default function SettingsScreen() {
     setEditCommandModalParams({ index: index, command: command })
   }
 
-  const LanguageOptions = [...SupportedLanguages.map((k) => {
+  const LanguageOptions = [{ label: "System", value: "null" }, ...SupportedLanguages.map((k) => {
     const displayName = resources[k].name
-    return { key: displayName, value: k }
-  }), { key: "System", value: "null" }]
+    return { label: displayName, value: k }
+  })]
 
   return (
     <KeyboardAvoidingView
@@ -118,37 +118,43 @@ export default function SettingsScreen() {
           contentContainerStyle={{ backgroundColor: theme.colors.elevation.level5, padding: 20, borderColor: theme.colors.outlineVariant, borderWidth: 5, gap: 10 }}
           onDismiss={() => setEditCommandModalParams(null)}
         >
+          {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
+            <IconButton
+              style={{ position: 'absolute', right: '0%' }}
+              icon={"delete"}
+              onPress={() => { dispatch(storedCommandsSlice.actions.removeCommand(editCommandModalParams!.index)); setEditCommandModalParams(null) }}
+            ></IconButton>
+          }
           <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
             <Text variant="titleMedium">{t("Edit stored command")}</Text>
           </View>
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text variant="labelLarge">{t("Name")}: </Text>
             <TextInput
+              label={t("Name")}
+              clearButtonMode="always"
               value={editCommandModalParams?.command.name}
               onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, name: t } })}
-              style={{ color: theme.dark ? "white" : "black", flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant, padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
+              style={{ flex: 1 }}
             />
           </View>
           <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
-            <Text variant="labelLarge">{t("Command")}: </Text>
             <TextInput
+              label={t("Command")}
+              clearButtonMode="always"
               value={editCommandModalParams?.command.command}
               onChangeText={(t) => setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, command: t } })}
-              style={{ color: theme.dark ? "white" : "black", flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant, padding: 5, borderColor: 'black', borderWidth: 2, flex: 1 }}
+              style={{ flex: 1 }}
               autoCapitalize="none"
             />
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
             <View style={{ flex: 1 }}>
-              <Button onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>{t("Save")}</Button>
+              <Button
+                mode="contained"
+                onPress={() => { dispatch(storedCommandsSlice.actions.setCommand(editCommandModalParams!)); setEditCommandModalParams(null) }}>
+                {t("Save")}
+              </Button>
             </View>
-            {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
-              <IconButton
-                style={{ position: 'absolute', right: '0%' }}
-                icon={"delete"}
-                onPress={() => { dispatch(storedCommandsSlice.actions.removeCommand(editCommandModalParams!.index)); setEditCommandModalParams(null) }}
-              ></IconButton>
-            }
           </View>
         </Modal>
       </Portal>
@@ -185,10 +191,10 @@ export default function SettingsScreen() {
           </>
         )}
 
-        <SettingsSection title={"Language"}>
+        <SettingsSection title={"User Interface"}>
+          <Text variant="labelMedium">{t("Language")}</Text>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text variant="labelMedium">{t("Language")}</Text>
               <View style={{ flex: 1, flexDirection: 'row' }}>
                 <Controller
                   control={control}
@@ -196,8 +202,8 @@ export default function SettingsScreen() {
                   render={({ field: { value } }) => (
                     <Dropdown
                       iconColor={theme.colors.secondary}
-                      selectedTextStyle={{ color: theme.colors.secondary }}
-                      itemTextStyle={{ color: theme.colors.secondary }}
+                      itemTextStyle={{color: theme.dark ? "white" : "black"}}
+                      selectedTextStyle={{color: theme.dark ? "white" : "black"}}
                       containerStyle={{ backgroundColor: theme.colors.secondary }}
                       itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                       activeColor={theme.colors.surfaceVariant}
@@ -212,7 +218,7 @@ export default function SettingsScreen() {
                           i18n.changeLanguage(getLocales()[0].languageCode ?? undefined)
                         }
                       }}
-                      labelField={"key"} valueField={"value"}
+                      labelField={"label"} valueField={"value"}
                       value={value}
                     />
                   )}
@@ -220,36 +226,27 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
-        </SettingsSection>
 
-        <SettingsSection title={"Appearance"}>
+          <Text variant="labelMedium">{t("Appearence")}</Text>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text variant="labelMedium">{t("Dark mode")}</Text>
               <Controller
                 control={control}
                 name="colorMode"
                 render={({ field: { value } }) => (
-                  <Dropdown
-                    iconColor={theme.colors.secondary}
-                    selectedTextStyle={{ color: theme.colors.secondary }}
-                    itemTextStyle={{ color: theme.colors.secondary }}
-                    containerStyle={{ backgroundColor: theme.colors.secondary }}
-                    itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
-                    activeColor={theme.colors.surfaceVariant}
-                    style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
-                    data={[{ key: t("Light"), value: "light" }, { key: t("Dark"), value: "dark" }, { key: t("System"), value: "null" }]}
-                    onChange={async (v) => {
-                      setValue("colorMode", v.value)
-                      if(v.value != "null") {
-                        Appearance.setColorScheme(v.value)
+                  <SegmentedButtons
+                    value={value}
+                    onValueChange={async (value) => {
+                      setValue("colorMode", value)
+                      if (value != "null") {
+                        Appearance.setColorScheme(value)
+                        dispatch(setColorScheme(value))
                       } else {
                         Appearance.setColorScheme(undefined)
+                        dispatch(setColorScheme(value))
                       }
-                      dispatch(setColorScheme(v.value))
                     }}
-                    labelField={"key"} valueField={"value"}
-                    value={value}
+                    buttons={[{ label: t("System"), value: "null" }, { label: t("Light"), value: "light" }, { label: t("Dark"), value: "dark" }]}
                   />
                 )}
               />

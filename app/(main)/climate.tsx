@@ -33,7 +33,7 @@ export default function ClimateScreen() {
             </View>
 
             {/* Box for remaining features */}
-            <View style={{ flexDirection: 'row', padding: 20, position: 'absolute', left: '5%', top: '70%', width: '90%', height: '25%', borderWidth: 2, borderColor: 'grey', borderRadius: 20, backgroundColor: theme.colors.backdrop }}>
+            <View style={{ flexDirection: 'row', padding: 20, position: 'absolute', left: '5%', top: '70%', width: '90%', height: '25%', borderWidth: 2, borderColor: 'grey', borderRadius: 20 }}>
 
               {/* Heating/cooling enabled */}
               <View style={{ flexShrink: 1, flexDirection: 'column', alignItems: 'center' }}>

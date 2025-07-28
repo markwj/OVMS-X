@@ -22,7 +22,7 @@ export default function ControlsScreen() {
 
   const {t} = useTranslation()
 
-  const carLocked = useSelector(selectMetricValue('v.e.locked'))
+  const carLocked = useSelector(selectMetricValue('v.e.locked'))  === "locked"
   const valetMode = useSelector(selectMetricValue('v.e.valet'))
 
   const vDFL = useSelector(selectMetricValue("v.d.fl")) == "open"

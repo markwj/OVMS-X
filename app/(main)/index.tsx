@@ -16,7 +16,7 @@ import { MetricValue } from "@/components/ui/MetricValue";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
-import { CommandCode, ConnectionStandardCommand } from "@/components/platforms/connection";
+import { CommandCode, ConnectionCommand } from "@/components/platforms/connection";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -28,7 +28,7 @@ export default function HomeScreen() {
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const vehicleCount = useSelector(getVehicleCount)
-  const vEAwake = useSelector(selectMetricValue("v.e.awake12"))
+  const vEAwake = useSelector(selectMetricValue("v.e.awake12")) === "awake"
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -70,7 +70,7 @@ export default function HomeScreen() {
               <ConnectionText />
               {!vEAwake &&
                 <IconButton size={20} icon={"sleep"} onPress={() => {
-                  ConnectionStandardCommand(selectedVehicle, {commandCode: CommandCode.WAKEUP_CAR})
+                  ConnectionCommand(selectedVehicle, {commandCode: CommandCode.WAKEUP_CAR})
                 }}></IconButton>
               }
             </View>

@@ -92,7 +92,7 @@ export default function EditVehicleScreen() {
                         title: t("Edit") + " " + v,
                       })
                     }}
-                    style={{ color: theme.colors.secondary, flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2 }}
+                    style={{ color: theme.colors.secondary, flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant }}
                     dense={true}
                     placeholder="Name..."
                   />
@@ -112,8 +112,8 @@ export default function EditVehicleScreen() {
               render={({ field: { onChange, value = vehicle.image.imageName } }) => (
                 <Dropdown
                   iconColor={theme.colors.secondary}
-                  selectedTextStyle={{ color: theme.colors.secondary }}
-                  itemTextStyle={{ color: theme.colors.secondary }}
+                  selectedTextStyle={{ color: theme.dark ? 'white' : 'black' }}
+                  itemTextStyle={{ color: theme.dark ? 'white' : 'black' }}
                   containerStyle={{ backgroundColor: theme.colors.secondary }}
                   itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                   activeColor={theme.colors.surface}
