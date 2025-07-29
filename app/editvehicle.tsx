@@ -17,7 +17,6 @@ import * as FileSystem from "expo-file-system"
 
 import * as ImagePicker from "expo-image-picker"
 import { ImageData, ImageEditor } from "expo-dynamic-image-crop";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
@@ -71,186 +70,184 @@ export default function EditVehicleScreen() {
   if (vehicle == null) { return <View style={styles.container}><Text>Could not find vehicle data</Text></View> }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
-          <View style={{ flexShrink: 1, marginRight: '5%' }}>
-            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Name")}: </Text>
-          </View>
-          <View style={{ flexGrow: 4 }}>
-            <Controller
-              control={control}
-              name="name"
-              rules={{ required: 'Required', maxLength: 30 }}
-              render={({ field: { onChange, value = vehicle.name } }) => (
-                <View style={{ alignItems: 'center' }}>
-                  <TextInput
-                    value={value ?? ""}
-                    onChangeText={(v: string) => {
-                      onChange(v);
-                      navigation.setOptions({
-                        title: t("Edit") + " " + v,
-                      })
-                    }}
-                    style={{ color: theme.colors.secondary, flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant }}
-                    dense={true}
-                    placeholder="Name..."
+    <View style={styles.container}>
+      <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
+        <View style={{ flexShrink: 1, marginRight: '5%' }}>
+          <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Name")}: </Text>
+        </View>
+        <View style={{ flexGrow: 4 }}>
+          <Controller
+            control={control}
+            name="name"
+            rules={{ required: 'Required', maxLength: 30 }}
+            render={({ field: { onChange, value = vehicle.name } }) => (
+              <View style={{ alignItems: 'center' }}>
+                <TextInput
+                  value={value ?? ""}
+                  onChangeText={(v: string) => {
+                    onChange(v);
+                    navigation.setOptions({
+                      title: t("Edit") + " " + v,
+                    })
+                  }}
+                  style={{ color: theme.colors.secondary, flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant }}
+                  dense={true}
+                  placeholder="Name..."
+                />
+              </View>
+            )}
+          />
+        </View>
+      </View>
+      <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
+        <View style={{ flexShrink: 1, marginRight: '5%' }}>
+          <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Type")}: </Text>
+        </View>
+        <View style={{ flexGrow: 4 }}>
+          <Controller
+            control={control}
+            name="image.imageName"
+            render={({ field: { onChange, value = vehicle.image.imageName } }) => (
+              <Dropdown
+                iconColor={theme.colors.secondary}
+                selectedTextStyle={{ color: theme.dark ? 'white' : 'black' }}
+                itemTextStyle={{ color: theme.dark ? 'white' : 'black' }}
+                containerStyle={{ backgroundColor: theme.colors.secondary }}
+                itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                activeColor={theme.colors.surface}
+                style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10 }}
+                data={vehicleImageNames.map((v) => { return { ...v, key: t(v.key) } })}
+                onChange={(v) => onChange(v.value)}
+                labelField={"key"} valueField={"value"}
+                value={value}
+              />
+            )} />
+        </View>
+      </View>
+      <View style={{ flexGrow: 1 }}>
+
+        {!customImage &&
+          <>
+            <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'flex-start', zIndex: 0 }}>
+              <VehicleSideImage image={carImage} />
+            </View>
+            <View style={{ flexGrow: 1, padding: 40, paddingTop: 0 }}>
+              <Controller
+                control={control}
+                name="image.tintColor"
+                render={({ field: { onChange, value = vehicle.image.tintColor } }) => (
+                  <ColorPicker
+                    color={value ?? "#ffffff"}
+                    palette={['#ffffff', '#bababa', '#888888', '#282828', '#fc574b', '#f99500', '#fce00c', '#00ff50', '#5480e5', "#cb6ee5", "#f95eb6"]}
+                    //@ts-ignore
+                    onColorChangeComplete={(color) => { onChange(color); }}
                   />
-                </View>
-              )}
-            />
-          </View>
-        </View>
-        <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
-          <View style={{ flexShrink: 1, marginRight: '5%' }}>
-            <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Type")}: </Text>
-          </View>
-          <View style={{ flexGrow: 4 }}>
-            <Controller
-              control={control}
-              name="image.imageName"
-              render={({ field: { onChange, value = vehicle.image.imageName } }) => (
-                <Dropdown
-                  iconColor={theme.colors.secondary}
-                  selectedTextStyle={{ color: theme.dark ? 'white' : 'black' }}
-                  itemTextStyle={{ color: theme.dark ? 'white' : 'black' }}
-                  containerStyle={{ backgroundColor: theme.colors.secondary }}
-                  itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
-                  activeColor={theme.colors.surface}
-                  style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10 }}
-                  data={vehicleImageNames.map((v) => {return {...v, key: t(v.key)}})}
-                  onChange={(v) => onChange(v.value)}
-                  labelField={"key"} valueField={"value"}
-                  value={value}
-                />
-              )} />
-          </View>
-        </View>
-        <View style={{ flexGrow: 1 }}>
+                )}
+              />
+            </View>
+          </>
+        }
 
-          {!customImage &&
-            <>
-              <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'flex-start', zIndex: 0 }}>
-                <VehicleSideImage image={carImage} />
-              </View>
-              <View style={{ flexGrow: 1, padding: 40, paddingTop: 0 }}>
-                <Controller
-                  control={control}
-                  name="image.tintColor"
-                  render={({ field: { onChange, value = vehicle.image.tintColor } }) => (
-                    <ColorPicker
-                      color={value ?? "#ffffff"}
-                      palette={['#ffffff', '#bababa', '#888888', '#282828', '#fc574b', '#f99500', '#fce00c', '#00ff50', '#5480e5', "#cb6ee5", "#f95eb6"]}
-                      //@ts-ignore
-                      onColorChangeComplete={(color) => { onChange(color); }}
-                    />
-                  )}
-                />
-              </View>
-            </>
-          }
+        {customImage &&
+          <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'center' }}>
+            <TouchableOpacity
+              style={{ borderWidth: 2, borderColor: theme.colors.secondary, alignItems: 'center' }}
+              onPress={async () => {
+                const image = await pickImageAsync()
+                if (image == null) { return }
+                setCroppingImageParams({
+                  uri: image,
+                  aspectRatio: 654 / 302,
+                  type: "side"
+                })
+              }}>
+              <VehicleSideImage image={carImage} continuouslyPollSource={false}></VehicleSideImage>
+              <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Side view")}</Text>
+            </TouchableOpacity>
 
-          {customImage &&
-            <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'center' }}>
-              <TouchableOpacity
-                style={{ borderWidth: 2, borderColor: theme.colors.secondary, alignItems: 'center' }}
-                onPress={async () => {
+            <View style={{ flexDirection: 'row', flex: 1, width: '100%' }}>
+
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
                   const image = await pickImageAsync()
                   if (image == null) { return }
                   setCroppingImageParams({
                     uri: image,
-                    aspectRatio: 654 / 302,
-                    type: "side"
+                    aspectRatio: 304 / 606,
+                    type: "top"
                   })
                 }}>
-                <VehicleSideImage image={carImage} continuouslyPollSource={false}></VehicleSideImage>
-                <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Side view")}</Text>
-              </TouchableOpacity>
-
-              <View style={{ flexDirection: 'row', flex: 1, width: '100%' }}>
-
-                <View style={{ flex: 1 }}>
-                  <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
-                    const image = await pickImageAsync()
-                    if (image == null) { return }
-                    setCroppingImageParams({
-                      uri: image,
-                      aspectRatio: 304 / 606,
-                      type: "top"
-                    })
-                  }}>
-                    <VehicleTopImage image={carImage}></VehicleTopImage>
-                    <Text style={{ alignSelf: 'center' }} variant="labelMedium">{t("Top view")}</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View style={{ flex: 1 }}>
-                  <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
-                    const image = await pickImageAsync()
-                    if (image == null) { return }
-                    setCroppingImageParams({
-                      uri: image,
-                      aspectRatio: 1,
-                      type: "map"
-                    })
-                  }}>
-                    <VehicleMapImage image={carImage}></VehicleMapImage>
-                    <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Map icon")}</Text>
-                  </TouchableOpacity>
-                </View>
-
+                  <VehicleTopImage image={carImage}></VehicleTopImage>
+                  <Text style={{ alignSelf: 'center' }} variant="labelMedium">{t("Top view")}</Text>
+                </TouchableOpacity>
               </View>
+
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
+                  const image = await pickImageAsync()
+                  if (image == null) { return }
+                  setCroppingImageParams({
+                    uri: image,
+                    aspectRatio: 1,
+                    type: "map"
+                  })
+                }}>
+                  <VehicleMapImage image={carImage}></VehicleMapImage>
+                  <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Map icon")}</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
-          }
+          </View>
+        }
 
-        </View>
-        <Controller
-          control={control}
-          name="image.customPath"
-          render={({ field: { onChange } }) => (
-            <ImageEditor
-              imageUri={croppingImageParams?.uri ?? ""}
-              onEditingCancel={() => {
-                setCroppingImageParams(null)
-              }}
-              onEditingComplete={async (data: ImageData) => {
-                let customPath = await HandleAddCustomVehicleImage(vehicleKey, croppingImageParams?.type ?? "side", data.uri)
-                onChange(customPath)
-                setCroppingImageParams(null)
-              }}
-              fixedAspectRatio={croppingImageParams?.aspectRatio ?? 1}
-              isVisible={croppingImageParams != null}
-            />
-          )}
-        />
+      </View>
+      <Controller
+        control={control}
+        name="image.customPath"
+        render={({ field: { onChange } }) => (
+          <ImageEditor
+            imageUri={croppingImageParams?.uri ?? ""}
+            onEditingCancel={() => {
+              setCroppingImageParams(null)
+            }}
+            onEditingComplete={async (data: ImageData) => {
+              let customPath = await HandleAddCustomVehicleImage(vehicleKey, croppingImageParams?.type ?? "side", data.uri)
+              onChange(customPath)
+              setCroppingImageParams(null)
+            }}
+            fixedAspectRatio={croppingImageParams?.aspectRatio ?? 1}
+            isVisible={croppingImageParams != null}
+          />
+        )}
+      />
 
-        <Stack.Screen options={{
-          title: t("Edit") + " " + vehicle?.name,
-          headerRight: () => (
-            <IconButton icon={"delete"} onPress={() => (
-              ConfirmationMessage(
-                () => {
-                  if (getSelectedVehicle(store.getState())?.key == vehicleKey) {
-                    dispatch(selectionSlice.actions.unselectVehicle())
-                  }
-                  dispatch(vehiclesSlice.actions.removeVehicle(vehicleKey))
+      <Stack.Screen options={{
+        title: t("Edit") + " " + vehicle?.name,
+        headerRight: () => (
+          <IconButton icon={"delete"} onPress={() => (
+            ConfirmationMessage(
+              () => {
+                if (getSelectedVehicle(store.getState())?.key == vehicleKey) {
+                  dispatch(selectionSlice.actions.unselectVehicle())
+                }
+                dispatch(vehiclesSlice.actions.removeVehicle(vehicleKey))
 
-                  const firstVehicleKey = getVehicles(store.getState())[0].key
-                  if (firstVehicleKey != null) {
-                    dispatch(selectionSlice.actions.selectVehicle(firstVehicleKey))
-                  }
+                const firstVehicleKey = getVehicles(store.getState())[0].key
+                if (firstVehicleKey != null) {
+                  dispatch(selectionSlice.actions.selectVehicle(firstVehicleKey))
+                }
 
-                  router.back()
-                },
-                "Warning!",
-                `Do you want to delete ${vehicle.name}? This action cannot be undone.`,
-                "Delete"
-              )
-            )} />
-          )
-        }} />
-      </SafeAreaView>
-    </SafeAreaProvider>
+                router.back()
+              },
+              "Warning!",
+              `Do you want to delete ${vehicle.name}? This action cannot be undone.`,
+              "Delete"
+            )
+          )} />
+        )
+      }} />
+    </View>
   );
 }
 

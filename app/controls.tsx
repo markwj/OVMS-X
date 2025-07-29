@@ -9,7 +9,6 @@ import { selectLocalisedMetricValue, selectMetricIsStale, selectMetricValue } fr
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ConnectionCommand } from "@/components/platforms/connection";
 import { useTranslation } from "react-i18next";
 import { CommandCode } from "@/components/platforms/Commands";
@@ -57,11 +56,9 @@ export default function ControlsScreen() {
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.primaryContainer}>
-
-        {vehicle != null &&
-          <View style={styles.screenContainer}>
+    <View style={styles.primaryContainer}>
+      {vehicle != null &&
+        <View style={styles.screenContainer}>
 
             {/* Car display */}
             <View style={styles.vehicleImageBoundary}>
@@ -220,8 +217,7 @@ export default function ControlsScreen() {
 
           </View>
         }
-      </SafeAreaView>
-    </SafeAreaProvider>
+    </View>
   );
 }
 

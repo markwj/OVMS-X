@@ -2,16 +2,17 @@ import React, { useState, useRef, RefObject } from "react";
 import { Image, View, Pressable, ScrollView, StyleSheet } from "react-native";
 import { router, useRouter } from "expo-router";
 import { Text, Card, Button, IconButton } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { getSelectedVehicle, selectionSlice, } from "@/store/selectionSlice";
 import { getVehicles, Vehicle, vehiclesSlice } from "@/store/vehiclesSlice"
 import { useTranslation } from "react-i18next";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
 interface VehicleSelectorProps {
   setDrawerOpen?: (open: boolean) => void;
+  headerHeight: number;
 }
 
 function VehicleList({ setDrawerOpen }: { setDrawerOpen?: (open: boolean) => void }) {
@@ -67,7 +68,7 @@ function VehicleList({ setDrawerOpen }: { setDrawerOpen?: (open: boolean) => voi
   }
 }
 
-export function VehicleSelector({ setDrawerOpen }: VehicleSelectorProps) {
+export function VehicleSelector({ setDrawerOpen, headerHeight }: VehicleSelectorProps) {
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -79,9 +80,10 @@ export function VehicleSelector({ setDrawerOpen }: VehicleSelectorProps) {
   };
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ height: '100%' }}>
-        <ScrollView>
+      <View style={{ height: '100%' }}>
+        <ScrollView
+          contentContainerStyle={{ paddingTop: headerHeight }}
+        >
           <VehicleList setDrawerOpen={setDrawerOpen} />
           <Pressable onPress={handleAddNewPlatform}>
             <Card style={styles.container}>
@@ -91,8 +93,7 @@ export function VehicleSelector({ setDrawerOpen }: VehicleSelectorProps) {
             </Card>
           </Pressable>
         </ScrollView>
-      </SafeAreaView >
-    </SafeAreaProvider>
+      </View >
   );
 }
 

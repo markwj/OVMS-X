@@ -27,6 +27,8 @@ import * as Device from 'expo-device';
 import { isRunningInExpoGo } from 'expo';
 import { Drawer } from 'react-native-drawer-layout';
 import { useTheme } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 // Conditionally import notifications to avoid warnings in Expo Go
 let Notifications: any = null;
 if (!isRunningInExpoGo()) {
@@ -153,6 +155,7 @@ const MainLayout = () => {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -210,7 +213,7 @@ const MainLayout = () => {
         drawerStyle={isLargeScreen ? null : { width: '50%', backgroundColor: theme.colors.surface }}
         keyboardDismissMode='on-drag'
         renderDrawerContent={() => {
-          return <VehicleSelector setDrawerOpen={setDrawerOpen} />
+          return <VehicleSelector setDrawerOpen={setDrawerOpen} headerHeight={insets.top} />
         }}>
         <StatusBar style='auto' hidden={false} />
         <Stack
