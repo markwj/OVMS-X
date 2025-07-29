@@ -210,7 +210,7 @@ const MainLayout = () => {
         drawerStyle={isLargeScreen ? null : { width: '50%', backgroundColor: theme.colors.surface }}
         keyboardDismissMode='on-drag'
         renderDrawerContent={() => {
-          return <VehicleSelector setDrawerOpen={setDrawerOpen}/>
+          return <VehicleSelector setDrawerOpen={setDrawerOpen} />
         }}>
         <StatusBar style='auto' hidden={false} />
         <Stack
@@ -223,13 +223,12 @@ const MainLayout = () => {
             headerTitleAlign: 'center',
             headerLargeTitle: false,
             headerBackButtonDisplayMode: 'generic',
-//            headerLeft: ({ canGoBack }) => (
-//              <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -30 }}>
-//                <IconButton icon='menu' onPress={() => setDrawerOpen(true)} />
-//                {canGoBack && <Button onPress={() => router.back()}>{'< Back'}</Button>}
-//              </View>
-//            ),
+            headerLeft: ({ canGoBack }) =>
+              canGoBack ? undefined : (
+                <IconButton icon='menu' onPress={() => setDrawerOpen(true)} />
+              ),
             headerRight: () => <ConnectionIcon />,
+
           }}
         >
           <Stack.Screen
