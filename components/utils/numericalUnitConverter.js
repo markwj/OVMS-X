@@ -40,6 +40,33 @@ import charge from 'convert-units/definitions/charge'
 */
 
 const customMeasures = {
+  temperature: {
+    ...temperature,
+    systems: {
+      ...temperature.systems,
+      metric: {
+        ...temperature.systems.metric,
+        '°C': {
+          name: {
+            singular: 'Celsius',
+            plural: 'Celsius',
+          },
+          to_anchor: 1,
+          anchor_shift: 0,
+        },
+      },
+      imperial: {
+        ...temperature.systems.imperial,
+        '°F': {
+          name: {
+            singular: 'Fahrenheit',
+            plural: 'Fahrenheit',
+          },
+          to_anchor: 1
+        },
+      }
+    }
+  },
   charge: {
     systems: {
       SI: {
@@ -94,13 +121,13 @@ const customMeasures = {
         ...power.anchors.metric,
         dBm: {
           transform: (v) => {
-            return 10 * Math.log10(1000*v)
+            return 10 * Math.log10(1000 * v)
           }
         },
         SQ: {
           transform: (v) => {
-            v = 10 * Math.log10(1000*v)
-            if(v <= -51) { return Math.round((v+113)/2)}
+            v = 10 * Math.log10(1000 * v)
+            if (v <= -51) { return Math.round((v + 113) / 2) }
             return 0
           }
         }
@@ -110,14 +137,14 @@ const customMeasures = {
         dBm: {
           transform: (v) => {
             v = v / 0.737562149
-            return 10 * Math.log10(1000*v)
+            return 10 * Math.log10(1000 * v)
           }
         },
         SQ: {
           transform: (v) => {
             v = v / 0.737562149
-            v = 10 * Math.log10(1000*v)
-            if(v <= -51) { return Math.round((v+113)/2)}
+            v = 10 * Math.log10(1000 * v)
+            if (v <= -51) { return Math.round((v + 113) / 2) }
             return 0
           }
         }
@@ -125,17 +152,17 @@ const customMeasures = {
       dBm: {
         metric: {
           transform: (v) => {
-            return (10 ** (v/10))/1000
+            return (10 ** (v / 10)) / 1000
           }
         },
         imperial: {
           transform: (v) => {
-            return (10 ** (v/10))/1000 * 0.737562149
+            return (10 ** (v / 10)) / 1000 * 0.737562149
           }
         },
         SQ: {
           transform: (v) => {
-            if(v <= -51) { return Math.round((v+113)/2)}
+            if (v <= -51) { return Math.round((v + 113) / 2) }
             return 0
           }
         }
@@ -143,19 +170,19 @@ const customMeasures = {
       SQ: {
         metric: {
           transform: (v) => {
-            v = v <= 31 ? Math.round(v*2 -113) : 0
-            return (10 ** (v/10))/1000
+            v = v <= 31 ? Math.round(v * 2 - 113) : 0
+            return (10 ** (v / 10)) / 1000
           }
         },
         imperial: {
           transform: (v) => {
-            v = v <= 31 ? Math.round(v*2 -113) : 0
-            return (10 ** (v/10))/1000 * 0.737562149
+            v = v <= 31 ? Math.round(v * 2 - 113) : 0
+            return (10 ** (v / 10)) / 1000 * 0.737562149
           }
         },
         dBm: {
           transform: (v) => {
-            if(v <= 31) { return Math.round(v*2 -113)}
+            if (v <= 31) { return Math.round(v * 2 - 113) }
             return 0
           }
         }
@@ -169,7 +196,6 @@ export const numericalUnitConvertor = configureMeasurements({
   time,
   speed,
   length,
-  temperature,
   voltage,
   current,
   energy,

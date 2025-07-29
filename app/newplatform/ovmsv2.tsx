@@ -84,14 +84,14 @@ export default function NewPlatformOVMSv2() {
     try {
       // Construct the HTTPS URL
       const httpsUrl = `https://${data.serverurl}:${data.httpsport}/api/vehicles`;
-      
+
       // Call the API with the form data
       const result = await getVehicles({
         url: httpsUrl,
         username: data.username,
         password: data.password
       }).unwrap();
-      
+
       console.log('getVehicles result', result);
       // Handle the response - add vehicles to the store
       var firstVehicle = true;
@@ -119,7 +119,7 @@ export default function NewPlatformOVMSv2() {
               customPath: null
             }
           };
-          
+
           dispatch(vehiclesSlice.actions.addVehicle(newVehicle));
           if (firstVehicle) {
             console.log("[NewPlatformOVMSv2] selecting vehicle", newKey);
@@ -129,12 +129,12 @@ export default function NewPlatformOVMSv2() {
           }
         });
       }
-      
+
       // Navigate back to main screen after successful addition
       setTimeout(() => {
         router.replace({ pathname: '/' });
       }, 1500);
-      
+
     } catch (error) {
       console.error('Error fetching vehicles:', error);
       // Handle error - show error message to user
@@ -152,19 +152,19 @@ export default function NewPlatformOVMSv2() {
         style={styles.container}>
 
         <ScrollView style={styles.scrollview}>
-
-          <Text>{t('Server')}</Text>
-          <Controller
-            control={control}
-            name="server"
-            render={({ field: { value } }) => (
-              <SegmentedButtons
-                value={value}
-                onValueChange={handleServerChange}
-                buttons={SERVER_BUTTONS}
-              />
-            )}
-          />
+          <View style={{gap: 10, marginBottom: 10}}>
+            <Controller
+              control={control}
+              name="server"
+              render={({ field: { value } }) => (
+                <SegmentedButtons
+                  value={value}
+                  onValueChange={handleServerChange}
+                  buttons={SERVER_BUTTONS}
+                />
+              )}
+            />
+          </View>
 
           <Controller
             control={control}
@@ -200,7 +200,7 @@ export default function NewPlatformOVMSv2() {
               <Controller
                 control={control}
                 name="httpsport"
-                rules={{ 
+                rules={{
                   required: 'Required',
                   min: { value: 1, message: 'Port must be at least 1' },
                   max: { value: 65535, message: 'Port must be at most 65535' },
@@ -237,7 +237,7 @@ export default function NewPlatformOVMSv2() {
               <Controller
                 control={control}
                 name="wssport"
-                rules={{ 
+                rules={{
                   required: 'Required',
                   min: { value: 1, message: 'Port must be at least 1' },
                   max: { value: 65535, message: 'Port must be at most 65535' },

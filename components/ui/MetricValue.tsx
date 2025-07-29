@@ -23,7 +23,7 @@ export function MetricValue(props : Props) {
     unit = res?.unit
   }
 
-  let addSpace = props.addSpace ?? !(["%", "°"].includes(unit))
+  let addSpace = props.addSpace ?? !(["%", "°", "°C", "°F"].includes(unit))
   let showUnit = props.showUnit ?? true
   let abbreviateUnit = props.abbreviateUnit ?? true
 

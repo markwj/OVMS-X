@@ -7,8 +7,8 @@ import { fallbackLng, TSupportedLanguages } from '@/i18n'
 
 export enum TemperatureChoiceType {
   SYSTEM = "system",
-  CELSIUS = "C",
-  FAHRENHEIT = "F"
+  CELSIUS = "°C",
+  FAHRENHEIT = "°F"
 }
 
 export enum DistanceChoiceType {
@@ -70,9 +70,9 @@ export const getTemperatureUnit = (state: RootState) => {
   const locales = getLocales()
   if (state.preferences.temperatureChoice === TemperatureChoiceType.SYSTEM) {
     if (locales[0].temperatureUnit === 'celsius') {
-      return 'C'
+      return '°C'
     } else {
-      return 'F'
+      return '°F'
     }
   } else {
     return state.preferences.temperatureChoice.toString();

@@ -70,10 +70,10 @@ export default function AboutMetricScreen() {
                   onChangeText={setTempValue}
                   onSubmitEditing={(value) => dispatch(metricsSlice.actions.setMetric({ key: metricName, value: value.nativeEvent.text, currentTime: GetCurrentUTCTimeStamp() }))}
                   placeholder={t('undefined')}
-                  placeholderTextColor={theme.colors.primary}
+                  placeholderTextColor={theme.colors.onSurfaceDisabled}
                   autoCapitalize="none"
                   clearButtonMode="always"
-                  style={{flex: 1, flexDirection: 'row', color: theme.dark ? "white" : "black"}}
+                  style={{flex: 1, flexDirection: 'row', color: theme.colors.onSurface}}
                 />
                 {metricUnit != null && <Text>{metricUnit}</Text>}
               </View>

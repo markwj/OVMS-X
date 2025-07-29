@@ -24,7 +24,7 @@ import { notificationsEnabled, notificationsToken } from "@/store/notificationSl
 import StoredCommandsTable from "@/components/ui/StoredCommandsTable";
 import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedCommandsSlice";
 import { Dropdown } from "react-native-element-dropdown";
-import { resources, SupportedLanguages, TSupportedLanguages } from "@/i18n";
+import { fallbackLng, resources, SupportedLanguages, TSupportedLanguages } from "@/i18n";
 import { getLocales } from "expo-localization";
 
 interface FormData {
@@ -99,7 +99,13 @@ export default function SettingsScreen() {
     setEditCommandModalParams({ index: index, command: command })
   }
 
-  const LanguageOptions = [{ label: "System", value: "null" }, ...SupportedLanguages.map((k) => {
+  const locales = getLocales()
+  const defaultLanguage = locales[0].languageCode
+
+  const LanguageOptions = [{
+    label: `${t('System')} (${resources[((defaultLanguage && i18n.exists(defaultLanguage)) ? defaultLanguage : fallbackLng) as TSupportedLanguages].name})`, value: "null"
+  },
+  ...SupportedLanguages.map((k) => {
     const displayName = resources[k].name
     return { label: displayName, value: k }
   })]
@@ -115,12 +121,12 @@ export default function SettingsScreen() {
       <Portal>
         <Modal
           visible={editCommandModalParams != null}
-          contentContainerStyle={{ backgroundColor: theme.colors.elevation.level5, padding: 20, borderColor: theme.colors.outlineVariant, borderWidth: 5, gap: 10 }}
+          contentContainerStyle={{ backgroundColor: theme.colors.elevation.level5, padding: 20, borderColor: 'grey', borderWidth: 2, gap: 10 }}
           onDismiss={() => setEditCommandModalParams(null)}
         >
           {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
             <IconButton
-              style={{ position: 'absolute', right: '0%' }}
+              style={{ position: 'absolute', right: '2%', top:'2%' }}
               icon={"delete"}
               onPress={() => { dispatch(storedCommandsSlice.actions.removeCommand(editCommandModalParams!.index)); setEditCommandModalParams(null) }}
             ></IconButton>
@@ -201,13 +207,13 @@ export default function SettingsScreen() {
                   name="language"
                   render={({ field: { value } }) => (
                     <Dropdown
-                      iconColor={theme.colors.secondary}
-                      itemTextStyle={{color: theme.dark ? "white" : "black"}}
-                      selectedTextStyle={{color: theme.dark ? "white" : "black"}}
-                      containerStyle={{ backgroundColor: theme.colors.secondary }}
+                      iconColor={theme.colors.onSurface}
+                      selectedTextStyle={{ color: theme.colors.onSurface }}
+                      itemTextStyle={{ color: theme.colors.onSurface }}
+                      containerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                       itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
-                      activeColor={theme.colors.surfaceVariant}
-                      style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10, flex: 1, marginLeft: 10 }}
+                      activeColor={theme.colors.surface}
+                      style={{ backgroundColor: theme.colors.surfaceVariant, padding: 10, flex: 1 }}
                       data={LanguageOptions}
                       onChange={async (v) => {
                         setValue("language", v.value)
@@ -215,7 +221,7 @@ export default function SettingsScreen() {
                         if (v == null) {
                           i18n.changeLanguage(v.value)
                         } else {
-                          i18n.changeLanguage(getLocales()[0].languageCode ?? undefined)
+                          i18n.changeLanguage(defaultLanguage ?? fallbackLng)
                         }
                       }}
                       labelField={"label"} valueField={"value"}
@@ -347,7 +353,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     gap: 10,
     marginBottom: 20,
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    borderColor: 'grey',
+    borderWidth: 2,
   },
   headerRow: {
     flex: 1,

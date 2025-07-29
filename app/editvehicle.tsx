@@ -90,6 +90,7 @@ export default function EditVehicleScreen() {
                       title: t("Edit") + " " + v,
                     })
                   }}
+                  clearButtonMode="always"
                   style={{ color: theme.colors.secondary, flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant }}
                   dense={true}
                   placeholder="Name..."
@@ -109,13 +110,13 @@ export default function EditVehicleScreen() {
             name="image.imageName"
             render={({ field: { onChange, value = vehicle.image.imageName } }) => (
               <Dropdown
-                iconColor={theme.colors.secondary}
-                selectedTextStyle={{ color: theme.dark ? 'white' : 'black' }}
-                itemTextStyle={{ color: theme.dark ? 'white' : 'black' }}
-                containerStyle={{ backgroundColor: theme.colors.secondary }}
+                iconColor={theme.colors.onSurface}
+                selectedTextStyle={{ color: theme.colors.onSurface }}
+                itemTextStyle={{ color: theme.colors.onSurface }}
+                containerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                 itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
                 activeColor={theme.colors.surface}
-                style={{ backgroundColor: theme.colors.surfaceVariant, borderColor: theme.colors.outline, borderWidth: 2, padding: 10 }}
+                style={{ backgroundColor: theme.colors.surfaceVariant, padding: 10 }}
                 data={vehicleImageNames.map((v) => { return { ...v, key: t(v.key) } })}
                 onChange={(v) => onChange(v.value)}
                 labelField={"key"} valueField={"value"}
@@ -151,7 +152,7 @@ export default function EditVehicleScreen() {
         {customImage &&
           <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'center' }}>
             <TouchableOpacity
-              style={{ borderWidth: 2, borderColor: theme.colors.secondary, alignItems: 'center' }}
+              style={{ borderWidth: 2, borderColor: 'grey', alignItems: 'center' }}
               onPress={async () => {
                 const image = await pickImageAsync()
                 if (image == null) { return }
@@ -168,7 +169,7 @@ export default function EditVehicleScreen() {
             <View style={{ flexDirection: 'row', flex: 1, width: '100%' }}>
 
               <View style={{ flex: 1 }}>
-                <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
+                <TouchableOpacity style={{ borderWidth: 2, borderColor: 'grey' }} onPress={async () => {
                   const image = await pickImageAsync()
                   if (image == null) { return }
                   setCroppingImageParams({
@@ -183,7 +184,7 @@ export default function EditVehicleScreen() {
               </View>
 
               <View style={{ flex: 1 }}>
-                <TouchableOpacity style={{ borderWidth: 2, borderColor: theme.colors.secondary }} onPress={async () => {
+                <TouchableOpacity style={{ borderWidth: 2, borderColor: 'grey' }} onPress={async () => {
                   const image = await pickImageAsync()
                   if (image == null) { return }
                   setCroppingImageParams({

@@ -12,7 +12,7 @@ export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: numb
   batterySOC ??= useSelector(selectMetricValue("v.b.soc"))
   batteryCharging ??= useSelector(selectMetricValue('v.c.inprogress')) == "yes"
 
-  let batteryColor = theme.dark ? "white" : "black"
+  let batteryColor = theme.colors.onSurface
 
   if (batterySOC == undefined) {
     batteryIconSource = "battery-unknown"
@@ -39,8 +39,8 @@ export function BatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: numb
 const battery100 = require("@/assets/images/component/battery_100.png")
 const battery0 = require("@/assets/images/component/battery_000.png")
 const batteryCopperTops = require("@/assets/images/component/battery_coppertops.png")
-const minPercentageWidth = 20
-const maxPercentageWidth = 55
+const minPercentageWidth = 16
+const maxPercentageWidth = 62
 
 export function HorizontalBatteryIcon({ batterySOC, batteryCharging }: { batterySOC?: number, batteryCharging?: boolean }): React.JSX.Element {
 

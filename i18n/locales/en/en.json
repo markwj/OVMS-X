@@ -92,5 +92,7 @@
   "Build":"Build",
   "Dark mode": "Dark mode",
   "Language":"Language",
-  "User Interface":"User Interface"
+  "User Interface":"User Interface",
+  "Stop Charging":"Stop Charging",
+  "Start Charging":"Start Charging"
 }

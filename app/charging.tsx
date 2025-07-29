@@ -16,6 +16,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import Slider from "@react-native-community/slider";
 import { numericalUnitConvertor } from "@/components/utils/numericalUnitConverter";
 import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
+import { Stack } from "expo-router";
 
 const vCModes = [
   { value: "standard", label: "Standard" },
@@ -28,11 +29,10 @@ export default function ChargingScreen() {
   const vehicle = useSelector(getSelectedVehicle)
   const sufficientSOC = useSelector(selectMetricValue("v.c.limit.soc"))
   const { value: sufficientRange, unit: sufficientRangeUnit } = store.dispatch(selectLocalisedMetricValue("v.c.limit.range")) //These should already be same unit
-  const { value: chargeCurrent, unit: chargeCurrentUnit } = store.dispatch(selectLocalisedMetricValue("v.c.current"))
 
   const { t } = useTranslation()
 
-  const charging = useSelector(selectMetricValue("v.c.inprogress")) == "yes"
+  const charging = useSelector(selectMetricValue("v.c.inprogress", "bool"))
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm({
     defaultValues: {
@@ -49,8 +49,8 @@ export default function ChargingScreen() {
       </View>
       <View style={{ flex: 10, gap: 10 }}>
         <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <MetricValue metricKey={"v.b.health"} emptyOverride="Undescribed SOH"></MetricValue>
-          <Text> (</Text>
+          <MetricValue metricKey={"v.b.health"}></MetricValue>
+          <Text> ({t("SOH")}: </Text>
           <MetricValue metricKey={"v.b.soh"} emptyOverride="N/A"></MetricValue>
           <Text>)</Text>
         </View>
@@ -79,28 +79,20 @@ export default function ChargingScreen() {
 
         <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
           <Button
-            mode="elevated"
-            style={(charging ? { backgroundColor: theme.colors.primaryContainer } : { backgroundColor: theme.colors.surfaceDisabled })}
+            mode="contained"
             onPress={() => {
-              if (charging) { return; }
+              if (charging) {
+                ConnectionCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
+                return;
+              }
               ConnectionCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
             }}
           >
-            <Text style={styles.buttonText}>{t('START CHARGING')}</Text>
-          </Button>
-          <Button
-            mode="elevated"
-            style={(!charging ? { backgroundColor: theme.colors.primaryContainer } : { backgroundColor: theme.colors.surfaceDisabled })}
-            onPress={() => {
-              if (!charging) { return; }
-              ConnectionCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
-            }}
-          >
-            <Text style={styles.buttonText}>{t('STOP CHARGING')}</Text>
+            <Text style={{color: theme.colors.onPrimary}}>{charging ? t('Stop Charging') : t('Start Charging')}</Text>
           </Button>
         </View>
 
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
 
           {charging &&
             <Section title={"Time until..."} visibilityToggle={false}>
@@ -113,7 +105,7 @@ export default function ChargingScreen() {
                 <MetricValue metricKey={"v.c.duration.soc"} emptyOverride="N/A" toBest={true} abbreviateUnit={false}></MetricValue>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text>{sufficientSOC ?? t("Sufficient range")} {sufficientRangeUnit ?? ""}: </Text>
+                <Text>{sufficientRange ?? t("Sufficient range")} {sufficientRangeUnit ?? ""}: </Text>
                 <MetricValue metricKey={"v.c.duration.range"} emptyOverride="N/A" toBest={true} abbreviateUnit={false}></MetricValue>
               </View>
             </Section>
@@ -128,13 +120,13 @@ export default function ChargingScreen() {
                   render={({ field: { value } }) => {
                     return (
                       <Dropdown
-                        iconColor='white'
-                        selectedTextStyle={{ color: 'white' }}
-                        itemTextStyle={{ color: 'white' }}
-                        containerStyle={{ backgroundColor: 'grey' }}
-                        itemContainerStyle={{ backgroundColor: 'grey' }}
-                        activeColor="dimgrey"
-                        style={{ backgroundColor: 'dimgrey', borderColor: 'black', borderWidth: 2, padding: 5 }}
+                        iconColor={theme.colors.onSurface}
+                        selectedTextStyle={{ color: theme.colors.onSurface }}
+                        itemTextStyle={{ color: theme.colors.onSurface }}
+                        containerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                        itemContainerStyle={{ backgroundColor: theme.colors.surfaceVariant }}
+                        activeColor={theme.colors.surface}
+                        style={{ backgroundColor: theme.colors.surfaceVariant, padding: 10 }}
                         value={value}
                         onChange={(v) => {
                           setValue('chargeMode', v.value)
@@ -153,7 +145,7 @@ export default function ChargingScreen() {
           </Section>
 
           <Section title={"Power"}>
-            <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 5 }}>
+            <View style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
               <Text numberOfLines={1} adjustsFontSizeToFit={true}>{t("Power: ")}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
@@ -249,12 +241,16 @@ export default function ChargingScreen() {
 
         </ScrollView>
       </View>
+
+      <Stack.Screen options={{title: charging ? "Charging" : "Not Charging"}}/>
     </View>
   );
 }
 
 function Section({ title, children, visibilityToggle, visibleDefault }: { title: string, children?: any, visibilityToggle?: boolean, visibleDefault?: boolean }) {
   const { t } = useTranslation()
+  const theme = useTheme()
+  
   visibleDefault ??= false
   const [childrenVisible, setChildrenVisible] = useState(visibleDefault)
 
@@ -264,47 +260,33 @@ function Section({ title, children, visibilityToggle, visibleDefault }: { title:
   }
 
   return (
-    <View style={styles.sectionContainer}>
-      <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text style={[{ flex: 1 }, childrenVisible && { marginBottom: 0 }]} variant="bodyLarge">{t(title)}</Text>
+    <View style={[styles.section, { backgroundColor: theme.colors.elevation.level4 }]}>
+      <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10 }}>
+        {title && <Text variant="titleLarge">{t(title)}</Text>}
         {visibilityToggle &&
           <IconButton icon={childrenVisible ? 'eye' : 'eye-off'} size={15} onPress={() => setChildrenVisible(!childrenVisible)}></IconButton>
         }
       </View>
-      {childrenVisible &&
-        <View style={{
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: 5,
-          flex: 1
-        }}>
-          {children}
-        </View>
-      }
+      {childrenVisible && children}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
+  section: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'flex-start',
     borderColor: 'grey',
     borderWidth: 2,
-    borderRadius: 20,
-    padding: 15,
-    gap: 5,
-    marginBottom: 10
+    flexDirection: 'column',
+    padding: 10,
+    gap: 10,
+    marginBottom: 20,
+    alignItems: 'flex-start'
   },
   button: {
     backgroundColor: 'grey',
     borderRadius: 10,
     borderColor: "black",
     borderWidth: 2,
-  },
-  buttonText: {
-    color: 'white'
   }
 })

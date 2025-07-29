@@ -44,7 +44,7 @@ export default function DeveloperScreen() {
   }, [navigation, visible])
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <MetricTable metricKeys={keys} />
     </View>
   );

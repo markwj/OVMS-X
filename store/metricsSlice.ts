@@ -132,8 +132,10 @@ export const selectMetricValue = (key: string, unit?: string) => {
     switch (metric.type) {
       case MetricType.BOOL:
         if ([1, "yes", metric.trueStatement].includes(v)) {
+          if(unit == "bool") { return true }
           return metric.trueStatement ?? "yes"
         } else {
+          if(unit == "bool") { return false }
           return metric.falseStatement ?? "no"
         }
       case MetricType.NUMBER:

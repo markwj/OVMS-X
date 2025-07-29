@@ -133,14 +133,3 @@ export default function HomeScreen() {
     </>
   );
 }
-
-function DisplayDataAge(dataAgeSeconds: number, t: any) {
-  const minutes = dataAgeSeconds / 60
-  const hours = minutes / 60
-  const days = hours / 24
-
-  if (days >= 1) { return `${Math.floor(days)} ${days >= 2 ? t('days') : t('day')}` }
-  if (hours >= 1) { return `${Math.floor(hours)} ${hours >= 2 ? t('hours') : t('hour')}` }
-  if (minutes >= 1) { return `${Math.floor(minutes)} ${minutes >= 2 ? t('minutes') : t('minute')}` }
-  return "live"
-}
