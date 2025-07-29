@@ -21,8 +21,8 @@ export default function ControlsScreen() {
 
   const {t} = useTranslation()
 
-  const carLocked = useSelector(selectMetricValue('v.e.locked'))  === "locked"
-  const valetMode = useSelector(selectMetricValue('v.e.valet'))
+  const carLocked = useSelector(selectMetricValue('v.e.locked', "bool"))
+  const valetMode = useSelector(selectMetricValue('v.e.valet', "bool"))
 
   const vDFL = useSelector(selectMetricValue("v.d.fl")) == "open"
   const vDFR = useSelector(selectMetricValue("v.d.fr")) == "open"
@@ -32,10 +32,10 @@ export default function ControlsScreen() {
   const vDTrunk = useSelector(selectMetricValue("v.d.trunk")) == "open"
   const vDChargeport = useSelector(selectMetricValue("v.d.chargeport")) == "open"
 
-  const getPIN = () => {
+  const getPIN = ({title} : {title: string}) => {
     return new Promise((resolve, reject) => {
       Alert.prompt(
-        t('Enter PIN'),
+        t(title),
         '',
         [
           {
@@ -68,41 +68,41 @@ export default function ControlsScreen() {
             </View>
 
             {/* TPMS displays */}
-            <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: theme.colors.outline, borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.fl.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.outline, borderTopWidth: 1 }} metricKey={"v.tp.fl.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.fl.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: theme.colors.outline, borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4}}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.fr.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.outline, borderTopWidth: 1 }} metricKey={"v.tp.fr.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.fr.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: theme.colors.outline, borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4}}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.rl.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.outline, borderTopWidth: 1 }} metricKey={"v.tp.rl.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.rl.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: theme.colors.outline, borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.rr.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.outline, borderTopWidth: 1 }} metricKey={"v.tp.rr.p"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.rr.p"} />
             </View>
 
             {/* Temperature displays */}
-            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: theme.colors.outline, borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <BatteryIcon />
                 <Text style={{ marginLeft: 5 }}>Battery</Text>
               </View>
-              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.outline, borderTopWidth: 1 }} metricKey={"v.b.temp"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.b.temp"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '20%', top: '92.5%', borderColor: theme.colors.outline, borderWidth: 2 }}>
+            <View style={{ ...styles.absoluteCentering, left: '20%', top: '92.5%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <Icon size={20} source={"axis-x-rotate-clockwise"} />
                 <Text style={{ marginLeft: 5 }}>Motor</Text>
               </View>
-              <MetricValue style={{ ...styles.metricValue, borderColor: theme.colors.outline, borderTopWidth: 1 }} metricKey={"v.m.temp"} />
+              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.m.temp"} />
             </View>
 
             {/* Door displays */}
@@ -150,7 +150,7 @@ export default function ControlsScreen() {
                 icon={(v) => v == "locked" ? "lock" : 'lock-open'}
                 size={50}
                 onPress={async () => {
-                  const pin = await getPIN()
+                  const pin = await getPIN({title: carLocked ? "Enter PIN to unlock" : "Enter PIN to lock"})
                   if(pin == "User cancelled") { return }
                   if (carLocked) {
                     await ConnectionCommand(vehicle, {commandCode: CommandCode.UNLOCK_CAR, params: {pin: pin}})
@@ -169,7 +169,7 @@ export default function ControlsScreen() {
                 iconColor={(v) => v == "yes" ? "green" : 'red'}
                 size={50}
                 onPress={async () => {
-                  const pin = await getPIN()
+                  const pin = await getPIN({title: valetMode ? "Enter PIN to disable valet mode" : "Enter PIN to enable valet mode"})
                   if(pin == "User cancelled") { return }
                   if (valetMode) {
                     await ConnectionCommand(vehicle, {commandCode: CommandCode.ACTIVATE_VALET_MODE, params: {pin: pin}})
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   screenContainer: { width: '100%', height: '100%', borderWidth: 0, borderColor: 'blue' },
   vehicleImageBoundary: { position: 'absolute', left: '20%', top: '15%', width: '60%', height: '70%', borderWidth: 0, borderColor: 'blue' },
   vehicleImageContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  metricValue: { fontSize: 15, padding: 5 },
+  metricValue: { padding: 5 },
 
   absoluteCentering: { position: 'absolute', transform: [{ 'translateX': '-50%' }, { 'translateY': "-50%" }] }
 })

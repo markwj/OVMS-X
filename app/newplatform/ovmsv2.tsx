@@ -149,20 +149,20 @@ export default function NewPlatformOVMSv2() {
       enabled={true}
       style={styles.container}>
 
-      <ScrollView style={styles.scrollview}>
-
-        <Text>{t('Server')}</Text>
-        <Controller
-          control={control}
-          name="server"
-          render={({ field: { value } }) => (
-            <SegmentedButtons
-              value={value}
-              onValueChange={handleServerChange}
-              buttons={SERVER_BUTTONS}
+        <ScrollView style={styles.scrollview}>
+          <View style={{gap: 10, marginBottom: 10}}>
+            <Controller
+              control={control}
+              name="server"
+              render={({ field: { value } }) => (
+                <SegmentedButtons
+                  value={value}
+                  onValueChange={handleServerChange}
+                  buttons={SERVER_BUTTONS}
+                />
+              )}
             />
-          )}
-        />
+          </View>
 
         <Controller
           control={control}
@@ -194,79 +194,79 @@ export default function NewPlatformOVMSv2() {
 
         <View style={{ flexDirection: 'row', gap: 10 }}>
 
-          <View style={{ flex: 1, flexGrow: 1 }}>
-            <Controller
-              control={control}
-              name="httpsport"
-              rules={{
-                required: 'Required',
-                min: { value: 1, message: 'Port must be at least 1' },
-                max: { value: 65535, message: 'Port must be at most 65535' },
-                pattern: { value: /^[1-9]\d{0,4}$/, message: 'Port must be between 1 and 65535' }
-              }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  value={value}
-                  label={t('HTTPS Port')}
-                  onChangeText={(text) => {
-                    // Only allow numeric input and limit to 5 digits
-                    const numericText = text.replace(/[^0-9]/g, '');
-                    if (numericText.length <= 5) {
-                      onChange(numericText);
-                    }
-                  }}
-                  placeholder={t('HTTPS Port')}
-                  keyboardType="numeric"
-                  autoComplete="off"
-                  clearButtonMode="always"
-                  inputMode="numeric"
-                  autoCapitalize="none"
-                />
-              )}
-            />
-            {(typeof errors.httpsport !== 'undefined') &&
-              <HelperText type="error" visible={typeof errors.httpsport !== 'undefined'}>
-                Error: {errors.httpsport?.message}
-              </HelperText>
-            }
-          </View>
+            <View style={{ flex: 1, flexGrow: 1 }}>
+              <Controller
+                control={control}
+                name="httpsport"
+                rules={{
+                  required: 'Required',
+                  min: { value: 1, message: 'Port must be at least 1' },
+                  max: { value: 65535, message: 'Port must be at most 65535' },
+                  pattern: { value: /^[1-9]\d{0,4}$/, message: 'Port must be between 1 and 65535' }
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    value={value}
+                    label={t('HTTPS Port')}
+                    onChangeText={(text) => {
+                      // Only allow numeric input and limit to 5 digits
+                      const numericText = text.replace(/[^0-9]/g, '');
+                      if (numericText.length <= 5) {
+                        onChange(numericText);
+                      }
+                    }}
+                    placeholder={t('HTTPS Port')}
+                    keyboardType="numeric"
+                    autoComplete="off"
+                    clearButtonMode="always"
+                    inputMode="numeric"
+                    autoCapitalize="none"
+                  />
+                )}
+              />
+              {(typeof errors.httpsport !== 'undefined') &&
+                <HelperText type="error" visible={typeof errors.httpsport !== 'undefined'}>
+                  Error: {errors.httpsport?.message}
+                </HelperText>
+              }
+            </View>
 
-          <View style={{ flex: 1, flexGrow: 1 }}>
-            <Controller
-              control={control}
-              name="wssport"
-              rules={{
-                required: 'Required',
-                min: { value: 1, message: 'Port must be at least 1' },
-                max: { value: 65535, message: 'Port must be at most 65535' },
-                pattern: { value: /^[1-9]\d{0,4}$/, message: 'Port must be between 1 and 65535' }
-              }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  value={value}
-                  label={t('WSS Port')}
-                  onChangeText={(text) => {
-                    // Only allow numeric input and limit to 5 digits
-                    const numericText = text.replace(/[^0-9]/g, '');
-                    if (numericText.length <= 5) {
-                      onChange(numericText);
-                    }
-                  }}
-                  placeholder={t('WSS Port')}
-                  keyboardType="numeric"
-                  autoComplete="off"
-                  clearButtonMode="always"
-                  inputMode="numeric"
-                  autoCapitalize="none"
-                />
-              )}
-            />
-            {(typeof errors.wssport !== 'undefined') &&
-              <HelperText type="error" visible={typeof errors.wssport !== 'undefined'}>
-                Error: {errors.wssport?.message}
-              </HelperText>
-            }
-          </View>
+            <View style={{ flex: 1, flexGrow: 1 }}>
+              <Controller
+                control={control}
+                name="wssport"
+                rules={{
+                  required: 'Required',
+                  min: { value: 1, message: 'Port must be at least 1' },
+                  max: { value: 65535, message: 'Port must be at most 65535' },
+                  pattern: { value: /^[1-9]\d{0,4}$/, message: 'Port must be between 1 and 65535' }
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    value={value}
+                    label={t('WSS Port')}
+                    onChangeText={(text) => {
+                      // Only allow numeric input and limit to 5 digits
+                      const numericText = text.replace(/[^0-9]/g, '');
+                      if (numericText.length <= 5) {
+                        onChange(numericText);
+                      }
+                    }}
+                    placeholder={t('WSS Port')}
+                    keyboardType="numeric"
+                    autoComplete="off"
+                    clearButtonMode="always"
+                    inputMode="numeric"
+                    autoCapitalize="none"
+                  />
+                )}
+              />
+              {(typeof errors.wssport !== 'undefined') &&
+                <HelperText type="error" visible={typeof errors.wssport !== 'undefined'}>
+                  Error: {errors.wssport?.message}
+                </HelperText>
+              }
+            </View>
 
         </View>
 

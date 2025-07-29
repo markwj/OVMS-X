@@ -68,7 +68,7 @@ export const STANDARD_METRICS = [
   { key: "v.b.range.ideal", unit: "km", type: MetricType.NUMBER, precision: 1 },
   { key: "v.b.range.est", unit: "km", type: MetricType.NUMBER, precision: 1 },
   { key: "v.b.range.speed", unit: "km/h", type: MetricType.NUMBER, precision: 1 },
-  { key: "v.b.temp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.b.temp", unit: "°C", type: MetricType.NUMBER },
 
   { key: "v.b.12v.voltage", unit: "V", type: MetricType.NUMBER },
   { key: "v.b.12v.current", unit: "A", type: MetricType.NUMBER },
@@ -87,11 +87,11 @@ export const STANDARD_METRICS = [
   { key: "v.b.p.vstddev_max", unit: "V", type: MetricType.NUMBER },
   { key: "v.b.p.vgrad", unit: "V", type: MetricType.NUMBER },
 
-  { key: "v.b.p.tmin", unit: "C", type: MetricType.NUMBER },
-  { key: "v.b.p.tmax", unit: "C", type: MetricType.NUMBER },
-  { key: "v.b.p.tavg", unit: "C", type: MetricType.NUMBER },
-  { key: "v.b.p.tstddev", unit: "C", type: MetricType.NUMBER },
-  { key: "v.b.p.tstddev_max", unit: "C", type: MetricType.NUMBER },
+  { key: "v.b.p.tmin", unit: "°C", type: MetricType.NUMBER },
+  { key: "v.b.p.tmax", unit: "°C", type: MetricType.NUMBER },
+  { key: "v.b.p.tavg", unit: "°C", type: MetricType.NUMBER },
+  { key: "v.b.p.tstddev", unit: "°C", type: MetricType.NUMBER },
+  { key: "v.b.p.tstddev_max", unit: "°C", type: MetricType.NUMBER },
 
   //These are Metric Vectors of floats
   { key: "v.b.c.voltage", unit: "V",  },
@@ -101,10 +101,10 @@ export const STANDARD_METRICS = [
   { key: "v.b.c.valert", unit: "V",  },
 
   //These are Metric Vectors of floats
-  { key: "v.b.c.temp", unit: "C",  },
-  { key: "v.b.c.tmin", unit: "C",  },
-  { key: "v.b.c.tmax", unit: "C",  },
-  { key: "v.b.c.tdevmax", unit: "C",  },
+  { key: "v.b.c.temp", unit: "°C",  },
+  { key: "v.b.c.tmin", unit: "°C",  },
+  { key: "v.b.c.tmax", unit: "°C",  },
+  { key: "v.b.c.tdevmax", unit: "°C",  },
   { key: "v.b.c.talert",  },
 
   //
@@ -132,12 +132,12 @@ export const STANDARD_METRICS = [
   { key: "v.c.duration.full", unit: "min", type: MetricType.NUMBER, precision: 0 },
   { key: "v.c.duration.range", unit: "min", type: MetricType.NUMBER, precision: 0 },
   { key: "v.c.duration.soc", unit: "min", type: MetricType.NUMBER, precision: 0 },
-  { key: "v.c.duration.temp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.c.duration.temp", unit: "°C", type: MetricType.NUMBER },
   { key: "v.c.timestamp", unit: "DateLocal", type: MetricType.NUMBER, precision: 0 },
 
   { key: "v.c.12v.current", unit: "A", type: MetricType.NUMBER },
   { key: "v.c.12v.power", unit: "W", type: MetricType.NUMBER },
-  { key: "v.c.12v.temp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.c.12v.temp", unit: "°C", type: MetricType.NUMBER },
   { key: "v.c.12v.voltage", unit: "V", type: MetricType.NUMBER },
 
   //
@@ -165,13 +165,13 @@ export const STANDARD_METRICS = [
   { key: "v.g.duration.empty", unit: "min", type: MetricType.NUMBER, precision: 0 },
   { key: "v.g.duration.range", unit: "km", type: MetricType.NUMBER, precision: 0 },
   { key: "v.g.duration.soc", unit: "min", type: MetricType.NUMBER, precision: 0 },
-  { key: "v.g.temp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.g.temp", unit: "°C", type: MetricType.NUMBER },
   { key: "v.g.timestamp", unit: "DateLocal", type: MetricType.NUMBER },
 
   //
   //Motor inverstor/controller metrics
   //
-  { key: "v.i.temp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.i.temp", unit: "°C", type: MetricType.NUMBER },
   { key: "v.i.power", unit: "kW", type: MetricType.NUMBER },
   { key: "v.i.efficiency", unit: "%", type: MetricType.NUMBER },
 
@@ -179,7 +179,7 @@ export const STANDARD_METRICS = [
   //Motor metrics
   //
   { key: "v.m.rpm", type: MetricType.NUMBER, precision: 0 },
-  { key: "v.m.temp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.m.temp", unit: "°C", type: MetricType.NUMBER },
 
   //
   //Doors & ports metrics
@@ -217,10 +217,10 @@ export const STANDARD_METRICS = [
   { key: "v.e.ctrl.login", type: MetricType.BOOL, trueStatement: "yes", falseStatement: "no" },
   { key: "v.e.ctrl.config", type: MetricType.BOOL, trueStatement: "yes", falseStatement: "no" },
 
-  { key: "v.e.temp", unit: "C", type: MetricType.NUMBER },
-  { key: "v.e.cabintemp", unit: "C", type: MetricType.NUMBER },
+  { key: "v.e.temp", unit: "°C", type: MetricType.NUMBER },
+  { key: "v.e.cabintemp", unit: "°C", type: MetricType.NUMBER },
   { key: "v.e.cabinfan", unit: "%", type: MetricType.NUMBER, precision: 0 },
-  { key: "v.e.cabinsetpoint", unit: "C", type: MetricType.NUMBER },
+  { key: "v.e.cabinsetpoint", unit: "°C", type: MetricType.NUMBER },
   { key: "v.e.cabinintake", type: MetricType.STRING },
   { key: "v.e.cabinvent", type: MetricType.STRING },
 
@@ -253,10 +253,10 @@ export const STANDARD_METRICS = [
   //
   //TMPS: tyre monitoring metrics
   //
-  { key: "v.tp.fl.t", unit: "C", type: MetricType.NUMBER, precision: 1 },
-  { key: "v.tp.fr.t", unit: "C", type: MetricType.NUMBER, precision: 1 },
-  { key: "v.tp.rr.t", unit: "C", type: MetricType.NUMBER, precision: 1 },
-  { key: "v.tp.rl.t", unit: "C", type: MetricType.NUMBER, precision: 1 },
+  { key: "v.tp.fl.t", unit: "°C", type: MetricType.NUMBER, precision: 1 },
+  { key: "v.tp.fr.t", unit: "°C", type: MetricType.NUMBER, precision: 1 },
+  { key: "v.tp.rr.t", unit: "°C", type: MetricType.NUMBER, precision: 1 },
+  { key: "v.tp.rl.t", unit: "°C", type: MetricType.NUMBER, precision: 1 },
   { key: "v.tp.fl.p", unit: "kPa", type: MetricType.NUMBER, precision: 0 },
   { key: "v.tp.fr.p", unit: "kPa", type: MetricType.NUMBER, precision: 0 },
   { key: "v.tp.rr.p", unit: "kPa", type: MetricType.NUMBER, precision: 0 },
@@ -264,7 +264,7 @@ export const STANDARD_METRICS = [
 
   //These are Metric Vectors of floats
   { key: "v.t.pressure", unit: "kPa",  },
-  { key: "v.t.temp", unit: "C",  },
+  { key: "v.t.temp", unit: "°C",  },
   { key: "v.t.health", unit: "%",  },
   { key: "v.t.alert",  },
 ]

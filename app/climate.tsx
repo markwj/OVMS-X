@@ -31,13 +31,22 @@ export default function ClimateScreen() {
           </View>
 
           {/* Box for remaining features */}
-          <View style={{ flexDirection: 'row', padding: 20, position: 'absolute', left: '5%', top: '70%', width: '90%', height: '25%', borderWidth: 2, borderColor: 'grey', borderRadius: 20 }}>
+          <View style={{
+            flexDirection: 'row',
+            padding: 20,
+            position: 'absolute',
+            left: '5%', top: '70%',
+            width: '90%', height: '25%',
+            borderColor: 'grey',
+            borderWidth: 2,
+            backgroundColor: theme.colors.elevation.level4
+          }}>
 
             {/* Heating/cooling enabled */}
             <View style={{ flexShrink: 1, flexDirection: 'column', alignItems: 'center' }}>
               <View style={cooling ? { opacity: 1 } : { opacity: 0 }}>
                 <Icon size={50} source={"fan"} />
-                <MetricValue metricKey={"v.e.cabinfan"} style={{ alignSelf: 'center' }}></MetricValue>
+                <MetricValue variant="titleMedium" metricKey={"v.e.cabinfan"} style={{ alignSelf: 'center' }}></MetricValue>
               </View>
               <View style={heating ? { opacity: 1 } : { opacity: 0 }}>
                 <Icon size={50} source={"fire"} />
@@ -48,26 +57,26 @@ export default function ClimateScreen() {
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', paddingHorizontal: 20 }}>
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
                 <View style={{ justifyContent: 'flex-start' }}>
-                  <MetricValue metricKey={"v.e.cabintemp"} numberOfLines={1} adjustsFontSizeToFit={true} variant="headlineLarge" emptyOverride={t("N/A")}></MetricValue>
+                  <MetricValue metricKey={"v.e.cabintemp"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleLarge" emptyOverride={t("N/A")}></MetricValue>
                   {(cooling || heating) &&
                     <>
                       <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <Icon size={20} source={'bullseye'}></Icon>
-                        <MetricValue metricKey={"v.e.cabinsetpoint"} numberOfLines={1} adjustsFontSizeToFit={true} variant="headlineSmall"></MetricValue>
+                        <MetricValue metricKey={"v.e.cabinsetpoint"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleMedium"></MetricValue>
                       </View>
-                      <MetricValue metricKey={"v.e.cabinintake"} numberOfLines={1} adjustsFontSizeToFit={true} variant="labelLarge"></MetricValue>
+                      <MetricValue metricKey={"v.e.cabinintake"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleMedium"></MetricValue>
                     </>
                   }
                 </View>
-                <Text variant="headlineMedium" numberOfLines={1} adjustsFontSizeToFit={true}>{t("Cabin")}</Text>
+                <Text variant="titleLarge" numberOfLines={1} adjustsFontSizeToFit={true}>{t("Cabin")}</Text>
               </View>
             </View>
 
             {/* Ambient details */}
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', paddingHorizontal: 20 }}>
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
-                <MetricValue metricKey={"v.e.temp"} numberOfLines={1} adjustsFontSizeToFit={true} variant="headlineLarge"></MetricValue>
-                <Text variant="headlineMedium" numberOfLines={1} adjustsFontSizeToFit={true}>{t("Ambient")}</Text>
+                <MetricValue metricKey={"v.e.temp"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleLarge"></MetricValue>
+                <Text variant="titleLarge" numberOfLines={1} adjustsFontSizeToFit={true}>{t("Ambient")}</Text>
               </View>
             </View>
           </View>

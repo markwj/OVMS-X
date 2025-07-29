@@ -21,12 +21,13 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
   return (
     <DataTable style={styles.table}>
       <FlatList
+        bounces={false}
         ListHeaderComponent={(
-          <View style={{backgroundColor: theme.colors.background}}>
+          <View style={{ backgroundColor: theme.colors.background }}>
             <DataTable.Header style={styles.headerRow}>
               <View style={{ ...styles.headerRow, flexDirection: 'row', alignItems: 'center', padding: 5, paddingVertical: 10 }}>
                 <Searchbar
-                  style={{ flex: 1, width: 'auto'}}
+                  style={{ flex: 1, width: 'auto' }}
                   value={searchFilter}
                   autoCapitalize="none"
                   placeholder={t("Search") + "..."}

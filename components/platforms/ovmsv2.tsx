@@ -27,7 +27,7 @@ let PendingCommands: Map<CommandCode, PendingCommand[]> = new Map();
 
 export async function sendOVMSv2Command(command: { commandCode: CommandCode, params?: any }): Promise<string> {
   return new Promise((resolve, reject) => {
-    console.log('[connection OVMSv2 sendOVMSv2Command] command', CommandCode[command.commandCode], command.params || {})
+    console.log('[connection OVMSv2 sendOVMSv2Command] command', CommandCode[command.commandCode] ?? command.commandCode, command.params || {})
     if (!connection || connection.readyState !== WebSocket.OPEN) {
       console.log('[connection OVMSv2 sendOVMSv2Command] not connected to vehicle')
       reject(new Error("OVMSv2 not connected to vehicle"));
@@ -445,13 +445,13 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
           const staleTpmsIndicator = parts[8] < 0 ? undefined : (parts[8] == 0)
 
           if (frontLeftWheelPressure !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.p', value: frontLeftWheelPressure, unit: "psi", stale: staleTpmsIndicator })) }
-          if (frontLeftWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature, unit: "C", stale: staleTpmsIndicator })) }
+          if (frontLeftWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fl.t', value: frontLeftWheelTemperature, unit: "°C", stale: staleTpmsIndicator })) }
           if (frontRightWheelPressure !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.p', value: frontRightWheelPressure, unit: "psi", stale: staleTpmsIndicator })) }
-          if (frontRightWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature, unit: "C", stale: staleTpmsIndicator })) }
+          if (frontRightWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.fr.t', value: frontRightWheelTemperature, unit: "°C", stale: staleTpmsIndicator })) }
           if (rearRightWheelPressure !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.p', value: rearRightWheelPressure, unit: "psi", stale: staleTpmsIndicator })) }
-          if (rearRightWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature, unit: "C", stale: staleTpmsIndicator })) }
+          if (rearRightWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rr.t', value: rearRightWheelTemperature, unit: "°C", stale: staleTpmsIndicator })) }
           if (rearLeftWheelPressure !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.p', value: rearLeftWheelPressure, unit: "psi", stale: staleTpmsIndicator })) }
-          if (rearLeftWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature, unit: "C", stale: staleTpmsIndicator })) }
+          if (rearLeftWheelTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.tp.rl.t', value: rearLeftWheelTemperature, unit: "°C", stale: staleTpmsIndicator })) }
 
         } else if (event.data.startsWith('T')) {
           const parts = event.data.substring(1).split(',')
@@ -534,10 +534,10 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
           if (carParkingTimer !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.parktime', value: carParkingTimer, unit: "s" })) }
           if (carTripMeter !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.p.trip', value: (carTripMeter / 10).toString(), unit: distanceUnits })) }
           if (vehicleCabinTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.cabintemp', value: vehicleCabinTemperature })) }
-          if (batteryTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.b.temp', value: batteryTemperature, unit: "C", stale: staleTemperatures })) }
-          if (motorTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature, unit: "C", stale: staleTemperatures })) }
-          if (pemTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature, unit: "C", stale: staleTemperatures })) }
-          if (ambientTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature, unit: "C", stale: staleAmbientTemperature })) }
+          if (batteryTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.b.temp', value: batteryTemperature, unit: "°C", stale: staleTemperatures })) }
+          if (motorTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.m.temp', value: motorTemperature, unit: "°C", stale: staleTemperatures })) }
+          if (pemTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.i.temp', value: pemTemperature, unit: "°C", stale: staleTemperatures })) }
+          if (ambientTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.temp', value: ambientTemperature, unit: "°C", stale: staleAmbientTemperature })) }
           if (carAwakeState !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.awake12', value: carAwakeState ? "awake" : "sleeping" })) }
           if (carCoolingState !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.cooling', value: carCoolingState ? "on" : "off" })) }
           if (carLoggedInState !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.ctrl.login', value: carLoggedInState ? "yes" : "no" })) }
@@ -551,7 +551,7 @@ export function OVMSv2ConnectionIcon(): React.JSX.Element {
           if (charging12vState !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.charging12', value: charging12vState ? "on" : "off" })) }
           if (aux12VState !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.aux12v', value: aux12VState ? "on" : "off" })) }
           if (hvacState !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.hvac', value: hvacState ? "on" : "off" })) }
-          if (vehicleChargerTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.c.temp', value: vehicleChargerTemperature, unit: "C", stale: staleTemperatures })) }
+          if (vehicleChargerTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.c.temp', value: vehicleChargerTemperature, unit: "°C", stale: staleTemperatures })) }
           if (vehicle12VCurrent !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.b.12v.current', value: vehicle12VCurrent, unit: "A" })) }
           if (vehicleCabinTemperature !== undefined) { dispatch(metricsSlice.actions.setMetric({ key: 'v.e.cabintemp', value: vehicleCabinTemperature })) }
 

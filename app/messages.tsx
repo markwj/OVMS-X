@@ -1,18 +1,18 @@
 import BottomSheet from "@gorhom/bottom-sheet";
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
 import { GiftedChat, IMessage } from 'react-native-gifted-chat'
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { addAppMessage, addVehicleMessage, selectVehicleMessages } from "@/store/messagesSlice";
-import { ConnectionCommand } from "@/components/platforms/connection";
+import { ConnectionCommand, ConnectionIcon } from "@/components/platforms/connection";
 import { CommandCode } from "@/app/platforms/commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
 import { Icon, IconButton, Menu } from "react-native-paper";
 import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { selectVehicle } from "@/store/vehiclesSlice";
-import { Stack } from "expo-router";
+import { useNavigation } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { StatusBar } from "expo-status-bar";
 import { getCommands } from "@/store/storedCommandsSlice";
@@ -30,6 +30,24 @@ export default function MessagesScreen() {
   const storedCommands = useSelector(getCommands)
 
   const { t } = useTranslation()
+  const navigation = useNavigation()
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Menu
+            visible={commandsVisible}
+            onDismiss={() => setCommandsVisible(false)}
+            anchor={<IconButton onPress={() => setCommandsVisible(true)} size={20} icon={'keyboard'} />}
+            anchorPosition="bottom">
+            {storedCommands.map((c) => <Menu.Item key={c.key} onPress={() => { setText(c.command); setCommandsVisible(false) }} title={c.name} />)}
+          </Menu>
+          <ConnectionIcon/>
+        </View>
+      )
+    })
+  }, [navigation, storedCommands, commandsVisible])
 
   const onSend = async (newMessage: IMessage) => {
     dispatch(addAppMessage({ text: newMessage.text, vehicleKey: selectedVehicle?.key }));
@@ -38,7 +56,7 @@ export default function MessagesScreen() {
       dispatch(addVehicleMessage({ text: "Vehicle is not connected", vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }));
     } else {
       try {
-        const command = {commandCode: CommandCode.EXECUTE_SMS_COMMAND, params: {text: newMessage.text}};
+        const command = { commandCode: CommandCode.EXECUTE_SMS_COMMAND, params: { text: newMessage.text } };
         const response = await ConnectionCommand(selectedVehicle, command);
         dispatch(addVehicleMessage({ text: response, vehicleKey: selectedVehicle?.key, vehicleName: selectedVehicle?.name }));
       } catch (error) {
@@ -56,7 +74,7 @@ export default function MessagesScreen() {
       <GiftedChat
         messages={messages}
         text={text}
-        onInputTextChanged={(t) => {setText(t)}}
+        onInputTextChanged={(t) => { setText(t) }}
         timeFormat="LT"
         showUserAvatar={true}
         dateFormat="ddd D MMMM, YYYY"
@@ -93,18 +111,6 @@ export default function MessagesScreen() {
         }
         }
       />
-
-      <Stack.Screen options={{
-        headerRight: () => (
-          <Menu
-            visible={commandsVisible}
-            onDismiss={() => setCommandsVisible(false)}
-            anchor={<IconButton onPress={() => setCommandsVisible(true)} size={20} icon={'keyboard'} />}
-            anchorPosition="bottom">
-            {storedCommands.map((c) => <Menu.Item key={c.key} onPress={() => {setText(c.command); setCommandsVisible(false)}} title={c.name} />)}
-          </Menu>
-        )
-      }}/>
     </KeyboardAvoidingView>
   )
 }

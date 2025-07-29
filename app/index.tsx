@@ -13,7 +13,8 @@ import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
-import { CommandCode, ConnectionCommand } from "@/components/platforms/connection";
+import { ConnectionCommand } from "@/components/platforms/connection";
+import { CommandCode } from "@/components/platforms/Commands";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -132,15 +133,4 @@ export default function HomeScreen() {
       </View>
     </>
   );
-}
-
-function DisplayDataAge(dataAgeSeconds: number, t: any) {
-  const minutes = dataAgeSeconds / 60
-  const hours = minutes / 60
-  const days = hours / 24
-
-  if (days >= 1) { return `${Math.floor(days)} ${days >= 2 ? t('days') : t('day')}` }
-  if (hours >= 1) { return `${Math.floor(hours)} ${hours >= 2 ? t('hours') : t('hour')}` }
-  if (minutes >= 1) { return `${Math.floor(minutes)} ${minutes >= 2 ? t('minutes') : t('minute')}` }
-  return "live"
 }

@@ -74,7 +74,7 @@ export function ConnectionText() {
   const dataAgeSeconds = Date.now() / 1000 - lastUpdated
 
   let textContent;
-  let textColor = (theme.dark ? "white" : "black");
+  let textColor = theme.colors.onSurface;
 
   let displayText
   try {
@@ -97,7 +97,7 @@ export function ConnectionText() {
   if (connectionState == VehicleConnectionState.CONNECTED) {
     if (carConnected) {
       textContent = `${vEAwake ? t('Awake') : t('Sleeping')}, ${displayText}`
-      textColor = (theme.dark ? "white" : "black")
+      textColor = theme.colors.onSurface
     } else {
       textColor = ORANGE
       textContent = t("Vehicle disconnected") + " " + displayText

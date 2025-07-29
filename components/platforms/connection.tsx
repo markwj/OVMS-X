@@ -76,6 +76,7 @@ export function ConnectionIcon(): React.JSX.Element {
 
     return () => {
       connectionCount--;
+      if(connectionCount != undefined) { console.error("[connection main] Connection count is undefined"); return; }
       if (connectionCount == 0) {
         console.log('[connection main] cleanup', connectionCount);
         subscription.remove();
@@ -93,5 +94,3 @@ export function ConnectionIcon(): React.JSX.Element {
     return (<View style={{ marginRight: 10 }}><DefaultConnectionIcon /></View>)
   }
 }
-
-export { CommandCode }

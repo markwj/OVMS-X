@@ -30,6 +30,7 @@ if (isExpo) {
 
 export const securePersistStorage: Storage = {
 
+  //@ts-ignore
   getItem(key: string) {
     console.log('[persistStorage] getItem',key);
     if (isExpo) {

@@ -21,12 +21,10 @@ export enum controlType {
   Developer
 }
 
-const getPIN = () => {
-  const {t} = useTranslation()
-
+const getPIN = ({title, t} : {title : string, t : any}) => {
   return new Promise((resolve, reject) => {
     Alert.prompt(
-      t('Enter PIN'),
+      t(title),
       '',
       [
         {
@@ -76,10 +74,12 @@ export function ControlIcon({ type }: { type: controlType }): React.JSX.Element 
     case controlType.Lock:
       return (
         <IconButton icon='lock' onPress={async () => {
-          const pin = await getPIN()
+          const locked = selectMetricValue("v.e.locked", "bool")(store.getState())
+          const pin = await getPIN({title: locked ? 'Enter PIN to unlock' : "Enter pin to lock", t: t})
           const vehicle = getSelectedVehicle(store.getState())
           if (pin == "User cancelled") { return }
-          if (selectMetricValue("v.e.locked")(store.getState())) {
+
+          if (locked) {
             await ConnectionCommand(vehicle, { commandCode: CommandCode.UNLOCK_CAR, params: {pin: pin} })
             return
           }
