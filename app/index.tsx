@@ -14,7 +14,7 @@ import { MetricValue } from "@/components/ui/MetricValue";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
 import { ConnectionCommand } from "@/components/platforms/connection";
-import { CommandCode } from "@/components/platforms/Commands";
+import { CommandCode } from "./platforms/commands";
 
 export default function HomeScreen() {
   const theme = useTheme();
