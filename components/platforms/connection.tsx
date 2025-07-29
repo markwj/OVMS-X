@@ -15,8 +15,8 @@ import {
 } from "./tesla"
 import { DefaultConnectionIcon } from "./default"
 import { InactiveConnectionIcon } from "./inactive"
-import { handleUrlParams } from "expo-router/build/fork/getStateFromPath-forks"
 import { CommandCode } from "./Commands"
+import { View } from "react-native"
 
 export function HandleNotificationResponse(response: any, vehicles: Vehicle[], dispatch: any) {
   handleOVMSv2NotificationResponse(response, vehicles, dispatch);
@@ -85,12 +85,12 @@ export function ConnectionIcon(): React.JSX.Element {
   }, []);
 
   if (appState.current != "active") {
-    return (<InactiveConnectionIcon />)
+    return (<View style={{ marginRight: 10 }}><InactiveConnectionIcon /></View>)
   } else if (selectedVehicle?.platform == "ovmsv2api") {
-    return (<OVMSv2ConnectionIcon />)
+    return (<View style={{ marginRight: 10 }}><OVMSv2ConnectionIcon /></View>)
   } else if (selectedVehicle?.platform == "teslawebapi") {
-    return (<TeslaConnectionIcon />)
+    return (<View style={{ marginRight: 10 }}><TeslaConnectionIcon /></View>)
   } else {
-    return (<DefaultConnectionIcon />)
+    return (<View style={{ marginRight: 10 }}><DefaultConnectionIcon /></View>)
   }
 }
