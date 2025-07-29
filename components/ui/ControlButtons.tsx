@@ -3,7 +3,7 @@ import { Button, IconButton, useTheme } from 'react-native-paper';
 import { router } from "expo-router";
 import { useTranslation } from 'react-i18next';
 import { ConnectionCommand } from "@/components/platforms/connection";
-import { CommandCode } from "@/components/platforms/Commands";
+import { CommandCode } from "@/app/platforms/commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { store } from "@/store/root";
 import { selectMetricValue } from "@/store/metricsSlice";

@@ -11,7 +11,7 @@ import { addVehicleMessage, messagesSlice } from "@/store/messagesSlice";
 import { ConnectionDisplay } from "../ui/ConnectionDisplay";
 import { notificationsEnabled, notificationsToken, notificationsUniqueID } from "@/store/notificationSlice";
 import { store } from "@/store/root";
-import { CommandCode } from "./Commands"
+import { CommandCode } from "../../app/platforms/commands"
 
 const COMMAND_TIMEOUT = 10000; // 10 seconds
 let connection: WebSocket | null = null;

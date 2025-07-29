@@ -11,7 +11,7 @@ import { MetricValue } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { ConnectionCommand } from "@/components/platforms/connection";
 import { useTranslation } from "react-i18next";
-import { CommandCode } from "@/components/platforms/Commands";
+import { CommandCode } from "@/app/platforms/commands";
 
 const auxBattery = require("@/assets/images/aux_battery.png")
 
