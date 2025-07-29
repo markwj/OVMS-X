@@ -39,6 +39,8 @@ import * as Application from 'expo-application';
 import { getVehicles } from '@/store/vehiclesSlice';
 
 import MaterialTheme from "@/assets/MaterialTheme.json"
+import { getColorScheme, getLanguage } from '@/store/preferencesSlice';
+import i18n from '@/i18n';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -146,6 +148,8 @@ const MainLayout = () => {
   const [notification, setNotification] = useState<any | undefined>(
     undefined
   );
+  const reduxColorScheme = useSelector(getColorScheme)
+  const reduxLanguage = useSelector(getLanguage)
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -182,6 +186,16 @@ const MainLayout = () => {
       };
     }
   }, [dispatch]);
+
+  //Sets settings according to stored redux settings
+  useEffect(() => {
+    if (reduxColorScheme != null) {
+      Appearance.setColorScheme(reduxColorScheme)
+    }
+    if (reduxLanguage != null) {
+      i18n.changeLanguage(reduxLanguage)
+    }
+  }, [])
 
   return (
     <>
@@ -258,11 +272,11 @@ export default Sentry.wrap(function RootLayout() {
   const { DarkTheme, LightTheme } = adaptNavigationTheme({
     reactNavigationDark: NavigationDarkTheme,
     reactNavigationLight: NavigationDefaultTheme,
-    materialDark: {...MD3DarkTheme, colors: {...MD3DarkTheme.colors, ...MaterialTheme.dark.colors}},
-    materialLight: {...MD3LightTheme, colors: {...MD3LightTheme.colors, ...MaterialTheme.light.colors}}
+    materialDark: { ...MD3DarkTheme, colors: { ...MD3DarkTheme.colors, ...MaterialTheme.dark.colors } },
+    materialLight: { ...MD3LightTheme, colors: { ...MD3LightTheme.colors, ...MaterialTheme.light.colors } }
   });
   //@ts-ignore
-  const theme = (colorScheme == 'dark') ? {...MD3DarkTheme, colors: {...MD3DarkTheme.colors, ...MaterialTheme.dark.colors}} : {...MD3LightTheme, colors:{...MD3LightTheme.colors, ...MaterialTheme.light.colors}};
+  const theme = (colorScheme == 'dark') ? { ...MD3DarkTheme, colors: { ...MD3DarkTheme.colors, ...MaterialTheme.dark.colors } } : { ...MD3LightTheme, colors: { ...MD3LightTheme.colors, ...MaterialTheme.light.colors } };
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);
 
   return (
