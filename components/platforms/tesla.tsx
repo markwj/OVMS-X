@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { ConnectionDisplay } from "../ui/ConnectionDisplay";
 import { Vehicle } from "@/store/vehiclesSlice";
-import { CommandCode } from "./Commands";
+import { CommandCode } from "../../app/platforms/commands";
 
 export async function sendTeslaCommand(command: {commandCode : CommandCode, params? : any}): Promise<string> {
   return new Promise((resolve, reject) => {

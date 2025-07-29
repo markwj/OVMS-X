@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { Dropdown } from "react-native-element-dropdown";
 import { ConnectionCommand } from "@/components/platforms/connection";
-import { CommandCode } from "@/components/platforms/Commands";
+import { CommandCode } from "@/app/platforms/commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { useTranslation } from "react-i18next";
 import { store } from "@/store/root";

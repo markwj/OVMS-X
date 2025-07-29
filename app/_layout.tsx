@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
@@ -15,11 +15,11 @@ import { store, persistedStore } from '@/store/root';
 import { Provider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { VehicleSelector } from '@/components/ui/VehicleSelector';
-import { Appearance, Platform, useWindowDimensions, View } from 'react-native';
+import { Appearance, Platform, useWindowDimensions, AppState } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/selectionSlice';
-import { ConnectionIcon, HandleNotificationIncoming, HandleNotificationResponse } from '@/components/platforms/connection';
+import { ConnectionIcon } from '@/components/platforms/connection';
 import { selectHasStandardMetrics, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
@@ -34,6 +34,7 @@ let Notifications: any = null;
 if (!isRunningInExpoGo()) {
   Notifications = require('expo-notifications');
 }
+
 import * as Updates from 'expo-updates';
 import * as Network from 'expo-network';
 import { setToken, setUniqueID } from '@/store/notificationSlice';
@@ -43,6 +44,9 @@ import { getVehicles } from '@/store/vehiclesSlice';
 import MaterialTheme from "@/assets/MaterialTheme.json"
 import { getColorScheme, getLanguage } from '@/store/preferencesSlice';
 import i18n from '@/i18n';
+import { appForeground, appBackground, appInactive,
+  connectToVehicle,
+  handleNotificationResponse, handleNotificationIncoming, handleNotificationRegistration } from './platforms/platform';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -130,6 +134,7 @@ async function registerForPushNotificationsAsync(dispatch: any) {
       ).data;
       console.log('[registerForPushNotificationsAsync] pushTokenString', pushTokenString);
       dispatch(setToken(pushTokenString));
+      handleNotificationRegistration(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
@@ -156,6 +161,7 @@ const MainLayout = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const appState = useRef(AppState.currentState);
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -178,12 +184,12 @@ const MainLayout = () => {
 
       const notificationListener = Notifications.addNotificationReceivedListener((notification: any) => {
         console.log('[notificationListener] notification', JSON.stringify(notification?.request?.content));
-        HandleNotificationIncoming(notification?.request?.content, vehicles, dispatch);
+        handleNotificationIncoming(notification?.request?.content);
       });
 
       const responseListener = Notifications.addNotificationResponseReceivedListener((response: any) => {
         console.log(JSON.stringify(response?.notification?.request?.content));
-        HandleNotificationResponse(response?.notification?.request?.content, vehicles, dispatch);
+        handleNotificationResponse(response?.notification?.request?.content);
       });
 
       return () => {
@@ -202,6 +208,38 @@ const MainLayout = () => {
       i18n.changeLanguage(reduxLanguage)
     }
   }, [])
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.current != nextAppState) {
+        console.log('[MainLayout] app state', appState.current, '=>', nextAppState);
+        appState.current = nextAppState;
+      switch (appState.current) {
+        case 'active':
+          appForeground();
+          break;
+        case 'background':
+          appBackground();
+          break;
+        case 'inactive':
+          appInactive();
+          break;
+        }
+      }
+    });
+
+    return () => {
+      console.log('[MainLayout] cleanup');
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (selectedVehicle) {
+      console.log('[MainLayout] connectToVehicle', selectedVehicle.name);
+      connectToVehicle(selectedVehicle);
+    }
+  }, [selectedVehicle]);
 
   return (
     <>

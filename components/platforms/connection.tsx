@@ -15,7 +15,7 @@ import {
 } from "./tesla"
 import { DefaultConnectionIcon } from "./default"
 import { InactiveConnectionIcon } from "./inactive"
-import { CommandCode } from "./Commands"
+import { CommandCode } from "../../app/platforms/commands"
 import { View } from "react-native"
 
 export function HandleNotificationResponse(response: any, vehicles: Vehicle[], dispatch: any) {
@@ -37,7 +37,7 @@ export async function ConnectionCommand(vehicle: Vehicle | null, command: { comm
     switch (vehicle.platform) {
       case "ovmsv2api":
         return await sendOVMSv2Command(command);
-      case "teslawebapi":
+      case "teslafleetapi":
         return await sendTeslaCommand(command);
       default:
         throw new Error(`Unsupported platform: ${vehicle.platform}`);
@@ -87,7 +87,7 @@ export function ConnectionIcon(): React.JSX.Element {
     return (<View style={{ marginRight: 10 }}><InactiveConnectionIcon /></View>)
   } else if (selectedVehicle?.platform == "ovmsv2api") {
     return (<View style={{ marginRight: 10 }}><OVMSv2ConnectionIcon /></View>)
-  } else if (selectedVehicle?.platform == "teslawebapi") {
+  } else if (selectedVehicle?.platform == "teslafleetapi") {
     return (<View style={{ marginRight: 10 }}><TeslaConnectionIcon /></View>)
   } else {
     return (<View style={{ marginRight: 10 }}><DefaultConnectionIcon /></View>)

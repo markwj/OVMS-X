@@ -6,7 +6,7 @@ import { KeyboardAvoidingView, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { addAppMessage, addVehicleMessage, selectVehicleMessages } from "@/store/messagesSlice";
 import { ConnectionCommand } from "@/components/platforms/connection";
-import { CommandCode } from "@/components/platforms/Commands";
+import { CommandCode } from "@/app/platforms/commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
 import { Icon, IconButton, Menu } from "react-native-paper";
