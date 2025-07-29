@@ -94,5 +94,3 @@ export function ConnectionIcon(): React.JSX.Element {
     return (<DefaultConnectionIcon />)
   }
 }
-
-export { CommandCode }

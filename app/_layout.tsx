@@ -313,6 +313,13 @@ const MainLayout = () => {
               title: 'Edit Vehicle',
             }}
           />
+          <Stack.Screen
+            name="+not-found"
+            options={{
+              headerShown: false,
+              title: 'Oops!'
+            }}
+          />
         </Stack>
       </Drawer>
     </>

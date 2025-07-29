@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { router, Stack, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next";
@@ -17,6 +17,7 @@ import * as FileSystem from "expo-file-system"
 
 import * as ImagePicker from "expo-image-picker"
 import { ImageData, ImageEditor } from "expo-dynamic-image-crop";
+import { ConnectionIcon } from "@/components/platforms/connection";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
@@ -35,10 +36,6 @@ export default function EditVehicleScreen() {
   const { control, handleSubmit, watch } = useForm<Vehicle>({ defaultValues: vehicle ?? {} })
   const onSubmit: SubmitHandler<Vehicle> = async (data) => {
     dispatch(vehiclesSlice.actions.updateVehicleName({ key: vehicleKey, newValue: data.name }))
-    navigation.setOptions({
-      title: t("Edit") + " " + data?.name,
-    })
-
     const customPath = FileSystem.documentDirectory + "carimages/" + encodeURI(data.key)
 
     if (data.image.imageName != 'custom' && (await FileSystem.getInfoAsync(customPath)).exists) {
@@ -57,6 +54,38 @@ export default function EditVehicleScreen() {
     handleSubmit(onSubmit)();
     navigation.dispatch(d.data.action)
   })
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: t("Edit") + " " + vehicle?.name,
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <IconButton icon={"delete"} onPress={() => (
+            ConfirmationMessage(
+              t,
+              () => {
+                if (getSelectedVehicle(store.getState())?.key == vehicleKey) {
+                  dispatch(selectionSlice.actions.unselectVehicle())
+                }
+                dispatch(vehiclesSlice.actions.removeVehicle(vehicleKey))
+
+                const firstVehicleKey = getVehicles(store.getState())[0].key
+                if (firstVehicleKey != null) {
+                  dispatch(selectionSlice.actions.selectVehicle(firstVehicleKey))
+                }
+
+                router.back()
+              },
+              "Warning!",
+              `Do you want to delete ${vehicle?.name ?? t("vehicle")}? This action cannot be undone.`,
+              "Delete"
+            )
+          )} />
+          <ConnectionIcon />
+        </View>
+      )
+    })
+  }, [navigation, vehicle])
 
   const carImage = useWatch({ control, name: "image", defaultValue: vehicle?.image })
 
@@ -86,9 +115,6 @@ export default function EditVehicleScreen() {
                   value={value ?? ""}
                   onChangeText={(v: string) => {
                     onChange(v);
-                    navigation.setOptions({
-                      title: t("Edit") + " " + v,
-                    })
                   }}
                   clearButtonMode="always"
                   style={{ color: theme.colors.secondary, flexDirection: 'row', backgroundColor: theme.colors.surfaceVariant }}
@@ -222,32 +248,6 @@ export default function EditVehicleScreen() {
           />
         )}
       />
-
-      <Stack.Screen options={{
-        title: t("Edit") + " " + vehicle?.name,
-        headerRight: () => (
-          <IconButton icon={"delete"} onPress={() => (
-            ConfirmationMessage(
-              () => {
-                if (getSelectedVehicle(store.getState())?.key == vehicleKey) {
-                  dispatch(selectionSlice.actions.unselectVehicle())
-                }
-                dispatch(vehiclesSlice.actions.removeVehicle(vehicleKey))
-
-                const firstVehicleKey = getVehicles(store.getState())[0].key
-                if (firstVehicleKey != null) {
-                  dispatch(selectionSlice.actions.selectVehicle(firstVehicleKey))
-                }
-
-                router.back()
-              },
-              "Warning!",
-              `Do you want to delete ${vehicle.name}? This action cannot be undone.`,
-              "Delete"
-            )
-          )} />
-        )
-      }} />
     </View>
   );
 }

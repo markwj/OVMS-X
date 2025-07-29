@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
-import { Stack, router } from "expo-router";
+import { router } from "expo-router";
 import { Text, TextInput, Button, SegmentedButtons, HelperText } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
-import { useGetMessagesQuery, closeWebSocket } from "@/store/ovmsv2wsApi";
 import { useDispatch } from "react-redux";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
 import { useLazyGetVehiclesQuery } from "@/store/ovmsv2httpApi";
@@ -144,12 +143,11 @@ export default function NewPlatformOVMSv2() {
   };
 
   return (
-    <>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={height + 100}
-        enabled={true}
-        style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={height + 100}
+      enabled={true}
+      style={styles.container}>
 
         <ScrollView style={styles.scrollview}>
           <View style={{gap: 10, marginBottom: 10}}>
@@ -166,35 +164,35 @@ export default function NewPlatformOVMSv2() {
             />
           </View>
 
-          <Controller
-            control={control}
-            name="serverurl"
-            rules={{ required: 'If "other" is selected, server URL is required' }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                label={t('Server URL')}
-                readOnly={selectedServer !== 'other'}
-                onChangeText={onChange}
-                placeholder={t('Enter server URL')}
-                autoComplete="url"
-                clearButtonMode="always"
-                inputMode="url"
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-              />
-            )}
-          />
-          {(typeof errors.serverurl !== 'undefined') &&
-            <HelperText type="error" visible={typeof errors.serverurl !== 'undefined'}>
-              Error: {errors.serverurl?.message}
-            </HelperText>
-          }
+        <Controller
+          control={control}
+          name="serverurl"
+          rules={{ required: 'If "other" is selected, server URL is required' }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              value={value}
+              label={t('Server URL')}
+              readOnly={selectedServer !== 'other'}
+              onChangeText={onChange}
+              placeholder={t('Enter server URL')}
+              autoComplete="url"
+              clearButtonMode="always"
+              inputMode="url"
+              autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
+            />
+          )}
+        />
+        {(typeof errors.serverurl !== 'undefined') &&
+          <HelperText type="error" visible={typeof errors.serverurl !== 'undefined'}>
+            Error: {errors.serverurl?.message}
+          </HelperText>
+        }
 
-          <View style={styles.gap}></View>
+        <View style={styles.gap}></View>
 
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
 
             <View style={{ flex: 1, flexGrow: 1 }}>
               <Controller
@@ -270,95 +268,92 @@ export default function NewPlatformOVMSv2() {
               }
             </View>
 
-          </View>
+        </View>
 
-          <View style={styles.gap}></View>
+        <View style={styles.gap}></View>
 
-          <Controller
-            control={control}
-            name="username"
-            rules={{ required: 'Required' }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                label={t('Username')}
-                onChangeText={onChange}
-                placeholder={t('Username')}
-                autoComplete="username"
-                clearButtonMode="always"
-                inputMode="text"
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-              />
-            )}
-          />
-          {(typeof errors.username !== 'undefined') &&
-            <HelperText type="error" visible={typeof errors.username !== 'undefined'}>
-              Error: {errors.username?.message}
-            </HelperText>
-          }
-
-          <View style={styles.gap}></View>
-
-          <Controller
-            control={control}
-            name="password"
-            rules={{ required: 'Required' }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                label={t('Password')}
-                onChangeText={onChange}
-                placeholder={t('Password')}
-                secureTextEntry={!passwordVisible}
-                right={<TextInput.Icon
-                  icon={passwordVisible ? "eye-off" : "eye"}
-                  onPress={() => setPasswordVisible(!passwordVisible)} />}
-                autoComplete="current-password"
-                clearButtonMode="always"
-                inputMode="text"
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-              />
-            )}
-          />
-          {(typeof errors.password !== 'undefined') &&
-            <HelperText type="error" visible={typeof errors.password !== 'undefined'}>
-              Error: {errors.password?.message}
-            </HelperText>
-          }
-
-          <View style={styles.gap}></View>
-
-          <Button
-            mode="contained"
-            onPress={handleSubmit(onSubmit)}
-            loading={isLoading || isLoadingLists}
-            disabled={isLoading || isLoadingLists}
-          >
-            {t('Add Vehicles')}
-          </Button>
-
-          {error && (
-            <HelperText type="error" visible={true}>
-              Error: {'status' in error ? `HTTP ${error.status}` : error.message || 'Failed to fetch vehicles'}
-            </HelperText>
+        <Controller
+          control={control}
+          name="username"
+          rules={{ required: 'Required' }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              value={value}
+              label={t('Username')}
+              onChangeText={onChange}
+              placeholder={t('Username')}
+              autoComplete="username"
+              clearButtonMode="always"
+              inputMode="text"
+              autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
+            />
           )}
+        />
+        {(typeof errors.username !== 'undefined') &&
+          <HelperText type="error" visible={typeof errors.username !== 'undefined'}>
+            Error: {errors.username?.message}
+          </HelperText>
+        }
 
-          {vehicleRecords && vehicleRecords.length > 0 && (
-            <HelperText type="info" visible={true}>
-              Successfully loaded {vehicleRecords.length} vehicle(s)
-            </HelperText>
+        <View style={styles.gap}></View>
+
+        <Controller
+          control={control}
+          name="password"
+          rules={{ required: 'Required' }}
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              value={value}
+              label={t('Password')}
+              onChangeText={onChange}
+              placeholder={t('Password')}
+              secureTextEntry={!passwordVisible}
+              right={<TextInput.Icon
+                icon={passwordVisible ? "eye-off" : "eye"}
+                onPress={() => setPasswordVisible(!passwordVisible)} />}
+              autoComplete="current-password"
+              clearButtonMode="always"
+              inputMode="text"
+              autoCapitalize="none"
+              autoCorrect={false}
+              spellCheck={false}
+            />
           )}
+        />
+        {(typeof errors.password !== 'undefined') &&
+          <HelperText type="error" visible={typeof errors.password !== 'undefined'}>
+            Error: {errors.password?.message}
+          </HelperText>
+        }
 
-        </ScrollView>
+        <View style={styles.gap}></View>
 
-      </KeyboardAvoidingView>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          loading={isLoading || isLoadingLists}
+          disabled={isLoading || isLoadingLists}
+        >
+          {t('Add Vehicles')}
+        </Button>
 
-      <Stack.Screen options={{ headerTitle: t('OVMS v2 API') }} />
-    </>
+        {error && (
+          <HelperText type="error" visible={true}>
+            Error: {'status' in error ? `HTTP ${error.status}` : error.message || 'Failed to fetch vehicles'}
+          </HelperText>
+        )}
+
+        {vehicleRecords && vehicleRecords.length > 0 && (
+          <HelperText type="info" visible={true}>
+            Successfully loaded {vehicleRecords.length} vehicle(s)
+          </HelperText>
+        )}
+
+      </ScrollView>
+
+    </KeyboardAvoidingView>
   );
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Stack } from 'expo-router';
+import { Link } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native-paper';
@@ -7,15 +7,12 @@ import { Text } from 'react-native-paper';
 export default function NotFoundScreen() {
   const { t } = useTranslation();
   return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <View style={styles.container}>
-        <Text variant="titleLarge">{t('This screen doesn\'t exist.')}</Text>
-        <Link href="/" style={styles.link}>
-          <Text variant="bodyLarge" style={{textDecorationLine: 'underline'}}>{t('Return to home screen')}</Text>
-        </Link>
-      </View>
-    </>
+    <View style={styles.container}>
+      <Text>{t('This screen doesn\'t exist.')}</Text>
+      <Link href="/" style={styles.link}>
+        <Text>{t('Return to home screen')}</Text>
+      </Link>
+    </View>
   );
 }
 

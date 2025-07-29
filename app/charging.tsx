@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { Text, Icon, Button, IconButton, useTheme } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { HorizontalBatteryIcon } from "@/components/ui/BatteryIcon";
@@ -13,10 +13,7 @@ import { getSelectedVehicle } from "@/store/selectionSlice";
 import { useTranslation } from "react-i18next";
 import { store } from "@/store/root";
 import { ScrollView } from "react-native-gesture-handler";
-import Slider from "@react-native-community/slider";
-import { numericalUnitConvertor } from "@/components/utils/numericalUnitConverter";
-import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
-import { Stack } from "expo-router";
+import { useNavigation } from "expo-router";
 
 const vCModes = [
   { value: "standard", label: "Standard" },
@@ -39,6 +36,12 @@ export default function ChargingScreen() {
       chargeMode: useSelector(selectMetricValue("v.c.mode")),
     }
   });
+
+  const navigation = useNavigation()
+
+  useLayoutEffect(() => {
+    navigation.setOptions({title: charging ? "Charging" : "Not Charging"})
+  }, [navigation, charging])
 
   const theme = useTheme()
 
@@ -241,8 +244,6 @@ export default function ChargingScreen() {
 
         </ScrollView>
       </View>
-
-      <Stack.Screen options={{title: charging ? "Charging" : "Not Charging"}}/>
     </View>
   );
 }
