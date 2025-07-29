@@ -104,9 +104,7 @@ export default function MessagesScreen() {
             {storedCommands.map((c) => <Menu.Item key={c.key} onPress={() => {setText(c.command); setCommandsVisible(false)}} title={c.name} />)}
           </Menu>
         )
-      }}>
-
-      </Stack.Screen>
+      }}/>
     </KeyboardAvoidingView>
   )
 }

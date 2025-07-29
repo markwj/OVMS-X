@@ -4,9 +4,8 @@ import {
   ScrollView,
   StyleSheet
 } from "react-native";
-import { router, Stack } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme, Text, Card, Button } from 'react-native-paper';
+import { router } from "expo-router";
+import { useTheme, Text, Card } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { Image } from "react-native";
 
@@ -15,23 +14,16 @@ export default function NewPlatform() {
   const { t } = useTranslation();
 
   return (
-    <>
-      <ScrollView style={{ height: '100%' }}>
-        <PlatformCard imageSource={require('@/assets/platforms/ovms.png')} title={'OVMS v2 API'} body={'Using the OVMS v2 API, protected by SSL/TLS encryption, and authenticated by username and password.'} pageSource={'/newplatform/ovmsv2'}></PlatformCard>
-        <PlatformCard imageSource={require('@/assets/platforms/ovms.png')} title={'OVMS v2 DEMO'} body={'The OVMS v2 Demonstration Vehicle. This is a simple demonstration of the OVMS system using randomised sample data.'} pageSource={'/newplatform/ovmsv2demo'}></PlatformCard>
-        <PlatformCard imageSource={require('@/assets/platforms/tesla.png')} title={'Tesla Fleet API'} body={'Using the Tesla fleet API, protected by SSL/TLS encryption, and authenticated by Tesla account credentials.'} pageSource={'/newplatform/tesla'}></PlatformCard>
-      </ScrollView>
-      <Stack.Screen
-        options={{
-          headerTitle: t('New Platform'),
-        }}
-      />
-    </>
+    <ScrollView style={{ height: '100%' }}>
+      <PlatformCard imageSource={require('@/assets/platforms/ovms.png')} title={'OVMS v2 API'} body={'Using the OVMS v2 API, protected by SSL/TLS encryption, and authenticated by username and password.'} pageSource={'/newplatform/ovmsv2'}></PlatformCard>
+      <PlatformCard imageSource={require('@/assets/platforms/ovms.png')} title={'OVMS v2 DEMO'} body={'The OVMS v2 Demonstration Vehicle. This is a simple demonstration of the OVMS system using randomised sample data.'} pageSource={'/newplatform/ovmsv2demo'}></PlatformCard>
+      <PlatformCard imageSource={require('@/assets/platforms/tesla.png')} title={'Tesla Fleet API'} body={'Using the Tesla fleet API, protected by SSL/TLS encryption, and authenticated by Tesla account credentials.'} pageSource={'/newplatform/tesla'}></PlatformCard>
+    </ScrollView>
   );
 }
 
-function PlatformCard({ imageSource, title, body, pageSource }: { imageSource: any, title: string, body: string, pageSource : any }) {
-  const {t} = useTranslation()
+function PlatformCard({ imageSource, title, body, pageSource }: { imageSource: any, title: string, body: string, pageSource: any }) {
+  const { t } = useTranslation()
 
   return (
     <Card mode="contained" style={{ margin: 10, padding: 10, marginTop: 10 }}

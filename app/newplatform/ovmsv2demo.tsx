@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
-import { Stack, router } from "expo-router";
-import { Text, TextInput, Button, SegmentedButtons, HelperText } from 'react-native-paper';
+import React, { useEffect } from "react";
+import { View } from "react-native";
+import { router } from "expo-router";
+import { Text } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
-import { useForm, Controller } from "react-hook-form";
-import { useHeaderHeight } from '@react-navigation/elements'
-import { useGetMessagesQuery, closeWebSocket } from "@/store/ovmsv2wsApi";
 import { useDispatch } from "react-redux";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
-import { useLazyGetVehiclesQuery } from "@/store/ovmsv2httpApi";
 import { VehicleTypes } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
 import { selectionSlice } from "@/store/selectionSlice";
