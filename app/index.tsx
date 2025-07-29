@@ -44,7 +44,7 @@ export default function HomeScreen() {
     console.log("[HomeScreen] No vehicle selected, currently at", routepath);
     if (routepath.substring(0, 12) !== '/newplatform') {
       setTimeout(() => {
-        router.push('/(main)/newplatform');
+        router.push('/newplatform');
       }, 0);
     }
     return null;
@@ -135,12 +135,6 @@ export default function HomeScreen() {
 
         </SafeAreaView>
       </SafeAreaProvider>
-
-      <Stack.Screen
-        options={{
-          headerTitle: t('Vehicle'),
-          headerShown: false,
-        }} />
     </>
   );
 }

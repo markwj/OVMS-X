@@ -11,23 +11,19 @@ import { VehicleSideImage } from "@/components/ui/VehicleImages";
 import { metricsSlice } from "@/store/metricsSlice";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 interface VehicleSelectorProps {
-  navigation?: any;
+  setDrawerOpen?: (open: boolean) => void;
 }
 
-function VehicleList({ navigation }: { navigation?: any }) {
+function VehicleList({ setDrawerOpen }: { setDrawerOpen?: (open: boolean) => void }) {
   const router = useRouter();
   const vehicleList = useSelector(getVehicles);
   const selectedVehicle = useSelector(getSelectedVehicle);
   const dispatch = useDispatch();
 
-  console.log("[VehicleList] navigation", navigation);
   const onVehiclePress = (key: string) => {
     dispatch(metricsSlice.actions.clearAll());
     dispatch(selectionSlice.actions.selectVehicle(key));
-    console.log("closing drawer with navigation", navigation);
-    if (navigation) {
-      navigation.closeDrawer();
-    }
+    if (setDrawerOpen) { setDrawerOpen(false); }
   }
 
   if (typeof vehicleList === 'undefined') {
@@ -55,9 +51,9 @@ function VehicleList({ navigation }: { navigation?: any }) {
                     <IconButton
                       icon='pencil'
                       size={20} onPress={() => {
-                        router.back();
+                        if (setDrawerOpen) { setDrawerOpen(false); }
                         setTimeout(() => {
-                          router.push({ pathname: '/(main)/editvehicle', params: { vehicleKey: vehicle.key } })
+                          router.push({ pathname: '/editvehicle', params: { vehicleKey: vehicle.key } })
                         }, 100);
                       }} />
                   )}
@@ -71,18 +67,14 @@ function VehicleList({ navigation }: { navigation?: any }) {
   }
 }
 
-export function VehicleSelector({ navigation }: VehicleSelectorProps) {
+export function VehicleSelector({ setDrawerOpen }: VehicleSelectorProps) {
   const router = useRouter();
   const { t } = useTranslation();
 
-  console.log("[VehicleSelector] navigation", navigation);
-
   const handleAddNewPlatform = () => {
-    // Close the drawer first by going back
-    router.back();
-    // Then navigate to the new platform screen
+    if (setDrawerOpen) { setDrawerOpen(false); }
     setTimeout(() => {
-      router.push('/(main)/newplatform');
+      router.push('/newplatform');
     }, 100);
   };
 
@@ -90,7 +82,7 @@ export function VehicleSelector({ navigation }: VehicleSelectorProps) {
     <SafeAreaProvider>
       <SafeAreaView style={{ height: '100%' }}>
         <ScrollView>
-          <VehicleList navigation={navigation} />
+          <VehicleList setDrawerOpen={setDrawerOpen} />
           <Pressable onPress={handleAddNewPlatform}>
             <Card style={styles.container}>
               <Card.Content>

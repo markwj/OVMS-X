@@ -51,23 +51,23 @@ export function ControlIcon({ type }: { type: controlType }): React.JSX.Element 
   switch (type) {
     case controlType.Controls:
       return (
-        <IconButton icon='car' onPress={() => { router.push('/(main)/controls'); }} />
+        <IconButton icon='car' onPress={() => { router.push('/controls'); }} />
       );
     case controlType.Climate:
       return (
-        <IconButton icon='air-conditioner' onPress={() => { router.push('/(main)/climate'); }} />
+        <IconButton icon='air-conditioner' onPress={() => { router.push('/climate'); }} />
       );
     case controlType.Charging:
       return (
-        <IconButton icon='ev-plug-type2' onPress={() => { router.push('/(main)/charging'); }} />
+        <IconButton icon='ev-plug-type2' onPress={() => { router.push('/charging'); }} />
       );
     case controlType.Location:
       return (
-        <IconButton icon='map-marker' onPress={() => { router.push('/(main)/location'); }} />
+        <IconButton icon='map-marker' onPress={() => { router.push('/location'); }} />
       );
     case controlType.Messages:
       return (
-        <IconButton icon='chat' onPress={() => { router.push('/(main)/messages'); }} />
+        <IconButton icon='chat' onPress={() => { router.push('/messages'); }} />
       );
     case controlType.Energy:
       return (
@@ -88,11 +88,11 @@ export function ControlIcon({ type }: { type: controlType }): React.JSX.Element 
       );
     case controlType.Settings:
       return (
-        <IconButton icon='hammer-wrench' onPress={() => { router.push('/(main)/settings'); }} />
+        <IconButton icon='hammer-wrench' onPress={() => { router.push('/settings'); }} />
       );
     case controlType.Developer:
       return (
-        <IconButton icon='developer-board' onPress={() => { router.push('/(main)/developer/metrics'); }} />
+        <IconButton icon='developer-board' onPress={() => { router.push('/developer/metrics'); }} />
       );
   }
   return null;
@@ -108,7 +108,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           icon='car'
           mode='contained-tonal'
           dark={theme.dark}
-          onPress={() => { router.push('/(main)/controls'); }}
+          onPress={() => { router.push('/controls'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Controls')}
         </Button>
@@ -119,7 +119,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           icon='air-conditioner'
           mode='contained-tonal'
           dark={theme.dark}
-          onPress={() => { router.push('/(main)/climate'); }}
+          onPress={() => { router.push('/climate'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Climate')}
         </Button>
@@ -130,7 +130,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           icon='ev-plug-type2'
           mode='contained-tonal'
           dark={theme.dark}
-          onPress={() => { router.push('/(main)/charging'); }}
+          onPress={() => { router.push('/charging'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Charging')}
         </Button>
@@ -152,7 +152,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           icon='chat'
           mode='contained-tonal'
           dark={theme.dark}
-          onPress={() => { router.push('/(main)/messages'); }}
+          onPress={() => { router.push('/messages'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Messages')}
         </Button>
@@ -185,7 +185,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           icon='hammer-wrench'
           mode='contained-tonal'
           dark={theme.dark}
-          onPress={() => { router.push('/(main)/settings'); }}
+          onPress={() => { router.push('/settings'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t('Settings')}
         </Button>
@@ -196,7 +196,7 @@ export function ControlButton({ type }: { type: controlType }): React.JSX.Elemen
           icon='developer-board'
           mode='contained-tonal'
           dark={theme.dark}
-          onPress={() => { router.push('/(main)/developer/metrics'); }}
+          onPress={() => { router.push('/developer/metrics'); }}
           style={{ width: '80%', marginBottom: 10 }}>
           {t("Developer")}
         </Button>

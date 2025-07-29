@@ -3,21 +3,20 @@ import {
   DefaultTheme as NavigationDefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState, useRef } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, Portal, Dialog, Text, Button } from 'react-native-paper';
+import { MD3LightTheme, MD3DarkTheme, adaptNavigationTheme, PaperProvider, Portal, Dialog, Text, Button, IconButton } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { store, persistedStore } from '@/store/root';
 import { Provider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { VehicleSelector } from '@/components/ui/VehicleSelector';
-import { Drawer } from 'expo-router/drawer';
-import { Appearance, Platform, useWindowDimensions } from 'react-native';
+import { Appearance, Platform, useWindowDimensions, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/selectionSlice';
@@ -27,6 +26,8 @@ import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
 import * as Device from 'expo-device';
 import { isRunningInExpoGo } from 'expo';
+import { Drawer } from 'react-native-drawer-layout';
+import { useTheme } from 'react-native-paper';
 // Conditionally import notifications to avoid warnings in Expo Go
 let Notifications: any = null;
 if (!isRunningInExpoGo()) {
@@ -150,6 +151,9 @@ const MainLayout = () => {
   );
   const reduxColorScheme = useSelector(getColorScheme)
   const reduxLanguage = useSelector(getLanguage)
+  const { t } = useTranslation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -189,7 +193,7 @@ const MainLayout = () => {
 
   //Sets settings according to stored redux settings
   useEffect(() => {
-    if (reduxColorScheme != null) {
+    if (reduxColorScheme != null && reduxColorScheme !== 'null') {
       Appearance.setColorScheme(reduxColorScheme)
     }
     if (reduxLanguage != null) {
@@ -199,20 +203,116 @@ const MainLayout = () => {
 
   return (
     <>
-      <StatusBar style='auto' hidden={false} />
       <Drawer
-        defaultStatus="closed"
-        screenOptions={{
-          title: selectedVehicle?.name ?? '',
-          drawerType: isLargeScreen ? 'permanent' : 'slide',
-          drawerStyle: isLargeScreen ? null : { width: '50%' },
-          drawerStatusBarAnimation: 'slide',
-          keyboardDismissMode: 'on-drag',
-          headerRight: () => <ConnectionIcon />
-        }}
-        drawerContent={(props) => {
-          return <VehicleSelector navigation={props.navigation} />
+        open={drawerOpen}
+        onOpen={() => setDrawerOpen(true)}
+        onClose={() => setDrawerOpen(false)}
+        drawerType={isLargeScreen ? 'permanent' : 'slide'}
+        drawerStyle={isLargeScreen ? null : { width: '50%', backgroundColor: theme.colors.surface }}
+        keyboardDismissMode='on-drag'
+        renderDrawerContent={() => {
+          return <VehicleSelector setDrawerOpen={setDrawerOpen}/>
         }}>
+        <StatusBar style='auto' hidden={false} />
+        <Stack
+          screenOptions={{
+            headerTitleStyle: {
+              fontSize: 18,
+              fontWeight: '600',
+            },
+            headerShadowVisible: false,
+            headerTitleAlign: 'center',
+            headerLargeTitle: false,
+            headerBackButtonDisplayMode: 'generic',
+//            headerLeft: ({ canGoBack }) => (
+//              <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -30 }}>
+//                <IconButton icon='menu' onPress={() => setDrawerOpen(true)} />
+//                {canGoBack && <Button onPress={() => router.back()}>{'< Back'}</Button>}
+//              </View>
+//            ),
+            headerRight: () => <ConnectionIcon />,
+          }}
+        >
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: true,
+              headerTitle: selectedVehicle?.name ?? ''
+            }}
+          />
+          <Stack.Screen
+            name="newplatform"
+            options={{
+              title: t('New Platform'),
+            }}
+          />
+          <Stack.Screen
+            name="newplatform/ovmsv2"
+            options={{
+              title: t('OVMS v2 API'),
+            }}
+          />
+          <Stack.Screen
+            name="newplatform/tesla"
+            options={{
+              title: t('TESLA API'),
+            }}
+          />
+          <Stack.Screen
+            name="controls"
+            options={{
+              title: t('Controls'),
+            }}
+          />
+          <Stack.Screen
+            name="climate"
+            options={{
+              title: t('Climate'),
+            }}
+          />
+          <Stack.Screen
+            name="charging"
+            options={{
+              title: t('Charging'),
+            }}
+          />
+          <Stack.Screen
+            name="location"
+            options={{
+              title: t('Location'),
+            }}
+          />
+          <Stack.Screen
+            name="messages"
+            options={{
+              title: t('Messages'),
+            }}
+          />
+          <Stack.Screen
+            name="settings"
+            options={{
+              title: t('Settings'),
+            }}
+          />
+          <Stack.Screen
+            name="developer/metrics"
+            options={{
+              title: t('Metrics'),
+            }}
+          />
+          <Stack.Screen
+            name="developer/aboutMetric"
+            options={{
+              title: 'About Metric',
+            }}
+          />
+          <Stack.Screen
+            name="editvehicle"
+            options={{
+              title: 'Edit Vehicle',
+            }}
+          />
+        </Stack>
       </Drawer>
     </>
   )
@@ -294,7 +394,7 @@ export default Sentry.wrap(function RootLayout() {
                   <Dialog.Title>{t('Update Available')}</Dialog.Title>
                   <Dialog.Content>
                     <Text variant="bodyMedium">
-                      {t('An update for Box Mail is available. We suggest to install the update now, or you can skip it until later.')}
+                      {t('An update for the OVMS-X App is available. We suggest to install the update now, or you can skip it until later.')}
                     </Text>
                   </Dialog.Content>
                   <Dialog.Actions>
@@ -308,6 +408,6 @@ export default Sentry.wrap(function RootLayout() {
           </PaperProvider>
         </ThemeProvider>
       </Provider>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 });

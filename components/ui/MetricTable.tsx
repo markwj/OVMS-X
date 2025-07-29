@@ -60,7 +60,7 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
 
 function OnMetricEntryPress(metricName: string) {
   //alert(metricName)
-  router.push({ pathname: "/(main)/developer/aboutMetric", params: { metricName: metricName } })
+  router.push({ pathname: "/developer/aboutMetric", params: { metricName: metricName } })
 }
 
 const styles = StyleSheet.create({

@@ -3,12 +3,16 @@ import { AppState } from "react-native"
 import { useSelector } from "react-redux"
 import { getSelectedVehicle } from "@/store/selectionSlice"
 import { Vehicle } from "@/store/vehiclesSlice"
-import { OVMSv2ConnectionIcon,
+import {
+  OVMSv2ConnectionIcon,
   sendOVMSv2Command,
-  handleOVMSv2NotificationResponse, handleOVMSv2NotificationIncoming } from "./ovmsv2"
-import { TeslaConnectionIcon,
+  handleOVMSv2NotificationResponse, handleOVMSv2NotificationIncoming
+} from "./ovmsv2"
+import {
+  TeslaConnectionIcon,
   sendTeslaCommand,
-  handleTeslaNotificationResponse, handleTeslaNotificationIncoming } from "./tesla"
+  handleTeslaNotificationResponse, handleTeslaNotificationIncoming
+} from "./tesla"
 import { DefaultConnectionIcon } from "./default"
 import { InactiveConnectionIcon } from "./inactive"
 import { handleUrlParams } from "expo-router/build/fork/getStateFromPath-forks"
@@ -24,7 +28,7 @@ export function HandleNotificationIncoming(notification: any, vehicles: Vehicle[
   handleTeslaNotificationIncoming(notification, vehicles, dispatch);
 }
 
-export async function ConnectionCommand(vehicle: Vehicle | null, command: {commandCode : CommandCode, params? : any}): Promise<string> {
+export async function ConnectionCommand(vehicle: Vehicle | null, command: { commandCode: CommandCode, params?: any }): Promise<string> {
   if (vehicle == null) {
     throw new Error("Vehicle is not selected");
   }
@@ -44,27 +48,38 @@ export async function ConnectionCommand(vehicle: Vehicle | null, command: {comma
   }
 }
 
+let connectionCount = 0;
+
 export function ConnectionIcon(): React.JSX.Element {
   const selectedVehicle = useSelector(getSelectedVehicle)
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('[connection] app state changed to active');
-      }
+    connectionCount++;
+    var subscription: any;
+    if (connectionCount == 1) {
+      console.log('[connection main] startup', connectionCount);
+      subscription = AppState.addEventListener('change', nextAppState => {
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          console.log('[connection main] app state changed to active');
+        }
 
-      appState.current = nextAppState;
-      setAppStateVisible(appState.current);
-      console.log('[connection] app state', appState.current);
-    });
+        appState.current = nextAppState;
+        setAppStateVisible(appState.current);
+        console.log('[connection main] app state', appState.current);
+      });
+    }
 
     return () => {
-      subscription.remove();
+      connectionCount--;
+      if (connectionCount == 0) {
+        console.log('[connection main] cleanup', connectionCount);
+        subscription.remove();
+      }
     };
   }, []);
 
