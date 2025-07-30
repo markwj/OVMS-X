@@ -57,7 +57,7 @@ export default function EditVehicleScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t("Edit") + " " + vehicle?.name,
+      headerTitle: t("Edit") + " " + vehicle?.name,
       headerRight: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <IconButton icon={"delete"} onPress={() => (

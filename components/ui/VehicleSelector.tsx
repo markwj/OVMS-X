@@ -53,9 +53,7 @@ function VehicleList({ setDrawerOpen }: { setDrawerOpen?: (open: boolean) => voi
                       icon='pencil'
                       size={20} onPress={() => {
                         if (setDrawerOpen) { setDrawerOpen(false); }
-                        setTimeout(() => {
-                          router.push({ pathname: '/editvehicle', params: { vehicleKey: vehicle.key } })
-                        }, 100);
+                        router.navigate({ pathname: '/editvehicle', params: { vehicleKey: vehicle.key } })
                       }} />
                   )}
                 </View>

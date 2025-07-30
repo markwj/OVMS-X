@@ -33,6 +33,11 @@ export default function MessagesScreen() {
   const { t } = useTranslation()
   const navigation = useNavigation()
 
+  const user = {
+    _id: "APP_" + (selectedVehicle?.key ?? "*"),
+    name: "command",
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -42,9 +47,21 @@ export default function MessagesScreen() {
             onDismiss={() => setCommandsVisible(false)}
             anchor={<IconButton onPress={() => setCommandsVisible(true)} size={20} icon={'keyboard'} />}
             anchorPosition="bottom">
-            {storedCommands.map((c) => <Menu.Item key={c.key} onPress={() => { setText(c.command); setCommandsVisible(false) }} title={c.name} />)}
+            {storedCommands.map((c) => <Menu.Item key={c.key} onPress={() => {
+              if (c.autosend) {
+                onSend({
+                  _id: 0, //Overwritten in slice
+                  text: c.command,
+                  createdAt: new Date(),
+                  user: user
+                })
+              } else {
+                setText(c.command);
+              }
+              setCommandsVisible(false);
+            }} title={c.name} />)}
           </Menu>
-          <ConnectionDisplay/>
+          <ConnectionDisplay />
         </View>
       )
     })
@@ -79,10 +96,7 @@ export default function MessagesScreen() {
         showUserAvatar={true}
         dateFormat="ddd D MMMM, YYYY"
         onSend={m => onSend(m[0])}
-        user={{
-          _id: "APP_" + selectedVehicle.key,
-          name: "command",
-        }}
+        user={user}
         renderAvatar={(props) => {
           const currentMessage = props.currentMessage
 

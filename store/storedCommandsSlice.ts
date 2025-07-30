@@ -5,7 +5,8 @@ import { RootState } from './root'
 export interface StoredCommand {
   name: string,
   command: string,
-  key: number
+  key: number,
+  autosend : boolean
 }
 
 interface StoredCommandsState {
