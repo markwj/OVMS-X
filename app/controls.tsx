@@ -68,28 +68,28 @@ export default function ControlsScreen() {
             </View>
 
             {/* TPMS displays */}
-            <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
+            <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4, alignItems: 'center' }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.fl.t"} />
               <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.fl.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4}}>
+            <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4, alignItems: 'center'}}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.fr.t"} />
               <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.fr.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4}}>
+            <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4, alignItems: 'center'}}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.rl.t"} />
               <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.rl.p"} />
             </View>
 
-            <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
+            <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4, alignItems: 'center' }}>
               <MetricValue style={styles.metricValue} metricKey={"v.tp.rr.t"} />
               <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.rr.p"} />
             </View>
 
             {/* Temperature displays */}
-            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
+            <View style={{ ...styles.absoluteCentering, left: '80%', top: '92.5%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4, alignItems: 'center' }}>
               <View style={{ ...styles.metricValue, flexDirection: 'row', alignItems: 'center' }}>
                 <BatteryIcon />
                 <Text style={{ marginLeft: 5 }}>Battery</Text>
@@ -113,33 +113,33 @@ export default function ControlsScreen() {
             }
             {vDHood &&
               <View style={{...styles.absoluteCentering, left: '50%', top: '12%' }}>
-                <Text variant="headlineSmall">{t('OPEN')}</Text>
+                <Text variant="labelLarge">{t('OPEN')}</Text>
               </View>
             }
             {vDChargeport &&
               <View style={{...styles.absoluteCentering, left: '10%', top: '72%', flexDirection: 'row', alignItems: 'center' }}>
                 <Icon size={20} source={"ev-plug-type2"}></Icon>
-                <Text variant="headlineSmall">{t('OPEN')}</Text>
+                <Text variant="labelLarge">{t('OPEN')}</Text>
               </View>
             }
             {vDRL &&
               <View style={{...styles.absoluteCentering, left: '10%', top: '60%' }}>
-                <Text variant="headlineSmall">{t('OPEN')}</Text>
+                <Text variant="labelLarge">{t('OPEN')}</Text>
               </View>
             }
             {vDFL &&
               <View style={{...styles.absoluteCentering, left: '10%', top: '40%' }}>
-                <Text variant="headlineSmall">{t('OPEN')}</Text>
+                <Text variant="labelLarge">{t('OPEN')}</Text>
               </View>
             }
             {vDRR &&
               <View style={{...styles.absoluteCentering, left: '90%', top: '60%' }}>
-                <Text variant="headlineSmall">{t('OPEN')}</Text>
+                <Text variant="labelLarge">{t('OPEN')}</Text>
               </View>
             }
             {vDFR &&
               <View style={{...styles.absoluteCentering, left: '90%', top: '40%' }}>
-                <Text variant="headlineSmall">{t('OPEN')}</Text>
+                <Text variant="labelLarge">{t('OPEN')}</Text>
               </View>
             }
 
@@ -187,19 +187,19 @@ export default function ControlsScreen() {
             </View>
 
             {/*Homelink buttons*/}
-            <View style={{ position: 'absolute', right: '20%', top: '0%' }}>
+            <View style={{ position: 'absolute', right: '24%', top: '0%' }}>
               <IconButton
                 icon={'home-floor-0'}
-                size={35}
+                size={50}
                 onPress={async () => {
                   await sendCommand({commandCode: CommandCode.HOME_LINK, params: {button: 0}})
                 }}
               />
             </View>
-            <View style={{ position: 'absolute', right: '10%', top: '0%' }}>
+            <View style={{ position: 'absolute', right: '12%', top: '0%' }}>
               <IconButton
                 icon={'home-floor-1'}
-                size={35}
+                size={50}
                 onPress={async () => {
                   await sendCommand({commandCode: CommandCode.HOME_LINK, params: {button: 1}})
                 }}
@@ -208,7 +208,7 @@ export default function ControlsScreen() {
             <View style={{ position: 'absolute', right: '0%', top: '0%' }}>
               <IconButton
                 icon={'home-floor-2'}
-                size={35}
+                size={50}
                 onPress={async () => {
                   await sendCommand({commandCode: CommandCode.HOME_LINK, params: {button: 2}})
                 }}
