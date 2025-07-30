@@ -17,7 +17,7 @@ import * as FileSystem from "expo-file-system"
 
 import * as ImagePicker from "expo-image-picker"
 import { ImageData, ImageEditor } from "expo-dynamic-image-crop";
-import { ConnectionIcon } from "@/components/platforms/connection";
+import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
@@ -81,7 +81,7 @@ export default function EditVehicleScreen() {
               "Delete"
             )
           )} />
-          <ConnectionIcon />
+          <ConnectionDisplay />
         </View>
       )
     })

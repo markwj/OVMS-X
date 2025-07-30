@@ -56,9 +56,14 @@ export function appInactive() {
 
 export async function sendCommand(command: { commandCode: CommandCode, params?: any }): Promise<string> {
   console.log("[platform] sendCommand", command.commandCode, JSON.stringify(command.params));
-  return new Promise((resolve, reject) => {
-    reject(new Error("Not yet implemented"));
-  });
+  if (currentPlatform) {
+    return currentPlatform.sendCommand(command);
+  }
+  else {
+    return new Promise((resolve, reject) => {
+      reject(new Error("Vehicle not connected"));
+    });
+  }
 }
 
 export function handleNotificationResponse(response: any) {

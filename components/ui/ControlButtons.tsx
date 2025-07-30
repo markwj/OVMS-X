@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Button, IconButton, useTheme } from 'react-native-paper';
 import { router } from "expo-router";
 import { useTranslation } from 'react-i18next';
-import { ConnectionCommand } from "@/components/platforms/connection";
+import { sendCommand } from "@/app/platforms/platform";
 import { CommandCode } from "@/app/platforms/commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { store } from "@/store/root";
@@ -80,10 +80,10 @@ export function ControlIcon({ type }: { type: controlType }): React.JSX.Element 
           if (pin == "User cancelled") { return }
 
           if (locked) {
-            await ConnectionCommand(vehicle, { commandCode: CommandCode.UNLOCK_CAR, params: {pin: pin} })
+            await sendCommand({ commandCode: CommandCode.UNLOCK_CAR, params: {pin: pin} })
             return
           }
-          await ConnectionCommand(vehicle, { commandCode: CommandCode.LOCK_CAR, params: {pin: pin} })
+          await sendCommand({ commandCode: CommandCode.LOCK_CAR, params: {pin: pin} })
         }} />
       );
     case controlType.Settings:

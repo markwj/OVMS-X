@@ -4,6 +4,7 @@ import { RootState } from './root'
 
 export enum VehicleConnectionState {
   DISCONNECTED = 'disconnected',
+  WAITRECONNECT = 'waitreconnect',
   CONNECTING = 'connecting',
   AUTHENTICATING = 'authenticating',
   CONNECTED = 'connected',

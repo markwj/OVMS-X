@@ -19,7 +19,7 @@ import { Appearance, Platform, useWindowDimensions, AppState } from 'react-nativ
 import { useTranslation } from 'react-i18next';
 import '@/i18n';
 import { getSelectedVehicle } from '@/store/selectionSlice';
-import { ConnectionIcon } from '@/components/platforms/connection';
+import { ConnectionDisplay } from '@/components/ui/ConnectionDisplay';
 import { selectHasStandardMetrics, metricsSlice } from '@/store/metricsSlice';
 import { useDispatch } from 'react-redux';
 import * as Sentry from '@sentry/react-native';
@@ -268,7 +268,7 @@ const MainLayout = () => {
               canGoBack ? undefined : (
                 <IconButton icon='menu' onPress={() => setDrawerOpen(true)} />
               ),
-            headerRight: () => <ConnectionIcon />,
+            headerRight: () => <ConnectionDisplay />,
 
           }}
         >

@@ -11,6 +11,8 @@ const GREEN = "#00ff00ff"
 const ORANGE = "#ff8000ff"
 const YELLOW = "#ffff00ff"
 const RED = "#ff0000ff"
+const BLUE = "#0000ffff"
+const GRAY = "#808080ff"
 
 export function ConnectionDisplay(): React.JSX.Element {
   let color;
@@ -78,14 +80,18 @@ export function ConnectionText() {
 
   let displayText
   try {
-    let displayAge = numericalUnitConvertor(dataAgeSeconds).from("s").toBest({ exclude: ['ms', 'ns', 'mu', 'year'] })!
-    displayAge.val = Math.floor(displayAge.val)
-
-    //@ts-ignore
-    if (displayAge.unit == 's') {
-      displayText = t("live")
+    if (dataAgeSeconds > 31 * 86400) {
+      displayText = t(">a month")
     } else {
-      displayText = `${displayAge.val} ${t(displayAge.val == 1 ? displayAge.singular : displayAge.plural)}`
+      let displayAge = numericalUnitConvertor(dataAgeSeconds).from("s").toBest({ exclude: ['ms', 'ns', 'mu', 'year'] })!
+      displayAge.val = Math.floor(displayAge.val)
+
+      //@ts-ignore
+      if (displayAge.unit == 's') {
+        displayText = t("live")
+      } else {
+        displayText = `${displayAge.val} ${t(displayAge.val == 1 ? displayAge.singular : displayAge.plural)}`
+      }
     }
   } catch (error) {
     console.log(error)
@@ -102,9 +108,18 @@ export function ConnectionText() {
       textColor = ORANGE
       textContent = t("Vehicle disconnected") + " " + displayText
     }
+  } else if (connectionState == VehicleConnectionState.CONNECTING) {
+    textContent = t("Connecting...")
+    textColor = YELLOW
   } else if (connectionState == VehicleConnectionState.AUTHENTICATING) {
     textContent = t("Authenticating...")
     textColor = YELLOW
+  } else if (connectionState == VehicleConnectionState.WAITRECONNECT) {
+    textContent = t("Wait reconnect...")
+    textColor = BLUE
+  } else if (connectionState == VehicleConnectionState.DISCONNECTED) {
+    textContent = t("Disconnected")
+    textColor = GRAY
   } else {
     textContent = t("Connecting...")
     textColor = RED

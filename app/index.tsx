@@ -13,7 +13,7 @@ import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
-import { ConnectionCommand } from "@/components/platforms/connection";
+import { sendCommand } from "./platforms/platform";
 import { CommandCode } from "./platforms/commands";
 
 export default function HomeScreen() {
@@ -67,7 +67,7 @@ export default function HomeScreen() {
             <ConnectionText />
             {!vEAwake &&
               <IconButton size={20} icon={"sleep"} onPress={() => {
-                ConnectionCommand(selectedVehicle, { commandCode: CommandCode.WAKEUP_CAR })
+                sendCommand({ commandCode: CommandCode.WAKEUP_CAR })
               }}></IconButton>
             }
           </View>

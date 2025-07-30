@@ -7,7 +7,6 @@ import connectionReducer from '@/store/connectionSlice';
 import selectionReducer from '@/store/selectionSlice';
 import preferencesReducer from '@/store/preferencesSlice';
 import storedCommandsReducer from '@/store/storedCommandsSlice';
-import { ovmsv2wsApi } from '@/store/ovmsv2wsApi';
 import { ovmsv2httpApi } from '@/store/ovmsv2httpApi';
 import {
   persistStore, persistReducer,
@@ -57,7 +56,6 @@ export const store = configureStore({
     metrics: metricsReducer,
     connection: connectionReducer,
     notification: notificationReducer,
-    [ovmsv2wsApi.reducerPath]: ovmsv2wsApi.reducer,
     [ovmsv2httpApi.reducerPath]: ovmsv2httpApi.reducer,
     //@ts-ignore
     messages : persistReducer(messagesPersistConfig, messagesReducer),
@@ -76,7 +74,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(ovmsv2wsApi.middleware).concat(ovmsv2httpApi.middleware),
+    }).concat(ovmsv2httpApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

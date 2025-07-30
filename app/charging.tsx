@@ -7,7 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { selectLocalisedMetricValue, selectMetricValue } from "@/store/metricsSlice";
 import { Dropdown } from "react-native-element-dropdown";
-import { ConnectionCommand } from "@/components/platforms/connection";
+import { sendCommand } from "@/app/platforms/platform";
 import { CommandCode } from "@/app/platforms/commands";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { useTranslation } from "react-i18next";
@@ -85,10 +85,10 @@ export default function ChargingScreen() {
             mode="contained"
             onPress={() => {
               if (charging) {
-                ConnectionCommand(vehicle, { commandCode: CommandCode.STOP_CHARGE })
+                sendCommand({ commandCode: CommandCode.STOP_CHARGE })
                 return;
               }
-              ConnectionCommand(vehicle, { commandCode: CommandCode.START_CHARGE })
+              sendCommand({ commandCode: CommandCode.START_CHARGE })
             }}
           >
             <Text style={{color: theme.colors.onPrimary}}>{charging ? t('Stop Charging') : t('Start Charging')}</Text>
@@ -133,7 +133,7 @@ export default function ChargingScreen() {
                         value={value}
                         onChange={(v) => {
                           setValue('chargeMode', v.value)
-                          ConnectionCommand(vehicle, { commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
+                          sendCommand({ commandCode: CommandCode.SET_CHARGE_MODE, params: [v.value] })
                         }}
                         data={vCModes}
                         labelField={"label"}

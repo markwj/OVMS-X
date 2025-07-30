@@ -8,7 +8,7 @@ import { Menu, Button, IconButton, Portal, Dialog, Text, TextInput } from "react
 import { useNavigation } from "expo-router";
 import { messagesSlice } from "@/store/messagesSlice";
 import { vehiclesSlice } from "@/store/vehiclesSlice";
-import { ConnectionIcon } from "@/components/platforms/connection";
+import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
 
 //@ts-ignore
 export default function DeveloperScreen() {
@@ -42,7 +42,7 @@ export default function DeveloperScreen() {
             <Menu.Item leadingIcon="delete" onPress={() => { dispatch(messagesSlice.actions.wipeMessages()); closeMenu(); }} title={t("Delete all messages")} />
             <Menu.Item leadingIcon="delete" onPress={() => { dispatch(vehiclesSlice.actions.wipeVehicles()); closeMenu(); }} title={t("Delete all vehicles")} />
           </Menu>
-          <ConnectionIcon/>
+          <ConnectionDisplay />
         </View>
     })
   }, [navigation])
