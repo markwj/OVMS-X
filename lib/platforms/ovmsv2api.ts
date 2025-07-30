@@ -10,6 +10,7 @@ import { messagesSlice } from "@/store/messagesSlice";
 import { CommandCode } from "./commands";
 import { connectionSlice, VehicleConnectionState, getConnectionState } from "@/store/connectionSlice";
 import { notificationsEnabled, notificationsToken } from "@/store/notificationSlice";
+import { platformRegistry } from "./platformRegistry";
 
 // PendingCommand is an object to store one pending protocol command
 interface PendingCommand {
@@ -693,3 +694,6 @@ export class OvmsV2Api extends Platform {
   }
 
 }
+
+// Register this platform with the registry
+platformRegistry.register("ovmsv2api", OvmsV2Api);
