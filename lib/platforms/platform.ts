@@ -4,7 +4,7 @@ import { Vehicle } from "@/store/vehiclesSlice";
 import { Platform } from "./baseplatform";
 import { OvmsV2Api } from "./ovmsv2api";
 import { TeslaFleetApi } from "./teslafleetapi";
-import { CommandCode } from "@/app/platforms/commands";
+import { CommandCode } from "@/lib/platforms/commands";
 
 var currentPlatform: Platform | null = null;
 

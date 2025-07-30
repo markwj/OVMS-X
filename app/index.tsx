@@ -13,8 +13,8 @@ import { ConnectionText } from "@/components/ui/ConnectionDisplay";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
-import { sendCommand } from "./platforms/platform";
-import { CommandCode } from "./platforms/commands";
+import { sendCommand } from "@/lib/platforms/platform";
+import { CommandCode } from "@/lib/platforms/commands";
 
 export default function HomeScreen() {
   const theme = useTheme();

@@ -9,9 +9,9 @@ import { selectLocalisedMetricValue, selectMetricIsStale, selectMetricValue } fr
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
 import { MetricValue } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
-import { sendCommand } from "./platforms/platform";
+import { sendCommand } from "@/lib/platforms/platform";
 import { useTranslation } from "react-i18next";
-import { CommandCode } from "@/app/platforms/commands";
+import { CommandCode } from "@/lib/platforms/commands";
 
 const auxBattery = require("@/assets/images/aux_battery.png")
 
