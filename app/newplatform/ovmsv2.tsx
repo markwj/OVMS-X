@@ -39,12 +39,6 @@ const generateRandomColor = (): string => {
   return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Function to generate a random vehicle type
-const generateRandomVehicleType = (): string => {
-  const vehicleTypeKeys = Object.keys(VehicleTypes);
-  return vehicleTypeKeys[Math.floor(Math.random() * vehicleTypeKeys.length)];
-};
-
 export default function NewPlatformOVMSv2() {
   const height = useHeaderHeight()
   const { t } = useTranslation();
@@ -113,7 +107,7 @@ export default function NewPlatformOVMSv2() {
               id: vehicle.id
             },
             image: {
-              imageName: generateRandomVehicleType(),
+              imageName: 'default',
               tintColor: generateRandomColor(),
               customPath: null
             }

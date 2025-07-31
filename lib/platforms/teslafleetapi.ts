@@ -2,6 +2,7 @@
 
 import { Platform } from "./baseplatform";
 import { Vehicle } from "@/store/vehiclesSlice";
+import { platformRegistry } from "./platformRegistry";
 
 export class TeslaFleetApi extends Platform {
   constructor(vehicle: Vehicle) {
@@ -28,3 +29,6 @@ export class TeslaFleetApi extends Platform {
     console.log("[platform TeslaFleetApi] handleNotificationRegistration", pushTokenString);
   }
 }
+
+// Register this platform with the registry
+platformRegistry.register("teslafleetapi", TeslaFleetApi);

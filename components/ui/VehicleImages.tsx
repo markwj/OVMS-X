@@ -10,52 +10,62 @@ export const VehicleTypes = {
   'ampera': {
     name: 'Opel Ampera-e',
     types: ['VA'],
-    side: require('@/assets/carimages/ampera_side_base.png'),
-    sideMask: require('@/assets/carimages/ampera_side_mask.png'),
-    top: require('@/assets/carimages/ampera_top_base.png'),
-    topMask: require('@/assets/carimages/ampera_top_mask.png'),
-    map: require('@/assets/carimages/ampera_map_base.png'),
-    mapMask: require('@/assets/carimages/ampera_map_mask.png')
+    side: require('@/assets/carimages/opel_ampera_side_base.png'),
+    sideMask: require('@/assets/carimages/opel_ampera_side_mask.png'),
+    top: require('@/assets/carimages/opel_ampera_top_base.png'),
+    topMask: require('@/assets/carimages/opel_ampera_top_mask.png'),
+    map: require('@/assets/carimages/opel_ampera_map_base.png'),
+    mapMask: require('@/assets/carimages/opel_ampera_map_mask.png')
   },
   'roadster': {
     name: 'Tesla Roadster (2008-2012)',
     types: ['TR', 'TR1N', 'TR2N', 'TR2S'],
-    side: require('@/assets/carimages/roadster_side_base.png'),
-    sideMask: require('@/assets/carimages/roadster_side_mask.png'),
-    top: require('@/assets/carimages/roadster_top_base.png'),
-    topMask: require('@/assets/carimages/roadster_top_mask.png'),
-    map: require('@/assets/carimages/roadster_map_base.png'),
-    mapMask: require('@/assets/carimages/roadster_map_mask.png')
+    side: require('@/assets/carimages/tesla_roadster_classic_side_base.png'),
+    sideMask: require('@/assets/carimages/tesla_roadster_classic_side_mask.png'),
+    top: require('@/assets/carimages/tesla_roadster_classic_top_base.png'),
+    topMask: require('@/assets/carimages/tesla_roadster_classic_top_mask.png'),
+    map: require('@/assets/carimages/tesla_roadster_classic_map_base.png'),
+    mapMask: require('@/assets/carimages/tesla_roadster_classic_map_mask.png')
   },
   'thinkcity': {
     name: 'Think City',
     types: ['TGTC'],
-    side: require('@/assets/carimages/thinkcity_side_base.png'),
-    sideMask: require('@/assets/carimages/thinkcity_side_mask.png'),
-    top: require('@/assets/carimages/thinkcity_top_base.png'),
-    topMask: require('@/assets/carimages/thinkcity_top_mask.png'),
-    map: require('@/assets/carimages/thinkcity_map_base.png'),
-    mapMask: require('@/assets/carimages/thinkcity_map_mask.png')
+    side: require('@/assets/carimages/think_city_side_base.png'),
+    sideMask: require('@/assets/carimages/think_city_side_mask.png'),
+    top: require('@/assets/carimages/think_city_top_base.png'),
+    topMask: require('@/assets/carimages/think_city_top_mask.png'),
+    map: require('@/assets/carimages/think_city_map_base.png'),
+    mapMask: require('@/assets/carimages/think_city_map_mask.png')
   },
   'twizy': {
     name: 'Renault Twizy',
     types: ['RT'],
-    side: require('@/assets/carimages/twizy_side_base.png'),
-    sideMask: require('@/assets/carimages/twizy_side_mask.png'),
-    top: require('@/assets/carimages/twizy_top_base.png'),
-    topMask: require('@/assets/carimages/twizy_top_mask.png'),
-    map: require('@/assets/carimages/twizy_map_base.png'),
-    mapMask: require('@/assets/carimages/twizy_map_mask.png')
+    side: require('@/assets/carimages/renault_twizy_side_base.png'),
+    sideMask: require('@/assets/carimages/renault_twizy_side_mask.png'),
+    top: require('@/assets/carimages/renault_twizy_top_base.png'),
+    topMask: require('@/assets/carimages/renault_twizy_top_mask.png'),
+    map: require('@/assets/carimages/renault_twizy_map_base.png'),
+    mapMask: require('@/assets/carimages/renault_twizy_map_mask.png')
   },
   'volt': {
     name: 'Chevrolet Volt',
     types: ['VA'],
-    side: require('@/assets/carimages/volt_side_base.png'),
-    sideMask: require('@/assets/carimages/volt_side_mask.png'),
-    top: require('@/assets/carimages/volt_top_base.png'),
-    topMask: require('@/assets/carimages/volt_top_mask.png'),
-    map: require('@/assets/carimages/volt_map_base.png'),
-    mapMask: require('@/assets/carimages/volt_map_mask.png')
+    side: require('@/assets/carimages/chevy_volt_side_base.png'),
+    sideMask: require('@/assets/carimages/chevy_volt_side_mask.png'),
+    top: require('@/assets/carimages/chevy_volt_top_base.png'),
+    topMask: require('@/assets/carimages/chevy_volt_top_mask.png'),
+    map: require('@/assets/carimages/chevy_volt_map_base.png'),
+    mapMask: require('@/assets/carimages/chevy_volt_map_mask.png')
+  },
+  'default': {
+    name: 'Default',
+    types: [],
+    side: require('@/assets/carimages/default_side_base.png'),
+    sideMask: require('@/assets/carimages/default_side_mask.png'),
+    top: require('@/assets/carimages/default_top_base.png'),
+    topMask: require('@/assets/carimages/default_top_mask.png'),
+    map: require('@/assets/carimages/default_map_base.png'),
+    mapMask: require('@/assets/carimages/default_map_mask.png')
   },
 }
 

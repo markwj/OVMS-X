@@ -23,9 +23,6 @@
         "backgroundColor": "#000000"
       },
       "package": "com.openvehicles.ovmsx",
-      "buildProperties": {
-        "minSdkVersion": 46
-      },
       "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
@@ -67,7 +64,14 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-build-properties",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 46
+          }
+        }
+      ],
       [
         "@sentry/react-native/expo",
         {
@@ -86,6 +90,13 @@
       },
       "eas": {
         "projectId": "ceb83602-03c8-44fa-ab2c-21c00721ad57"
+      },
+      "submit": {
+        "production": {
+          "ios": {
+            "ascAppId": "6748969822"
+          }
+        }
       }
     },
     "owner": "openvehicles",
@@ -93,13 +104,6 @@
       "url": "https://u.expo.dev/ceb83602-03c8-44fa-ab2c-21c00721ad57",
       "enabled": true,
       "checkAutomatically": "ON_ERROR_RECOVERY"
-    },
-    "submit": {
-    "production": {
-      "ios": {
-        "ascAppId": "6748969822"
-      }
     }
-  }
   }
 }

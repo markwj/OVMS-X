@@ -46,7 +46,7 @@ import { getColorScheme, getLanguage } from '@/store/preferencesSlice';
 import i18n from '@/i18n';
 import { appForeground, appBackground, appInactive,
   connectToVehicle,
-  handleNotificationResponse, handleNotificationIncoming, handleNotificationRegistration } from './platforms/platform';
+  handleNotificationResponse, handleNotificationIncoming, handleNotificationRegistration } from '@/lib/platforms/platform';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
