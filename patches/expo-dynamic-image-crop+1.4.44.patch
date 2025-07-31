@@ -1,0 +1,13 @@
+diff --git a/node_modules/expo-dynamic-image-crop/package.json b/node_modules/expo-dynamic-image-crop/package.json
+index a8f95ce..ec923f2 100644
+--- a/node_modules/expo-dynamic-image-crop/package.json
++++ b/node_modules/expo-dynamic-image-crop/package.json
+@@ -3,7 +3,7 @@
+   "version": "1.4.44",
+   "description": "Dynamic image cropping component for Expo/React Native with free-form and fixed aspect ratio support",
+   "main": "lib/index.js",
+-  "module": "lib/index.esm.js",
++  "module": "lib/index.js",
+   "types": "lib/index.d.ts",
+   "scripts": {
+     "build": "rm -rf lib && tsc",
