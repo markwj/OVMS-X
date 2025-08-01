@@ -12,9 +12,9 @@
   },
   "include": [
     "**/*.ts",
+    "components/**/*.js",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
-    "components/utils/numericalUnitConverter.js"
   ]
 }

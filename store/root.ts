@@ -7,6 +7,7 @@ import connectionReducer from '@/store/connectionSlice';
 import selectionReducer from '@/store/selectionSlice';
 import preferencesReducer from '@/store/preferencesSlice';
 import storedCommandsReducer from '@/store/storedCommandsSlice';
+import dashboardReducer from '@/store/dashboardSlice';
 import { ovmsv2httpApi } from '@/store/ovmsv2httpApi';
 import {
   persistStore, persistReducer,
@@ -50,6 +51,12 @@ const storedCommandsPersistConfig = {
   storage: securePersistStorage,
 }
 
+const dashboardPersistConfig = {
+  key: 'dashboard',
+  version: 1,
+  storage: securePersistStorage,
+}
+
 export const store = configureStore({
   reducer: {
     spinner: spinnerReducer,
@@ -66,7 +73,9 @@ export const store = configureStore({
     //@ts-ignore
     preferences: persistReducer(preferencesPersistConfig, preferencesReducer),
     //@ts-ignore
-    storedCommands: persistReducer(storedCommandsPersistConfig, storedCommandsReducer)
+    storedCommands: persistReducer(storedCommandsPersistConfig, storedCommandsReducer),
+    //@ts-ignore
+    dashboard: persistReducer(dashboardPersistConfig, dashboardReducer)
   },
 
   middleware: (getDefaultMiddleware) =>

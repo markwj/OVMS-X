@@ -8,7 +8,6 @@ import {
   TemperatureChoiceType, DistanceChoiceType, PressureChoiceType,
   setTemperaturePreference, setPressurePreference, setDistancePreference,
   getColorScheme,
-  preferencesSlice,
   getLanguage,
   setLanguage,
   setColorScheme
@@ -26,7 +25,12 @@ import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedC
 import { Dropdown } from "react-native-element-dropdown";
 import { fallbackLng, resources, SupportedLanguages, TSupportedLanguages } from "@/i18n";
 import { getLocales } from "expo-localization";
-// import { DashboardButton, DashboardEditButton } from "@/components/ui/DashboardButtons";
+import { DashboardButton, DashboardEditButton } from "@/components/ui/DashboardButtons";
+import { dashboardSlice, selectDashboard, selectDashboards, selectSerializedDashboards } from "@/store/dashboardSlice";
+import { router } from "expo-router";
+import { NestableDraggableFlatList, NestableScrollContainer } from "react-native-draggable-flatlist";
+import { dashboardRegistry } from "@/components/dashboard/registry";
+import { Dashboard } from "@/components/dashboard/types";
 
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
@@ -74,6 +78,9 @@ export default function SettingsScreen() {
   const pressurePreference = useSelector(getPressurePreference)
   const colorMode = useSelector(getColorScheme)
   const language = useSelector(getLanguage)
+
+  const serializedDashboards = useSelector(selectSerializedDashboards)
+  const dashboards = useSelector(selectDashboards)
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
@@ -157,7 +164,7 @@ export default function SettingsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative', padding: 10 }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
               <Text variant="labelMedium" style={{ marginRight: 10 }}>Autosend</Text>
-              <View style={{borderWidth: 2, borderColor: theme.colors.primary, borderRadius: 5}}>
+              <View style={{ borderWidth: 2, borderColor: theme.colors.primary, borderRadius: 5 }}>
                 <Checkbox
                   status={editCommandModalParams?.command.autosend ? 'checked' : 'unchecked'}
                   onPress={() => {
@@ -332,13 +339,23 @@ export default function SettingsScreen() {
           <StoredCommandsTable setMainScrollEnabled={setMainScrollEnabled} openEditMenu={openEditCommandModal} />
         </SettingsSection>
 
-        {/* <SettingsSection title={"Dashboards"} headerRight={() => <IconButton size={15} icon={"plus"}></IconButton>}>
+        <SettingsSection title={"Dashboards"} headerRight={() => <IconButton size={15} icon={"plus"} onPress={() => {
+          const constructor = dashboardRegistry.get("1x1")!
+          const dashboard = new constructor("New Dashboard", [])
+          const serializedDashboard = dashboard.serialize()
+          console.log(`[settings] Created dashboard ${serializedDashboard}`)
+          dispatch(dashboardSlice.actions.addSerializedDashboard(dashboard.serialize()))
+          router.push({ pathname: "/dashboard/edit/[id]", params: { id: dashboards.length } })
+        }}></IconButton>}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
             <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
-              <DashboardEditButton index={0}></DashboardEditButton>
+              {dashboards.map((d, i) => (
+                <DashboardEditButton index={i} key={`${d}-${i}`}></DashboardEditButton>
+              ))}
             </View>
           </View>
-        </SettingsSection> */}
+        </SettingsSection>
+        <Button style={{marginBottom: 50}} onPress={() => dispatch(dashboardSlice.actions.wipeDashboards())}>WIPE</Button>
 
       </ScrollView>
     </KeyboardAvoidingView>
