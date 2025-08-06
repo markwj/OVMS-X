@@ -9,7 +9,9 @@ const DEFAULT_IMAGE_NAME = "roadster"
 export const VehicleTypes = {
   'ampera': {
     name: 'Opel Ampera-e',
-    types: ['VA'],
+    types: {
+      'VA': 'Opel Ampera-e'
+    },
     side: require('@/assets/carimages/opel_ampera_side_base.png'),
     sideMask: require('@/assets/carimages/opel_ampera_side_mask.png'),
     top: require('@/assets/carimages/opel_ampera_top_base.png'),
@@ -19,7 +21,13 @@ export const VehicleTypes = {
   },
   'roadster': {
     name: 'Tesla Roadster (2008-2012)',
-    types: ['TR', 'TR1N', 'TR2N', 'TR2S'],
+    types: {
+      'TR': 'Tesla Roadster',
+      'TR1N': 'Tesla Roadster v1.x',
+      'TR2N': 'Tesla Roadster v2.x',
+      'TR2S': 'Tesla Roadster Sport v2.x',
+      'TRDM': 'Tesla Roadster Demonstration'
+    },
     side: require('@/assets/carimages/tesla_roadster_classic_side_base.png'),
     sideMask: require('@/assets/carimages/tesla_roadster_classic_side_mask.png'),
     top: require('@/assets/carimages/tesla_roadster_classic_top_base.png'),
@@ -29,7 +37,9 @@ export const VehicleTypes = {
   },
   'thinkcity': {
     name: 'Think City',
-    types: ['TGTC'],
+    types: {
+      'TGTC': 'Think City'
+    },
     side: require('@/assets/carimages/think_city_side_base.png'),
     sideMask: require('@/assets/carimages/think_city_side_mask.png'),
     top: require('@/assets/carimages/think_city_top_base.png'),
@@ -39,7 +49,9 @@ export const VehicleTypes = {
   },
   'twizy': {
     name: 'Renault Twizy',
-    types: ['RT'],
+    types: {
+      'RT': 'Renault Twizy'
+    },
     side: require('@/assets/carimages/renault_twizy_side_base.png'),
     sideMask: require('@/assets/carimages/renault_twizy_side_mask.png'),
     top: require('@/assets/carimages/renault_twizy_top_base.png'),
@@ -49,7 +61,9 @@ export const VehicleTypes = {
   },
   'volt': {
     name: 'Chevrolet Volt',
-    types: ['VA'],
+    types: {
+      'VA': 'Chevrolet Volt'
+    },
     side: require('@/assets/carimages/chevy_volt_side_base.png'),
     sideMask: require('@/assets/carimages/chevy_volt_side_mask.png'),
     top: require('@/assets/carimages/chevy_volt_top_base.png'),
@@ -59,7 +73,7 @@ export const VehicleTypes = {
   },
   'default': {
     name: 'Default',
-    types: [],
+    types: {},
     side: require('@/assets/carimages/default_side_base.png'),
     sideMask: require('@/assets/carimages/default_side_mask.png'),
     top: require('@/assets/carimages/default_top_base.png'),
@@ -78,9 +92,9 @@ const undefinedCarImages = {
 export const GetVehicleName = (type: string) => {
   for (const obj in VehicleTypes) {
     //@ts-ignore
-    if (VehicleTypes[obj].types.includes(type)) {
+    if (type in VehicleTypes[obj].types) {
       //@ts-ignore
-      return VehicleTypes[obj].name
+      return VehicleTypes[obj].types[type]
     }
   }
 
