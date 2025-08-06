@@ -23,6 +23,7 @@ export default function HomeScreen() {
 
   const vBatSoc = useSelector(selectMetricValue("v.b.soc"))
   const vType = useSelector(selectMetricValue("v.type"))
+  const vName = GetVehicleName(vType);
 
   const selectedVehicle = useSelector(getSelectedVehicle)
   const vehicleCount = useSelector(getVehicleCount)
@@ -122,9 +123,10 @@ export default function HomeScreen() {
 
             {/* Vehicle info */}
             <View style={{ alignItems: 'flex-start', marginLeft: 50, marginTop: 10 }}>
-              <Text variant='labelMedium'>{t(GetVehicleName(vType) ?? "Vehicle")}</Text>
+              { vName && <Text variant='labelMedium'>{vName}</Text> }
               <MetricValue variant='labelMedium' metricKey={"v.p.odometer"} />
-              <Text variant='labelMedium'>{t('VIN')} {selectedVehicle?.vin ?? "N/A "}</Text>
+              {selectedVehicle?.vin && <Text variant='labelMedium'>{selectedVehicle?.vin}</Text>}
+              <MetricValue variant='labelMedium' numberOfLines={0} adjustsFontSizeToFit={true} metricKey={"m.hardware"} />
             </View>
           </View>
 
