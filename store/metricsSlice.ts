@@ -251,6 +251,12 @@ export const selectMetricRecord = (key: string, toBest?: boolean) => {
           if (metric.unit === "DateLocal") {
             formattedLocalisedValue = new Date(localisedValue).toLocaleString();
           }
+          
+          // Add unit to the formatted value (same as original MetricValue component)
+          if (unit && unit !== "DateLocal") {
+            const addSpace = !(["%", "°", "°C", "°F"].includes(unit));
+            formattedLocalisedValue = formattedLocalisedValue + (addSpace ? " " : "") + unit;
+          }
         }
       }
 

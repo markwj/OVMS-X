@@ -16,14 +16,30 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
 
   const { t } = useTranslation()
 
-  // Get all metric records for the provided keys
-  const getMetricRecord = (key: string) => {
-    return useSelector(selectMetricRecord(key))
-  }
+  // Filter metric keys based on search
+  const filteredMetricKeys = searchFilter != "" 
+    ? metricKeys.filter((k: string) => k.toUpperCase().includes(searchFilter.toUpperCase()))
+    : metricKeys
 
-  if (searchFilter != "") {
-    metricKeys = metricKeys.filter((k: string) => k.toUpperCase().includes(searchFilter.toUpperCase()))
-  }
+  // Create a map of metric records for all keys
+  const metricRecordsMap = React.useMemo(() => {
+    const map = new Map()
+    filteredMetricKeys.forEach((key: string) => {
+      // Create a selector for each key
+      const selector = selectMetricRecord(key)
+      map.set(key, selector)
+    })
+    return map
+  }, [filteredMetricKeys])
+
+  // Get all metric records using useSelector at the top level
+  const metricRecords = useSelector((state) => {
+    const records = new Map()
+    metricRecordsMap.forEach((selector, key) => {
+      records.set(key, selector(state))
+    })
+    return records
+  })
 
   return (
     <DataTable style={styles.table}>
@@ -51,12 +67,12 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
           </View>
         )}
         stickyHeaderIndices={[0]}
-        data={metricKeys}
+        data={filteredMetricKeys}
         renderItem={(item) => (
           <DataTable.Row key={item.item} style={styles.metricRow} onPress={() => OnMetricEntryPress(item.item)}>
             <DataTable.Cell style={{ ...styles.metricText, flex: 2 }}>{item.item}</DataTable.Cell>
             <DataTable.Cell style={styles.metricText}>
-              <MetricVal metricRecord={getMetricRecord(item.item)}></MetricVal>
+              <MetricVal metricRecord={metricRecords.get(item.item)}></MetricVal>
             </DataTable.Cell>
           </DataTable.Row>
         )}
