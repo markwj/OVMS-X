@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { View, StyleSheet } from 'react-native';
 import { DataTable, Searchbar, TextInput, useTheme } from "react-native-paper";
 import { router } from "expo-router";
-import { MetricValue } from "@/components/ui/MetricValue"
+import { MetricVal } from "@/components/ui/MetricValue"
 import { FlatList } from "react-native-gesture-handler";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { selectMetricRecord } from "@/store/metricsSlice";
 
 //@ts-ignore
 export default function MetricTable({ metricKeys }): React.JSX.Element {
@@ -13,6 +15,11 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
   const theme = useTheme()
 
   const { t } = useTranslation()
+
+  // Get all metric records for the provided keys
+  const getMetricRecord = (key: string) => {
+    return useSelector(selectMetricRecord(key))
+  }
 
   if (searchFilter != "") {
     metricKeys = metricKeys.filter((k: string) => k.toUpperCase().includes(searchFilter.toUpperCase()))
@@ -49,7 +56,7 @@ export default function MetricTable({ metricKeys }): React.JSX.Element {
           <DataTable.Row key={item.item} style={styles.metricRow} onPress={() => OnMetricEntryPress(item.item)}>
             <DataTable.Cell style={{ ...styles.metricText, flex: 2 }}>{item.item}</DataTable.Cell>
             <DataTable.Cell style={styles.metricText}>
-              <MetricValue metricKey={item.item}></MetricValue>
+              <MetricVal metricRecord={getMetricRecord(item.item)}></MetricVal>
             </DataTable.Cell>
           </DataTable.Row>
         )}

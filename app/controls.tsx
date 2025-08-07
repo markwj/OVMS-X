@@ -5,9 +5,9 @@ import { VehicleTopImage } from "@/components/ui/VehicleImages";
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { store } from "@/store/root";
-import { selectLocalisedMetricValue, selectMetricIsStale, selectMetricValue } from "@/store/metricsSlice";
+import { selectLocalisedMetricValue, selectMetricIsStale, selectMetricValue, selectMetricRecord } from "@/store/metricsSlice";
 import { GetCurrentUTCTimeStamp } from "@/components/utils/datetime";
-import { MetricValue } from "@/components/ui/MetricValue";
+import { MetricVal } from "@/components/ui/MetricValue";
 import { BatteryIcon } from "@/components/ui/BatteryIcon";
 import { sendCommand } from "@/lib/platforms/platform";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,19 @@ export default function ControlsScreen() {
   const vDHood = useSelector(selectMetricValue("v.d.hood")) == "open"
   const vDTrunk = useSelector(selectMetricValue("v.d.trunk")) == "open"
   const vDChargeport = useSelector(selectMetricValue("v.d.chargeport")) == "open"
+
+  // Get all metric records at the start
+  const vTpFlT = useSelector(selectMetricRecord("v.tp.fl.t"))
+  const vTpFlP = useSelector(selectMetricRecord("v.tp.fl.p"))
+  const vTpFrT = useSelector(selectMetricRecord("v.tp.fr.t"))
+  const vTpFrP = useSelector(selectMetricRecord("v.tp.fr.p"))
+  const vTpRlT = useSelector(selectMetricRecord("v.tp.rl.t"))
+  const vTpRlP = useSelector(selectMetricRecord("v.tp.rl.p"))
+  const vTpRrT = useSelector(selectMetricRecord("v.tp.rr.t"))
+  const vTpRrP = useSelector(selectMetricRecord("v.tp.rr.p"))
+  const vBTemp = useSelector(selectMetricRecord("v.b.temp"))
+  const vMTemp = useSelector(selectMetricRecord("v.m.temp"))
+  const vB12vVoltage = useSelector(selectMetricRecord("v.b.12v.voltage"))
 
   const getPIN = ({title} : {title: string}) => {
     return new Promise((resolve, reject) => {
@@ -69,23 +82,23 @@ export default function ControlsScreen() {
 
             {/* TPMS displays */}
             <View style={{ ...styles.absoluteCentering, left: '10%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
-              <MetricValue style={styles.metricValue} metricKey={"v.tp.fl.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.fl.p"} />
+              <MetricVal style={styles.metricValue} metricRecord={vTpFlT} />
+              <MetricVal style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricRecord={vTpFlP} />
             </View>
 
             <View style={{ ...styles.absoluteCentering, left: '90%', top: '20%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4}}>
-              <MetricValue style={styles.metricValue} metricKey={"v.tp.fr.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.fr.p"} />
+              <MetricVal style={styles.metricValue} metricRecord={vTpFrT} />
+              <MetricVal style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricRecord={vTpFrP} />
             </View>
 
             <View style={{ ...styles.absoluteCentering, left: '10%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4}}>
-              <MetricValue style={styles.metricValue} metricKey={"v.tp.rl.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.rl.p"} />
+              <MetricVal style={styles.metricValue} metricRecord={vTpRlT} />
+              <MetricVal style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricRecord={vTpRlP} />
             </View>
 
             <View style={{ ...styles.absoluteCentering, left: '90%', top: '80%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
-              <MetricValue style={styles.metricValue} metricKey={"v.tp.rr.t"} />
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.tp.rr.p"} />
+              <MetricVal style={styles.metricValue} metricRecord={vTpRrT} />
+              <MetricVal style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricRecord={vTpRrP} />
             </View>
 
             {/* Temperature displays */}
@@ -94,7 +107,7 @@ export default function ControlsScreen() {
                 <BatteryIcon />
                 <Text style={{ marginLeft: 5 }}>Battery</Text>
               </View>
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.b.temp"} />
+              <MetricVal style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricRecord={vBTemp} />
             </View>
 
             <View style={{ ...styles.absoluteCentering, left: '20%', top: '92.5%', borderColor: 'grey', borderWidth: 2, backgroundColor: theme.colors.elevation.level4 }}>
@@ -102,7 +115,7 @@ export default function ControlsScreen() {
                 <Icon size={20} source={"axis-x-rotate-clockwise"} />
                 <Text style={{ marginLeft: 5 }}>Motor</Text>
               </View>
-              <MetricValue style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricKey={"v.m.temp"} />
+              <MetricVal style={{ ...styles.metricValue, borderColor: 'grey', borderTopWidth: 1 }} metricRecord={vMTemp} />
             </View>
 
             {/* Door displays */}
@@ -183,7 +196,7 @@ export default function ControlsScreen() {
             {/* 12v Battery Display */}
             <View style={{ position: 'absolute', left: '15%', top: '2.5%', transform: [{translateX: '-50%'}]}}>
               <Image width={50} height={50} source={auxBattery} tintColor={theme.colors.outline}/>
-              <MetricValue metricKey={"v.b.12v.voltage"} style={{position: 'absolute', top: '35%', left: '20%'}}></MetricValue>
+              <MetricVal metricRecord={vB12vVoltage} style={{position: 'absolute', top: '35%', left: '20%'}}></MetricVal>
             </View>
 
             {/*Homelink buttons*/}
