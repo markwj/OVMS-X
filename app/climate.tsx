@@ -4,15 +4,22 @@ import { Icon, Text, useTheme } from 'react-native-paper'
 import { useSelector } from "react-redux";
 import { getSelectedVehicle } from "@/store/selectionSlice";
 import { VehicleTopImage } from "@/components/ui/VehicleImages";
-import { MetricValue } from "@/components/ui/MetricValue";
+import { MetricVal } from "@/components/ui/MetricValue";
 import { useTranslation } from "react-i18next";
-import { selectMetricValue } from "@/store/metricsSlice";
+import { selectMetricValue, selectMetricRecord } from "@/store/metricsSlice";
 
 export default function ClimateScreen() {
   const vehicle = useSelector(getSelectedVehicle)
 
   const cooling = useSelector(selectMetricValue("v.e.cooling")) == "on"
   const heating = useSelector(selectMetricValue("v.e.heating")) == "on"
+
+  // Get all metric records at the start
+  const vECabinfan = useSelector(selectMetricRecord("v.e.cabinfan"))
+  const vECabintemp = useSelector(selectMetricRecord("v.e.cabintemp"))
+  const vECabinsetpoint = useSelector(selectMetricRecord("v.e.cabinsetpoint"))
+  const vECabinintake = useSelector(selectMetricRecord("v.e.cabinintake"))
+  const vETemp = useSelector(selectMetricRecord("v.e.temp"))
 
   const { t } = useTranslation()
 
@@ -46,7 +53,7 @@ export default function ClimateScreen() {
             <View style={{ flexShrink: 1, flexDirection: 'column', alignItems: 'center' }}>
               <View style={cooling ? { opacity: 1 } : { opacity: 0 }}>
                 <Icon size={50} source={"fan"} />
-                <MetricValue variant="titleMedium" metricKey={"v.e.cabinfan"} style={{ alignSelf: 'center' }}></MetricValue>
+                <MetricVal metricRecord={vECabinfan} variant="titleMedium" style={{ alignSelf: 'center' }}></MetricVal>
               </View>
               <View style={heating ? { opacity: 1 } : { opacity: 0 }}>
                 <Icon size={50} source={"fire"} />
@@ -57,14 +64,14 @@ export default function ClimateScreen() {
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', paddingHorizontal: 20 }}>
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
                 <View style={{ justifyContent: 'flex-start' }}>
-                  <MetricValue metricKey={"v.e.cabintemp"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleLarge" emptyOverride={t("N/A")}></MetricValue>
+                  <MetricVal metricRecord={vECabintemp} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleLarge" emptyOverride={t("N/A")}></MetricVal>
                   {(cooling || heating) &&
                     <>
                       <View style={{ flexShrink: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <Icon size={20} source={'bullseye'}></Icon>
-                        <MetricValue metricKey={"v.e.cabinsetpoint"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleMedium"></MetricValue>
+                        <MetricVal metricRecord={vECabinsetpoint} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleMedium"></MetricVal>
                       </View>
-                      <MetricValue metricKey={"v.e.cabinintake"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleMedium"></MetricValue>
+                      <MetricVal metricRecord={vECabinintake} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleMedium"></MetricVal>
                     </>
                   }
                 </View>
@@ -75,7 +82,7 @@ export default function ClimateScreen() {
             {/* Ambient details */}
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', paddingHorizontal: 20 }}>
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between' }}>
-                <MetricValue metricKey={"v.e.temp"} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleLarge"></MetricValue>
+                <MetricVal metricRecord={vETemp} numberOfLines={1} adjustsFontSizeToFit={true} variant="titleLarge"></MetricVal>
                 <Text variant="titleLarge" numberOfLines={1} adjustsFontSizeToFit={true}>{t("Ambient")}</Text>
               </View>
             </View>

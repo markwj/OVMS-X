@@ -48,3 +48,9 @@ export class Metric {
     }
   }
 }
+export interface MetricRecord {
+  stale: boolean
+  rawValue: string
+  localisedValue: string
+  type: MetricType
+}

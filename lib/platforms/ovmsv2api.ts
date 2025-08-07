@@ -334,7 +334,7 @@ export class OvmsV2Api extends Platform {
       const cellularConnectionStatus = parts[10]
 
       if (vin !== undefined) {
-        this.setMetric({ key: 's.v.vin', value: vin })
+        this.setMetric({ key: 'v.vin', value: vin })
         if (vin != this.currentVehicle.vin) {
           console.log('[platform OVMSv2Api] update vehicle vin', vin, this.currentVehicle.vin)
           store.dispatch(vehiclesSlice.actions.updateVehicleVIN({ key: this.currentVehicle.key, newValue: vin }))

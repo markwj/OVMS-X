@@ -1,7 +1,8 @@
 import { createSelector, createSlice, Dispatch, PayloadAction, UnknownAction } from '@reduxjs/toolkit'
 import { AppDispatch, RootState } from './root';
+import { store } from './root';
 import { STANDARD_METRICS } from '@/components/vehicle/standardMetrics';
-import { MetricDefined, Metric, MetricType } from '@/components/vehicle/metrics';
+import { MetricDefined, Metric, MetricType, MetricRecord } from '@/components/vehicle/metrics';
 import { GetUnitAbbr, numericalUnitConvertor } from '@/components/utils/numericalUnitConverter';
 import { GetCurrentUTCTimeStamp } from '@/components/utils/datetime';
 import { useDispatch } from 'react-redux';
@@ -179,6 +180,95 @@ export const selectMetricIsDefined = (key: string) => {
 export const selectMetricLastModified = (key: string) => {
   return createSelector(selectMetric(key), (metric) => metric?.lastModified)
 }
+
+export const selectMetricRecord = (key: string, toBest?: boolean) => {
+  return createSelector(
+    [selectMetric(key), selectMetricIsStale(key, GetCurrentUTCTimeStamp())],
+    (metric, isStale) => {
+      // Return null if metric is not defined (NEVER) or if metric key is not found
+      if (!metric || metric.defined === MetricDefined.NEVER) {
+        return null;
+      }
+
+      // Get the raw value
+      const rawValue = metric.value;
+
+      // Get the localized value using the same logic as MetricValue component
+      let localisedValue = rawValue;
+      let unit = metric.unit;
+
+      if (rawValue != null && metric.type === MetricType.NUMBER && metric.unit) {
+        const possibleUnits = numericalUnitConvertor().possibilities();
+        
+        if (possibleUnits.includes(metric.unit)) {
+          let targetUnit;
+          
+          switch (numericalUnitConvertor().describe(metric.unit).measure) {
+            case "temperature":
+              targetUnit = getTemperatureUnit(store.getState());
+              break;
+            case "length":
+              targetUnit = getDistancePreference(store.getState());
+              break;
+            case "pressure":
+              targetUnit = getPressureUnit(store.getState());
+              break;
+            default:
+              targetUnit = "system";
+          }
+
+          if (targetUnit !== "system" && targetUnit !== metric.unit) {
+            try {
+              localisedValue = numericalUnitConvertor(rawValue).from(GetUnitAbbr(metric.unit)).to(GetUnitAbbr(targetUnit));
+              unit = targetUnit;
+            } catch (error) {
+              console.error(`Error converting metric ${key}:`, error);
+            }
+          }
+        }
+      }
+
+      // Apply toBest conversion if requested (same as MetricValue component)
+      if (toBest && localisedValue != null && unit) {
+        const res = numericalUnitConvertor(localisedValue).from(unit).toBest();
+        if (res) {
+          localisedValue = res.val;
+          unit = res.unit;
+        }
+      }
+
+      // Format the localized value as a string
+      let formattedLocalisedValue = localisedValue;
+      if (localisedValue != null) {
+        if (metric.type === MetricType.BOOL) {
+          formattedLocalisedValue = [1, "yes", metric.trueStatement].includes(localisedValue) 
+            ? (metric.trueStatement ?? "yes") 
+            : (metric.falseStatement ?? "no");
+        } else if (metric.type === MetricType.NUMBER) {
+          if (metric.precision != null && +localisedValue) {
+            formattedLocalisedValue = +localisedValue.toFixed(metric.precision);
+          }
+          if (metric.unit === "DateLocal") {
+            formattedLocalisedValue = new Date(localisedValue).toLocaleString();
+          }
+          
+          // Add unit to the formatted value (same as original MetricValue component)
+          if (unit && unit !== "DateLocal") {
+            const addSpace = !(["%", "°", "°C", "°F"].includes(unit));
+            formattedLocalisedValue = formattedLocalisedValue + (addSpace ? " " : "") + unit;
+          }
+        }
+      }
+
+      return {
+        stale: isStale,
+        rawValue: rawValue,
+        localisedValue: formattedLocalisedValue,
+        type: metric.type
+      } as MetricRecord;
+    }
+  );
+};
 
 export function selectLocalisedMetricValue(metricName: string) {
   return (dispatch: AppDispatch, getState: () => RootState) => {
