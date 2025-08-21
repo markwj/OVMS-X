@@ -1,41 +1,43 @@
-import { JSX } from "react";
-import { DashboardWidget } from "../types";
-import { widgetRegistry } from "../registry";
-import { View } from "react-native";
+import { JSX, useState } from "react";
+import { DashboardWidget } from "../types"
 import React from "react";
-import {Text} from 'react-native-paper'
+import { View } from "react-native";
+import { widgetRegistry } from "../registry";
+import { Portal, Text, TouchableRipple } from "react-native-paper";
+import { StandardFormModal } from "../standard/StandardFormModal";
+import StandardEditWidgetCapsule from "../standard/StandardEditWidgetCapsule";
 
-const ID = 'Empty';
+const ID = "Empty"
 
-export default class Blank extends DashboardWidget {
-  public readonly ID: string = ID;
+export default class EmptyWidget extends DashboardWidget {
+  public type: string = ID;
+  public displayComponent = ({ self }: { self: DashboardWidget }) => {
+    return (<></>)
+  }
 
-  public renderDisplay(): JSX.Element {
+  public editComponent = ({ self, setSelf }: { self: DashboardWidget; setSelf: (newSelf: DashboardWidget) => void; }) => {
+    const [formVisible, setFormVisible] = useState(false)
+
     return (
-      <View style={{ flex: 1 }}>
-      </View>
+      <>
+        <StandardEditWidgetCapsule
+          label={ID}
+          onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
+          onEdit={() => setFormVisible(true) }
+        >
+          <TouchableRipple style={{ flex: 1 }} onPress={() => setFormVisible(true)}>
+            <View style={{ flex: 1, margin: 20, borderColor: 'grey', borderStyle: 'dashed' }} />
+          </TouchableRipple>
+        </StandardEditWidgetCapsule>
+
+        <Portal>
+          <StandardFormModal visible={formVisible} name={ID} onDismiss={() => setFormVisible(false)}>
+            <Text>WIP</Text>
+          </StandardFormModal>
+        </Portal>
+      </>
     )
   }
-  public renderEdit(): JSX.Element {
-    return (
-      <View style={{ flex: 1, padding: 10 }}>
-        <View style={{ flex: 1, borderColor: 'grey', borderWidth: 2, borderStyle: 'dashed' }}>
-        </View>
-      </View>
-    )
-  }
-  public renderForm(): JSX.Element {
-    return (
-      <View>
-        <Text>This is the time when I blew up ukraine</Text>
-      </View>
-    )
-  }
-
-  public constructor() {
-    super()
-  }
-
 }
 
-widgetRegistry.register(ID, Blank)
+widgetRegistry.register(ID, EmptyWidget)

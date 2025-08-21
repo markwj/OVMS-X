@@ -28,7 +28,6 @@ import { getLocales } from "expo-localization";
 import { DashboardButton, DashboardEditButton } from "@/components/ui/DashboardButtons";
 import { dashboardSlice, selectDashboard, selectDashboards, selectSerializedDashboards } from "@/store/dashboardSlice";
 import { router } from "expo-router";
-import { NestableDraggableFlatList, NestableScrollContainer } from "react-native-draggable-flatlist";
 import { dashboardRegistry } from "@/components/dashboard/registry";
 import { Dashboard } from "@/components/dashboard/types";
 
@@ -340,11 +339,15 @@ export default function SettingsScreen() {
         </SettingsSection>
 
         <SettingsSection title={"Dashboards"} headerRight={() => <IconButton size={15} icon={"plus"} onPress={() => {
-          const constructor = dashboardRegistry.get("1x1")!
-          const dashboard = new constructor("New Dashboard", [])
-          const serializedDashboard = dashboard.serialize()
+          const dashboard = dashboardRegistry.generateDashboard({
+            name: "New Dashboard",
+            type: "Blank",
+            params: "{}"
+          })!
+          
+          const serializedDashboard = dashboard.stringify({self: dashboard})
           console.log(`[settings] Created dashboard ${serializedDashboard}`)
-          dispatch(dashboardSlice.actions.addSerializedDashboard(dashboard.serialize()))
+          dispatch(dashboardSlice.actions.addSerializedDashboard(serializedDashboard))
           router.push({ pathname: "/dashboard/edit/[id]", params: { id: dashboards.length } })
         }}></IconButton>}>
           <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -355,7 +358,9 @@ export default function SettingsScreen() {
             </View>
           </View>
         </SettingsSection>
-        <Button style={{marginBottom: 50}} onPress={() => dispatch(dashboardSlice.actions.wipeDashboards())}>WIPE</Button>
+        {/* <Button style={{marginBottom: 50}} onPress={() => dispatch(dashboardSlice.actions.wipeDashboards())}>WIPE</Button> */}
+
+        <View style={{height: 50}}></View>
 
       </ScrollView>
     </KeyboardAvoidingView>

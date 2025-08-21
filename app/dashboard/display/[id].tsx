@@ -1,11 +1,15 @@
 //Edit dashboard screen brought up by settings
 
+import { DisplayedDashboardItem } from "@/components/dashboard/components";
+import { Dashboard, IDashboardItem } from "@/components/dashboard/types";
 import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
-import { selectDashboard } from "@/store/dashboardSlice";
+import { dashboardSlice, selectDashboard } from "@/store/dashboardSlice";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { View, StyleSheet } from "react-native";
+import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function DisplayDashboard() {
@@ -15,6 +19,8 @@ export default function DisplayDashboard() {
   const navigation = useNavigation()
 
   const dashboard = useSelector(selectDashboard(numID))
+  const {t} = useTranslation()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     navigation.setOptions({
@@ -27,9 +33,22 @@ export default function DisplayDashboard() {
     })
   }, [navigation])
 
+  if (dashboard == null || dashboard == undefined) {
+    return (
+      <View>
+        <Text>{t('Could not load dashboard')}</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
+        <DisplayedDashboardItem item={dashboard} setItem={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: (s as Dashboard).stringify({self: s}) }))}} />
+        {/* {dashboard.displayComponent({
+          self: dashboard,
+          setSelf: (s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: JSON.stringify(s) }))}
+        })} */}
       </View>
     </View >
   )

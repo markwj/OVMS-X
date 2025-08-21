@@ -1,4 +1,4 @@
-import { Dashboard, DashboardConstructor, DashboardWidget, WidgetConstructor } from "./types";
+import { Dashboard, DashboardConfig, DashboardConstructor, DashboardWidget, WidgetConstructor } from "./types";
 
 export const EMPTY_WIDGET_ID = "Empty"
 
@@ -52,8 +52,30 @@ export class WidgetRegistry {
     return constructor;
   }
 
-  getEmptyWidget() : WidgetConstructor | undefined {
-    return this.get(EMPTY_WIDGET_ID)
+  getEmptyWidget() : WidgetConstructor {
+    const emptyWidget = this.get(EMPTY_WIDGET_ID)
+    if(emptyWidget == undefined) {
+      throw new Error("widgetRegistry could not find the empty widget")
+    }
+    return emptyWidget
+  }
+
+  rebuildWithNewID(base : DashboardWidget, newID : string) : DashboardWidget {
+    const constructor = this.constructors.get(newID)
+    if(constructor == undefined) {
+      return base
+    }
+
+    const newWidget = new constructor()
+    for(const k in Object.keys(base)) {
+      //@ts-ignore
+      if(Object.keys(newWidget).includes(k) && !(typeof base[k] == 'function')) {
+        //@ts-ignore
+        newWidget.setParameter(k, base[k])
+      }
+    }
+
+    return newWidget
   }
 
   has(name: string): boolean {
@@ -134,6 +156,12 @@ export class DashboardRegistry {
     return constructor;
   }
 
+  public generateDashboard(config : DashboardConfig) : Dashboard | undefined {
+    const constructor = this.get(config.type)
+    if(!constructor) { return undefined }
+    return new constructor(config)
+  }
+
   public has(name: string): boolean {
     this.initialize();
     const hasPlatform = this.constructors.has(name);
@@ -159,30 +187,16 @@ export class DashboardRegistry {
   public parse(content: string): Dashboard | undefined {
     this.initialize()
 
-    const dashboardData = JSON.parse(content)
-    const dashboardConstructor = this.get(dashboardData.ID)
-    if (dashboardConstructor == undefined) { return undefined }
-    
-    const deserializedWidgets : DashboardWidget[] = dashboardData.widgets.map((w: any) => {
-      const widgetData = JSON.parse(w)
-      const widgetConstructor = widgetRegistry.get(widgetData.ID)
-      if (widgetConstructor == undefined) { return null }
-
-      const widget = new widgetConstructor()
-      for (const k of Object.keys(widgetData)) {
-        if (k == "ID") { continue }
-        widget.setParameter(k, widgetData[k])
-      }
-      return widget
-    })
-
-    const dashboard = new dashboardConstructor(dashboardData.name, deserializedWidgets)
-    for (const k of Object.keys(dashboardData)) {
-      if (["ID", "widgets"].includes(k)) { continue }
-      dashboard.setParameter(k, dashboardData[k])
+    if(content == undefined) {
+      return undefined
     }
 
-    return dashboard
+    const dashboardData : DashboardConfig = JSON.parse(content) as DashboardConfig
+    //console.warn(`Dashboard data: ${dashboardData} (type ${typeof dashboardData})`)
+    const dashboardConstructor = this.get(dashboardData.type)
+    if (dashboardConstructor == undefined) { return undefined }
+
+    return new dashboardConstructor(dashboardData)
   }
 }
 

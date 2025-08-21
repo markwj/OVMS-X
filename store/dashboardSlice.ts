@@ -17,15 +17,9 @@ export const dashboardSlice = createSlice({
   initialState,
   reducers: {
     addSerializedDashboard(state: DashboardSliceState, action: PayloadAction<string>) {
-      if(dashboardRegistry.parse(action.payload) == undefined) {
-        console.warn(`[dashboardSlice] Dashboard ${action.payload} may not be able to be correctly parsed.`)
-      }
       state.definedDashboards.push(action.payload)
     },
     updateDashboard(state: DashboardSliceState, action: PayloadAction<{index: number, newValue : string}>) {
-      if(dashboardRegistry.parse(action.payload.newValue) == undefined) {
-        console.warn(`[dashboardSlice] Dashboard ${action.payload} may not be able to be correctly parsed.`)
-      }
       state.definedDashboards[action.payload.index] = action.payload.newValue
     },
     swapDashboards(state: DashboardSliceState, action: PayloadAction<{from: number, to : number}>) {

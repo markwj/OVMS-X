@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Platform } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
@@ -13,9 +13,12 @@ import { usePreventRemove } from "@react-navigation/native";
 import { getSelectedVehicle, selectionSlice } from "@/store/selectionSlice";
 import { store } from "@/store/root";
 import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
+import * as FileSystem from "expo-file-system"
 
 import * as ImagePicker from "expo-image-picker"
 import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
+
+import { ImageData, ImageEditor } from "expo-dynamic-image-crop";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
@@ -34,7 +37,13 @@ export default function EditVehicleScreen() {
   const { control, handleSubmit, watch } = useForm<Vehicle>({ defaultValues: vehicle ?? {} })
   const onSubmit: SubmitHandler<Vehicle> = async (data) => {
     dispatch(vehiclesSlice.actions.updateVehicleName({ key: vehicleKey, newValue: data.name }))
-    const customPath = null 
+    const customPath = FileSystem.documentDirectory + "carimages/" + encodeURI(data.key)
+
+    if (data.image.imageName != 'custom' && (await FileSystem.getInfoAsync(customPath)).exists) {
+      console.log(`[EditVehicle] Removing images at ${customPath} due to custom being disabled`)
+      await FileSystem.deleteAsync(customPath)
+      data.image.customPath = null
+    }
 
     dispatch(vehiclesSlice.actions.updateVehicleImage({ key: vehicleKey, newValue: data.image }))
   }
@@ -80,6 +89,13 @@ export default function EditVehicleScreen() {
   }, [navigation, vehicle])
 
   const carImage = useWatch({ control, name: "image", defaultValue: vehicle?.image })
+
+  type CroppingImageParams = {
+    uri: string,
+    aspectRatio: number,
+    type: "side" | "top" | "map"
+  }
+  const [croppingImageParams, setCroppingImageParams] = useState<CroppingImageParams | null>(null)
 
   if (vehicle == null) { return <View style={styles.container}><Text>Could not find vehicle data</Text></View> }
 
@@ -162,11 +178,77 @@ export default function EditVehicleScreen() {
 
         {customImage &&
           <View style={{ flexGrow: 1, flexDirection: 'column', alignItems: 'center' }}>
-            <Text>{t("Custom images are not available on web.")}</Text>
+            <TouchableOpacity
+              style={{ borderWidth: 2, borderColor: 'grey', alignItems: 'center' }}
+              onPress={async () => {
+                const image = await pickImageAsync()
+                if (image == null) { return }
+                setCroppingImageParams({
+                  uri: image,
+                  aspectRatio: 654 / 302,
+                  type: "side"
+                })
+              }}>
+              <VehicleSideImage image={carImage} continuouslyPollSource={false}></VehicleSideImage>
+              <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Side view")}</Text>
+            </TouchableOpacity>
+
+            <View style={{ flexDirection: 'row', flex: 1, width: '100%' }}>
+
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity style={{ borderWidth: 2, borderColor: 'grey' }} onPress={async () => {
+                  const image = await pickImageAsync()
+                  if (image == null) { return }
+                  setCroppingImageParams({
+                    uri: image,
+                    aspectRatio: 304 / 606,
+                    type: "top"
+                  })
+                }}>
+                  <VehicleTopImage image={carImage}></VehicleTopImage>
+                  <Text style={{ alignSelf: 'center' }} variant="labelMedium">{t("Top view")}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity style={{ borderWidth: 2, borderColor: 'grey' }} onPress={async () => {
+                  const image = await pickImageAsync()
+                  if (image == null) { return }
+                  setCroppingImageParams({
+                    uri: image,
+                    aspectRatio: 1,
+                    type: "map"
+                  })
+                }}>
+                  <VehicleMapImage image={carImage}></VehicleMapImage>
+                  <Text variant="labelMedium" style={{ alignSelf: 'center' }}>{t("Map icon")}</Text>
+                </TouchableOpacity>
+              </View>
+
+            </View>
           </View>
         }
 
       </View>
+      <Controller
+        control={control}
+        name="image.customPath"
+        render={({ field: { onChange } }) => (
+          <ImageEditor
+            imageUri={croppingImageParams?.uri ?? ""}
+            onEditingCancel={() => {
+              setCroppingImageParams(null)
+            }}
+            onEditingComplete={async (data: ImageData) => {
+              let customPath = await HandleAddCustomVehicleImage(vehicleKey, croppingImageParams?.type ?? "side", data.uri)
+              onChange(customPath)
+              setCroppingImageParams(null)
+            }}
+            fixedAspectRatio={croppingImageParams?.aspectRatio ?? 1}
+            isVisible={croppingImageParams != null}
+          />
+        )}
+      />
     </View>
   );
 }
@@ -183,8 +265,7 @@ const styles = StyleSheet.create({
 async function pickImageAsync() {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ['images'],
-    quality: 1,
-    allowsEditing: true
+    quality: 1
   })
 
   if (!result.canceled) {
@@ -193,4 +274,41 @@ async function pickImageAsync() {
     console.log("[EditVehicle] Cancelled adding custom image")
     return null
   }
+}
+
+async function HandleAddCustomVehicleImage(vehicleKey: string, type: "side" | "top" | "map", image: string) {
+  const customPath = FileSystem.documentDirectory + "carimages/" + encodeURI(vehicleKey)
+  const pathToWriteTo = customPath + "/" + type
+
+  //Get uploaded image
+  /*const image = await pickImageAsync()*/
+
+  if (image == null) { return null }
+
+  //Handle CarImages directory
+  const carImagesDirectoryInfo = await FileSystem.getInfoAsync(FileSystem.documentDirectory + "carimages/")
+  if (!carImagesDirectoryInfo.exists) {
+    console.log(`[EditVehicle] Creating directory carImages at ${FileSystem.documentDirectory}`)
+    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + "carimages")
+  }
+
+  //Handle vehicle directory
+  const vehicleDirectory = await FileSystem.getInfoAsync(customPath)
+  if (!vehicleDirectory.exists) {
+    console.log(`[EditVehicle] Creating directory for vehicle ${vehicleKey} at ${customPath}`)
+    await FileSystem.makeDirectoryAsync(customPath)
+  }
+
+  //Overwrite existing file
+  const fileAlreadyAtPathInfo = await FileSystem.getInfoAsync(pathToWriteTo)
+  if (fileAlreadyAtPathInfo.exists) {
+    console.log(`[EditVehicle] Removing already existing file at ${pathToWriteTo} to add new image`)
+    FileSystem.deleteAsync(pathToWriteTo)
+  }
+
+  //Write file
+  console.log(`[EditVehicle] Copying file at URI ${image} to custom path ${pathToWriteTo}`)
+  await FileSystem.copyAsync({ from: image, to: pathToWriteTo })
+
+  return customPath
 }
