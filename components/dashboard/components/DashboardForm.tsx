@@ -4,7 +4,7 @@ import { dashboardRegistry } from "../registry";
 import { TextInput, Modal, Portal, useTheme, Text, IconButton } from "react-native-paper";
 import React from "react";
 import { View } from "react-native";
-import { StandardSubmitButton } from "./StandardFormModal";
+import { StandardSubmitButton } from "./FormModal";
 import { useTranslation } from "react-i18next";
 import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
 

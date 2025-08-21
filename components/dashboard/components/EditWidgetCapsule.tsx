@@ -12,7 +12,7 @@ export type StandardEditWidgetCapsuleProps = {
   onEdit: () => void
 }
 
-export default function StandardEditWidgetCapsule(props: StandardEditWidgetCapsuleProps) {
+export default function EditWidgetCapsule(props: StandardEditWidgetCapsuleProps) {
   const { t } = useTranslation()
   const theme = useTheme()
 

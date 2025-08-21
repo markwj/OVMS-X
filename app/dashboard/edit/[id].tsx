@@ -9,9 +9,9 @@ import { useTranslation } from "react-i18next";
 import { View, StyleSheet, GestureResponderEvent } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { IconButton, Modal, Portal, Text, useTheme } from 'react-native-paper'
-import { DashboardForm } from "@/components/dashboard/standard/DashboardForm";
+import { DashboardForm } from "@/components/dashboard/components/DashboardForm";
 import { Dashboard, IDashboardItem } from "@/components/dashboard/types";
-import { DisplayedDashboardItem, EditDashboardItem } from "@/components/dashboard/components";
+import { DisplayedDashboardComponent, EditDashboardComponent } from "@/components/dashboard/components";
 
 export default function EditDashboard() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,14 +25,14 @@ export default function EditDashboard() {
   const { t } = useTranslation()
   const navigation = useNavigation()
   const dispatch = useDispatch()
-  const [configureDashboardVisible, setConfigureDashboardVisible] = useState(false)
+  const [dashboardFormVisible, setDashboardFormVisible] = useState(false)
 
   useEffect(() => {
     navigation.setOptions({
       title: `${t('Edit')} ${dashboard?.name}`,
       headerRight: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton icon={"cog"} onPress={() => setConfigureDashboardVisible(true)}></IconButton>
+          <IconButton icon={"cog"} onPress={() => setDashboardFormVisible(true)}></IconButton>
           <ConnectionDisplay />
         </View>
       )
@@ -50,8 +50,8 @@ export default function EditDashboard() {
   return (
     <>
       <DashboardForm
-        visible={configureDashboardVisible}
-        setVisible={setConfigureDashboardVisible}
+        visible={dashboardFormVisible}
+        setVisible={setDashboardFormVisible}
         dashboard={dashboard}
         deleteDashboard={() => {router.back(); dispatch(dashboardSlice.actions.removeDashboard(index))}}
         submit={(s) => 
@@ -61,7 +61,7 @@ export default function EditDashboard() {
 
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
-          <EditDashboardItem item={dashboard} setItem ={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: (s as Dashboard).stringify({self: s}) }))}} />
+          <EditDashboardComponent item={dashboard} setItem ={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: (s as Dashboard).stringify({self: s}) }))}} />
           {/* {dashboard.editComponent({
             self: dashboard,
             setSelf: (s : Dashboard) => {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: s.stringify({self: s}) }))}

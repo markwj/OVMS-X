@@ -4,8 +4,8 @@ import React from "react";
 import { View } from "react-native";
 import { widgetRegistry } from "../registry";
 import { Portal, Text, TouchableRipple } from "react-native-paper";
-import { StandardFormModal } from "../standard/StandardFormModal";
-import StandardEditWidgetCapsule from "../standard/StandardEditWidgetCapsule";
+import { FormModal } from "../components/FormModal";
+import EditWidgetCapsule from "../components/EditWidgetCapsule";
 
 const ID = "Empty"
 
@@ -20,7 +20,7 @@ export default class EmptyWidget extends DashboardWidget {
 
     return (
       <>
-        <StandardEditWidgetCapsule
+        <EditWidgetCapsule
           label={ID}
           onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
           onEdit={() => setFormVisible(true) }
@@ -28,12 +28,12 @@ export default class EmptyWidget extends DashboardWidget {
           <TouchableRipple style={{ flex: 1 }} onPress={() => setFormVisible(true)}>
             <View style={{ flex: 1, margin: 20, borderColor: 'grey', borderStyle: 'dashed' }} />
           </TouchableRipple>
-        </StandardEditWidgetCapsule>
+        </EditWidgetCapsule>
 
         <Portal>
-          <StandardFormModal visible={formVisible} name={ID} onDismiss={() => setFormVisible(false)}>
+          <FormModal visible={formVisible} name={ID} onDismiss={() => setFormVisible(false)}>
             <Text>WIP</Text>
-          </StandardFormModal>
+          </FormModal>
         </Portal>
       </>
     )

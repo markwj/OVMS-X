@@ -5,7 +5,7 @@ import React from "react";
 import { Text, TextInput } from "react-native-paper";
 import { dashboardRegistry, widgetRegistry } from "../registry";
 import { useTranslation } from "react-i18next";
-import { EditDashboardItem } from "../components";
+import { EditDashboardComponent } from "../components";
 
 const type = "Grid Dashboard"
 export default class GridDashboard extends Dashboard {
@@ -131,12 +131,12 @@ export default class GridDashboard extends Dashboard {
             <View key={rowindex} style={{ flex: 1, flexDirection: 'row' }}>
               {row.map((item, index) => (
                 <View key={index} style={{ flex: 1, flexDirection: 'column' }}>
-                  <EditDashboardItem item={item} setItem={(s) => {
+                  <EditDashboardComponent item={item} setItem={(s) => {
                     const newWidgets = binding.widgets
                     newWidgets[rowindex * binding.height + index] = s as DashboardWidget
                     setSelf({ ...binding, widgets: newWidgets })
                   }}>
-                  </EditDashboardItem>
+                  </EditDashboardComponent>
                 </View>
               ))}
             </View>

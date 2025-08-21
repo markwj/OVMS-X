@@ -5,7 +5,7 @@ import { Modal, useTheme, Button, Text } from "react-native-paper";
 
 type StandardFormModalProps = ComponentProps<typeof Modal> & {name: string}
 
-export function StandardFormModal(props : StandardFormModalProps) {
+export function FormModal(props : StandardFormModalProps) {
   const { t } = useTranslation()
   const theme = useTheme()
 

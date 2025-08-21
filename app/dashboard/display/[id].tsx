@@ -1,6 +1,6 @@
 //Edit dashboard screen brought up by settings
 
-import { DisplayedDashboardItem } from "@/components/dashboard/components";
+import { DisplayedDashboardComponent } from "@/components/dashboard/components";
 import { Dashboard, IDashboardItem } from "@/components/dashboard/types";
 import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
 import { dashboardSlice, selectDashboard } from "@/store/dashboardSlice";
@@ -44,7 +44,7 @@ export default function DisplayDashboard() {
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
-        <DisplayedDashboardItem item={dashboard} setItem={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: (s as Dashboard).stringify({self: s}) }))}} />
+        <DisplayedDashboardComponent item={dashboard} setItem={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: (s as Dashboard).stringify({self: s}) }))}} />
         {/* {dashboard.displayComponent({
           self: dashboard,
           setSelf: (s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: JSON.stringify(s) }))}
