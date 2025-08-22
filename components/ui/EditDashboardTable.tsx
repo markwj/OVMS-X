@@ -1,5 +1,4 @@
-import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedCommandsSlice";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { DataTable, Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,14 +9,17 @@ import Reanimated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import { NestableScrollContainer, NestableDraggableFlatList, ScaleDecorator } from "react-native-draggable-flatlist"
+import { Dashboard } from "../dashboard/types";
+import { dashboardSlice, selectDashboards } from "@/store/dashboardSlice";
+import { router } from "expo-router";
 
-export default function StoredCommandsTable({ setMainScrollEnabled, openEditMenu }: { setMainScrollEnabled?: any, openEditMenu?: (index: number, command: StoredCommand) => void }) {
-  const storedCommands = useSelector(getCommands)
+export default function EditDashboardTable({ setMainScrollEnabled }: { setMainScrollEnabled?: any }) {
+  const dashboards = useSelector(selectDashboards).filter((c) => c != undefined)
   const dispatch = useDispatch()
   const theme = useTheme()
 
-  const CommandItem = (params: { index: number, item: StoredCommand, drag: () => void }) => {
-    const del = () => dispatch(storedCommandsSlice.actions.removeCommand(params.index))
+  const CommandItem = (params: { index: number, item: Dashboard, drag: () => void }) => {
+    const del = () => dispatch(dashboardSlice.actions.removeDashboard(params.index))
 
     const RightAction = (prog: SharedValue<number>, drag: SharedValue<number>) => {
       const styleAnimation = useAnimatedStyle(() => {
@@ -50,28 +52,26 @@ export default function StoredCommandsTable({ setMainScrollEnabled, openEditMenu
 
     return (
       <ScaleDecorator>
-        <Pressable
-          onPress={() => { openEditMenu != undefined && openEditMenu(params.index, params.item) }}
-        >
+        <Pressable onPress={() => router.push({ pathname: "/settings/dashboard/[id]", params: { id: params.index } })}>
           <ReanimatedSwipeable
             friction={2}
             enableTrackpadTwoFingerGesture
             enableContextMenu={true}
             rightThreshold={40}
             renderRightActions={RightAction}
-            key={params.item.key}
+            key={params.item.name}
             overshootRight={false}
           >
-            <DataTable.Row key={params.item.key} style={[styles.valueRow, { backgroundColor: theme.colors.elevation.level4, padding: 0 }]}>
+            <DataTable.Row key={params.item.name} style={[styles.valueRow, { backgroundColor: theme.colors.elevation.level4, padding: 0 }]}>
               <DataTable.Cell style={{ ...styles.valueText }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <IconButton icon={"menu"} size={20} style={{flexShrink: 1, alignItems: 'flex-start', margin: 0}} onLongPress={params.drag}></IconButton>
-                  <Text style={{flexGrow: 1, alignItems: 'flex-start'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <IconButton icon={"menu"} size={20} style={{ flexShrink: 1, alignItems: 'flex-start', margin: 0 }} onLongPress={params.drag}></IconButton>
+                  <Text style={{ flexGrow: 1, alignItems: 'flex-start' }}>
                     {params.item.name}
                   </Text>
                 </View>
               </DataTable.Cell>
-              <DataTable.Cell style={styles.valueText}>{params.item.command}</DataTable.Cell>
+              <DataTable.Cell style={styles.valueText}>{params.item.type}</DataTable.Cell>
             </DataTable.Row>
           </ReanimatedSwipeable>
         </Pressable>
@@ -85,17 +85,17 @@ export default function StoredCommandsTable({ setMainScrollEnabled, openEditMenu
           <DataTable.Header style={styles.headerRow} children={undefined}></DataTable.Header>
           <DataTable.Header style={styles.headerRow}>
             <DataTable.Title style={styles.headerText}>{t("Name")}</DataTable.Title>
-            <DataTable.Title style={styles.headerText}>{t("Command")}</DataTable.Title>
+            <DataTable.Title style={styles.headerText}>{t("Type")}</DataTable.Title>
           </DataTable.Header>
           <NestableDraggableFlatList
-            data={storedCommands}
-            keyExtractor={(c) => c.key.toString()}
-            renderItem={(params) => <CommandItem {...params} index={params.getIndex() ?? 0}></CommandItem>}
+            data={dashboards}
+            keyExtractor={(d) => d.name}
+            renderItem={(params) => <CommandItem index={params.getIndex() ?? 0} item={params.item} drag={params.drag}></CommandItem>}
             onDragBegin={() => setMainScrollEnabled(false)}
             onDragEnd={(data) => {
               setMainScrollEnabled(true);
               setTimeout(() => { //To reduce flickering w/ swaps
-                dispatch(storedCommandsSlice.actions.moveCommand({ from: data.from, to: data.to }))
+                dispatch(dashboardSlice.actions.swapDashboards({ from: data.from, to: data.to }))
               }, 0);
             }}
           >

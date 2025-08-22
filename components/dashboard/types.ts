@@ -39,15 +39,15 @@ export abstract class Dashboard implements IDashboardItem {
     this.name = config.name;
   }
 
-  public stringify = ({ self }: { self: any }) => {
+  public stringify : ({ self }: { self: any }) => string = ({ self }: { self: any }) => {
     return JSON.stringify({
       name: self.name, 
       type: self.type,
-      params: self.stringifyParams()
+      params: self.stringifyParams({self: self})
     })
   }
 
-  public stringifyParams = () => "{}"
+  public stringifyParams : ({ self }: { self: any }) => string = ({ self }: { self: any }) => "{}"
 
   public abstract displayComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
   public abstract editComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element

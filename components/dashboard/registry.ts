@@ -1,4 +1,6 @@
+import { selectDashboards } from "@/store/dashboardSlice";
 import { Dashboard, DashboardConfig, DashboardConstructor, DashboardWidget, WidgetConstructor } from "./types";
+import { store } from "@/store/root";
 
 export const EMPTY_WIDGET_ID = "Empty"
 

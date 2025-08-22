@@ -6,12 +6,12 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, GestureResponderEvent } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { IconButton, Modal, Portal, Text, useTheme } from 'react-native-paper'
+import { IconButton, Text } from 'react-native-paper'
 import { DashboardForm } from "@/components/dashboard/components/DashboardForm";
-import { Dashboard, IDashboardItem } from "@/components/dashboard/types";
-import { DisplayedDashboardComponent, EditDashboardComponent } from "@/components/dashboard/components";
+import { Dashboard } from "@/components/dashboard/types";
+import { EditDashboardComponent } from "@/components/dashboard/components";
 
 export default function EditDashboard() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,7 +25,7 @@ export default function EditDashboard() {
   const { t } = useTranslation()
   const navigation = useNavigation()
   const dispatch = useDispatch()
-  const [dashboardFormVisible, setDashboardFormVisible] = useState(false)
+  const [dashboardFormVisible, setDashboardFormVisible] = useState(dashboard?.type == "Blank")
 
   useEffect(() => {
     navigation.setOptions({
@@ -53,19 +53,15 @@ export default function EditDashboard() {
         visible={dashboardFormVisible}
         setVisible={setDashboardFormVisible}
         dashboard={dashboard}
-        deleteDashboard={() => {router.back(); dispatch(dashboardSlice.actions.removeDashboard(index))}}
+        index={index}
         submit={(s) => 
-          dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: s.stringify({self: s}) }))
+          {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: s.stringify({self: s}) }))}
         }
       />
 
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
           <EditDashboardComponent item={dashboard} setItem ={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: (s as Dashboard).stringify({self: s}) }))}} />
-          {/* {dashboard.editComponent({
-            self: dashboard,
-            setSelf: (s : Dashboard) => {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: s.stringify({self: s}) }))}
-          })} */}
         </View>
       </View>
     </>

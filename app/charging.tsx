@@ -105,7 +105,7 @@ export default function ChargingScreen() {
 
         <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
           <Text>{t('Last charge')}: </Text>
-          <MetricVal metricRecord={vCTimestamp} showUnit={false}></MetricVal>
+          <MetricVal metricRecord={vCTimestamp}></MetricVal>
         </View>
 
         <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
@@ -129,15 +129,15 @@ export default function ChargingScreen() {
             <Section title={"Time until..."} visibilityToggle={false}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text>100%: </Text>
-                <MetricVal metricRecord={vCDurationFull} emptyOverride="N/A" abbreviateUnit={false}></MetricVal>
+                <MetricVal metricRecord={vCDurationFull} emptyOverride="N/A"></MetricVal>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text>{sufficientSOC ?? t("Sufficient SOC")}%: </Text>
-                <MetricVal metricRecord={vCDurationSoc} emptyOverride="N/A" abbreviateUnit={false}></MetricVal>
+                <MetricVal metricRecord={vCDurationSoc} emptyOverride="N/A"></MetricVal>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text>{sufficientRange ?? t("Sufficient range")} {sufficientRangeUnit ?? ""}: </Text>
-                <MetricVal metricRecord={vCDurationRange} emptyOverride="N/A" abbreviateUnit={false}></MetricVal>
+                <MetricVal metricRecord={vCDurationRange} emptyOverride="N/A"></MetricVal>
               </View>
             </Section>
           }

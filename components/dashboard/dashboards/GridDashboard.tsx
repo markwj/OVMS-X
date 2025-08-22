@@ -2,12 +2,12 @@ import { JSX, useState } from "react";
 import { Dashboard, DashboardConfig, DashboardWidget } from "../types"
 import { View } from "react-native";
 import React from "react";
-import { Text, TextInput } from "react-native-paper";
+import { SegmentedButtons, Text, TextInput } from "react-native-paper";
 import { dashboardRegistry, widgetRegistry } from "../registry";
 import { useTranslation } from "react-i18next";
 import { EditDashboardComponent } from "../components";
 
-const type = "Grid Dashboard"
+const type = "Grid"
 export default class GridDashboard extends Dashboard {
   public type: string = type;
   width: number
@@ -62,11 +62,11 @@ export default class GridDashboard extends Dashboard {
     }
   }
 
-  public stringifyParams = () => {
+  public stringifyParams = ({self} : {self: any}) => {
     return JSON.stringify({
-      width: this.width,
-      height: this.height,
-      widgets: this.widgets.map((v) => JSON.stringify(v))
+      width: self.width,
+      height: self.height,
+      widgets: self.widgets.map((v : DashboardWidget) => JSON.stringify(v))
     })
   };
 
@@ -151,24 +151,50 @@ export default class GridDashboard extends Dashboard {
 
     const { t } = useTranslation()
 
-    const [val, setVal] = useState(binding.width.toString())
-
     return (
       <>
+        <Text variant="labelMedium">{t('Rows')}</Text>
         <View style={{ flexDirection: 'row' }}>
-          <TextInput
-            label={t("Width")}
-            clearButtonMode="always"
-            value={val}
-            onChangeText={(t) => {
-              setVal(t)
-              setSelf({...binding, width: +val})
+          <SegmentedButtons
+            value={binding.width.toString()}
+            onValueChange={(value) => {
+              setSelf({...binding, width: +value})
             }}
-            style={{ flex: 1 }}
-            autoCapitalize="none"
+            density="small"
+            style={{flex: 1}}
+            buttons={[
+              {value: "1", label: "1", style:{minWidth: 45}},
+              {value: "2", label: "2", style:{minWidth: 45}},
+              {value: "3", label: "3", style:{minWidth: 45}},
+              {value: "4", label: "4", style:{minWidth: 45}},
+              {value: "5", label: "5", style:{minWidth: 45}},
+              {value: "6", label: "6", style:{minWidth: 45}},
+              {value: "7", label: "7", style:{minWidth: 45}},
+              {value: "8", label: "8", style:{minWidth: 45 }}
+            ]}
           />
         </View>
-        <Text>Height: y</Text>
+        <Text variant="labelMedium">{t('Columns')}</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <SegmentedButtons
+            value={binding.height.toString()}
+            onValueChange={(value) => {
+              setSelf({...binding, height: +value})
+            }}
+            density="small"
+            style={{flex: 1}}
+            buttons={[
+              {value: "1", label: "1", style:{minWidth: 45}},
+              {value: "2", label: "2", style:{minWidth: 45}},
+              {value: "3", label: "3", style:{minWidth: 45}},
+              {value: "4", label: "4", style:{minWidth: 45}},
+              {value: "5", label: "5", style:{minWidth: 45}},
+              {value: "6", label: "6", style:{minWidth: 45}},
+              {value: "7", label: "7", style:{minWidth: 45}},
+              {value: "8", label: "8", style:{minWidth: 45 }}
+            ]}
+          />
+        </View>
       </>
     )
   }

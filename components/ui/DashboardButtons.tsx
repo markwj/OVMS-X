@@ -17,7 +17,7 @@ export function DashboardButton(props: DashboardButtonProps): React.JSX.Element 
       mode='contained-tonal'
       dark={theme.dark}
       onPress={() => {
-        router.push({ pathname: "/dashboard/display/[id]", params: { id: props.index } })
+        router.push({ pathname: "/dashboard/[id]", params: { id: props.index } })
       }}
       style={{ width: '80%', marginBottom: 10 }}
       {...props}
@@ -32,7 +32,7 @@ export function DashboardEditButton(props : DashboardButtonProps): React.JSX.Ele
     <DashboardButton
       icon={"pencil"}
       onPress={() => {
-        router.push({ pathname: "/dashboard/edit/[id]", params: { id: props.index } })
+        router.push({ pathname: "/settings/dashboard/[id]", params: { id: props.index } })
       }}
       {...props}
     >
