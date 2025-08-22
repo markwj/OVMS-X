@@ -264,12 +264,12 @@ const MainLayout = () => {
             headerTitleAlign: 'center',
             headerLargeTitle: false,
             headerBackButtonDisplayMode: 'generic',
+            headerBackTitle: t('Back'),
             headerLeft: ({ canGoBack }) =>
               canGoBack ? undefined : (
                 <IconButton icon='menu' onPress={() => setDrawerOpen(true)} />
               ),
             headerRight: () => <ConnectionDisplay />,
-
           }}
         >
           <Stack.Screen
@@ -331,6 +331,18 @@ const MainLayout = () => {
             name="settings"
             options={{
               title: t('Settings'),
+            }}
+          />
+          <Stack.Screen
+            name="dashboard/edit/[id]"
+            options={{
+              title: t('Edit Dashboard'),
+            }}
+          />
+          <Stack.Screen
+            name="dashboard/display/[id]"
+            options={{
+              title: t('Dashboard'),
             }}
           />
           <Stack.Screen

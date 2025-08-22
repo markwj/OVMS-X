@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Platform } from 'react-native';
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { Controller, SubmitHandler, useForm, useWatch } from "react-hook-form"
@@ -16,8 +16,9 @@ import { ConfirmationMessage } from "@/components/ui/ConfirmationMessage";
 import * as FileSystem from "expo-file-system"
 
 import * as ImagePicker from "expo-image-picker"
-import { ImageData, ImageEditor } from "expo-dynamic-image-crop";
 import { ConnectionDisplay } from "@/components/ui/ConnectionDisplay";
+
+import { ImageData, ImageEditor } from "expo-dynamic-image-crop";
 
 export default function EditVehicleScreen() {
   //@ts-ignore
@@ -57,7 +58,7 @@ export default function EditVehicleScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t("Edit") + " " + vehicle?.name,
+      headerTitle: t("Edit") + " " + vehicle?.name,
       headerRight: () => (
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <IconButton icon={"delete"} onPress={() => (
@@ -102,7 +103,7 @@ export default function EditVehicleScreen() {
     <View style={styles.container}>
       <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
         <View style={{ flexShrink: 1, marginRight: '5%' }}>
-          <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Name")}: </Text>
+          <Text variant="labelMedium" style={{ fontWeight: 'bold' }}>{t("Name")}: </Text>
         </View>
         <View style={{ flexGrow: 4 }}>
           <Controller
@@ -128,7 +129,7 @@ export default function EditVehicleScreen() {
       </View>
       <View style={{ flexShrink: 1, flexDirection: 'row', padding: 10, alignItems: 'center' }}>
         <View style={{ flexShrink: 1, marginRight: '5%' }}>
-          <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{t("Type")}: </Text>
+          <Text variant="labelMedium" style={{ fontWeight: 'bold' }}>{t("Type")}: </Text>
         </View>
         <View style={{ flexGrow: 4 }}>
           <Controller

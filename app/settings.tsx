@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useTheme, Text, Button, SegmentedButtons, Card, Icon, TextInput, DataTable, IconButton, Portal, Modal, Switch } from 'react-native-paper';
+import { useTheme, Text, Button, SegmentedButtons, Card, Icon, TextInput, DataTable, IconButton, Portal, Modal, Switch, Checkbox } from 'react-native-paper';
 import { KeyboardAvoidingView, Platform, StyleSheet, View, Appearance } from 'react-native';
 import { ScrollView } from "react-native-gesture-handler"
 import { useSelector, useDispatch } from "react-redux";
@@ -8,7 +8,6 @@ import {
   TemperatureChoiceType, DistanceChoiceType, PressureChoiceType,
   setTemperaturePreference, setPressurePreference, setDistancePreference,
   getColorScheme,
-  preferencesSlice,
   getLanguage,
   setLanguage,
   setColorScheme
@@ -26,6 +25,13 @@ import { getCommands, StoredCommand, storedCommandsSlice } from "@/store/storedC
 import { Dropdown } from "react-native-element-dropdown";
 import { fallbackLng, resources, SupportedLanguages, TSupportedLanguages } from "@/i18n";
 import { getLocales } from "expo-localization";
+import { DashboardButton, DashboardEditButton } from "@/components/ui/DashboardButtons";
+import { dashboardSlice, newBlankDashboard, selectDashboard, selectDashboards, selectSerializedDashboards } from "@/store/dashboardSlice";
+import { router } from "expo-router";
+import { dashboardRegistry } from "@/components/dashboard/registry";
+import { Dashboard } from "@/components/dashboard/types";
+import EditDashboardTable from "@/components/ui/EditDashboardTable";
+import { store } from "@/store/root";
 
 interface FormData {
   temperaturePreference: TemperatureChoiceType;
@@ -73,6 +79,8 @@ export default function SettingsScreen() {
   const pressurePreference = useSelector(getPressurePreference)
   const colorMode = useSelector(getColorScheme)
   const language = useSelector(getLanguage)
+
+  const dashboards = useSelector(selectDashboards)
 
   const { control, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>({
     defaultValues: {
@@ -126,7 +134,7 @@ export default function SettingsScreen() {
         >
           {(editCommandModalParams?.index ?? -1) < storedCommands.length &&
             <IconButton
-              style={{ position: 'absolute', right: '2%', top:'2%' }}
+              style={{ position: 'absolute', right: '2%', top: '2%' }}
               icon={"delete"}
               onPress={() => { dispatch(storedCommandsSlice.actions.removeCommand(editCommandModalParams!.index)); setEditCommandModalParams(null) }}
             ></IconButton>
@@ -143,7 +151,7 @@ export default function SettingsScreen() {
               style={{ flex: 1 }}
             />
           </View>
-          <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
+          <View style={{ flexShrink: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <TextInput
               label={t("Command")}
               clearButtonMode="always"
@@ -152,6 +160,20 @@ export default function SettingsScreen() {
               style={{ flex: 1 }}
               autoCapitalize="none"
             />
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative', padding: 10 }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <Text variant="labelMedium" style={{ marginRight: 10 }}>Autosend</Text>
+              <View style={{ borderWidth: 2, borderColor: theme.colors.primary, borderRadius: 5 }}>
+                <Checkbox
+                  status={editCommandModalParams?.command.autosend ? 'checked' : 'unchecked'}
+                  onPress={() => {
+                    setEditCommandModalParams({ ...editCommandModalParams!, command: { ...editCommandModalParams!.command, autosend: !editCommandModalParams?.command.autosend } })
+                  }}
+                >
+                </Checkbox>
+              </View>
+            </View>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
             <View style={{ flex: 1 }}>
@@ -313,9 +335,21 @@ export default function SettingsScreen() {
           />
         </SettingsSection>
 
-        <SettingsSection title={"Stored Commands"} headerRight={() => <IconButton size={15} icon={"plus"} onPress={() => openEditCommandModal(storedCommands.length, { name: "New Command", command: "", key: 0 })}></IconButton>}>
+        <SettingsSection title={"Stored Commands"} headerRight={() => <IconButton size={15} icon={"plus"} onPress={() => openEditCommandModal(storedCommands.length, { name: "New Command", command: "", key: 0, autosend: true })}></IconButton>}>
           <StoredCommandsTable setMainScrollEnabled={setMainScrollEnabled} openEditMenu={openEditCommandModal} />
         </SettingsSection>
+
+        <SettingsSection title={"Dashboards"} headerRight={() => <IconButton size={15} icon={"plus"} onPress={() => {
+          const dashboard = newBlankDashboard({})(store.getState())
+          
+          const serializedDashboard = dashboard.stringify({self: dashboard})
+          console.log(`[settings] Created dashboard ${serializedDashboard}`)
+          dispatch(dashboardSlice.actions.addSerializedDashboard(serializedDashboard))
+          router.push({ pathname: "/settings/dashboard/[id]", params: { id: dashboards.length } })
+        }}></IconButton>}>
+          <EditDashboardTable setMainScrollEnabled={setMainScrollEnabled}></EditDashboardTable>
+        </SettingsSection>
+        <View style={{height: 50}}></View>
 
       </ScrollView>
     </KeyboardAvoidingView>
@@ -328,7 +362,7 @@ function SettingsSection({ title, children, headerRight }: { title?: string, chi
 
   return (
     <View style={[styles.settingsSection, { backgroundColor: theme.colors.elevation.level4 }]}>
-      <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10 }}>
+      <View style={{ flex: 1, width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10 }}>
         {title && <Text variant="titleLarge">{t(title)}</Text>}
         {headerRight && headerRight()}
       </View>
