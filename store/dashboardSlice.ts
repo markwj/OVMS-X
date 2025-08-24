@@ -67,9 +67,6 @@ export const newBlankDashboard = ({ baseName, type, params }: { baseName?: strin
         trialNewName = `${newName} (${i})`
 
         if (i == 100) {
-          console.warn(names.entries())
-          console.warn(trialNewName)
-          alert("i reached 100")
           break
         }
       }

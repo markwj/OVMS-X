@@ -2,7 +2,8 @@ import { JSX } from "react";
 
 export interface IDashboardItem {
   displayComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
-  editComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
+  editComponent: ({ self, setSelf, onEdit }: { self: any, setSelf: (newSelf: any) => void, onEdit : () => void }) => JSX.Element
+  formComponent: (({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element) | undefined
 }
 
 export type WidgetConstructor = new () => DashboardWidget
@@ -18,7 +19,8 @@ export abstract class DashboardWidget implements IDashboardItem {
   }
 
   public abstract displayComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
-  public abstract editComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
+  public abstract editComponent: ({ self, setSelf, onEdit }: { self: any, setSelf: (newSelf: any) => void, onEdit : () => void }) => JSX.Element
+  public abstract formComponent: (({ self, setSelf }: { self: any; setSelf: (newSelf: any) => void; }) => JSX.Element) | undefined;
 }
 
 
@@ -50,6 +52,6 @@ export abstract class Dashboard implements IDashboardItem {
   public stringifyParams : ({ self }: { self: any }) => string = ({ self }: { self: any }) => "{}"
 
   public abstract displayComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
-  public abstract editComponent: ({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element
+  public abstract editComponent: ({ self, setSelf, onEdit }: { self: any, setSelf: (newSelf: any) => void, onEdit : () => void }) => JSX.Element
   public abstract formComponent: (({ self, setSelf }: { self: any, setSelf: (newSelf: any) => void }) => JSX.Element) | undefined
 }

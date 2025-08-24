@@ -1,11 +1,12 @@
 import { JSX, useState } from "react";
-import { Dashboard, DashboardConfig, DashboardWidget } from "../types"
+import { Dashboard, DashboardConfig, DashboardWidget, IDashboardItem } from "../types"
 import { View } from "react-native";
 import React from "react";
-import { SegmentedButtons, Text, TextInput } from "react-native-paper";
+import { Modal, Portal, SegmentedButtons, Text, TextInput } from "react-native-paper";
 import { dashboardRegistry, widgetRegistry } from "../registry";
 import { useTranslation } from "react-i18next";
-import { EditDashboardComponent } from "../components";
+import { DisplayedDashboardComponent, EditDashboardComponent } from "../components";
+import { WidgetForm } from "../components/WidgetForm";
 
 const type = "Grid"
 export default class GridDashboard extends Dashboard {
@@ -49,7 +50,9 @@ export default class GridDashboard extends Dashboard {
     this.onDimensionChange()
   }
 
-  onDimensionChange() {
+  public onDimensionChange() {
+    console.log("Widgets to start with: "+this.widgets.map((w) => JSON.stringify(w)))
+
     if (this.widgets.length > (this.width * this.height)) {
       this.widgets.length = (this.width * this.height)
     }
@@ -60,13 +63,14 @@ export default class GridDashboard extends Dashboard {
         this.widgets.push(new constructor)
       }
     }
+    console.log("Widgets to end with: "+this.widgets.map((w) => JSON.stringify(w)))
   }
 
-  public stringifyParams = ({self} : {self: any}) => {
+  public stringifyParams = ({ self }: { self: any }) => {
     return JSON.stringify({
       width: self.width,
       height: self.height,
-      widgets: self.widgets.map((v : DashboardWidget) => JSON.stringify(v))
+      widgets: self.widgets.map((v: DashboardWidget) => JSON.stringify(v))
     })
   };
 
@@ -92,25 +96,25 @@ export default class GridDashboard extends Dashboard {
     return arr
   }
 
-  public displayComponent = ({ self, setSelf }: { self: DashboardWidget, setSelf: (newSelf: any) => void }) => {
+  public displayComponent = ({ self, setSelf }: { self: Dashboard, setSelf: (newSelf: any) => void }) => {
     const binding = self as unknown as GridDashboard
 
     const renderedWidgets: JSX.Element[][] = binding.reorganise<JSX.Element>(binding.widgets.map((w, i) => (
       <View style={{ flex: 1 }} key={i}>
-        {w.displayComponent({
-          self: w, setSelf: (s) => {
-            const newWidgets = binding.widgets
-            newWidgets[i] = s
-            setSelf({ ...binding, widgets: newWidgets })
-          }
-        })}
-      </View>
+        <DisplayedDashboardComponent item={w} key={i} setItem={(s) => {
+          const newWidgets = binding.widgets
+          //@ts-ignore
+          newWidgets[i] = s
+          setSelf({ ...binding, widgets: newWidgets })
+        }
+        }></DisplayedDashboardComponent>
+      </View >
     )))
 
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        {renderedWidgets.map((row) => (
-          <View style={{ flex: 1, flexDirection: 'row' }}>
+        {renderedWidgets.map((row, rowindex) => (
+          <View style={{ flex: 1, flexDirection: 'row' }} key={rowindex}>
             {row.map((item) => (item))}
           </View>
         ))}
@@ -118,12 +122,13 @@ export default class GridDashboard extends Dashboard {
     )
   }
 
-  public editComponent = ({ self, setSelf }: { self: DashboardWidget, setSelf: (newSelf: any) => void }) => {
+  public editComponent = ({ self, setSelf }: { self: Dashboard, setSelf: (newSelf: any) => void }) => {
     const binding = self as unknown as GridDashboard
 
     const reorganisedWidgets: DashboardWidget[][] = binding.reorganise<DashboardWidget>(binding.widgets)
 
-    //console.warn(binding.widgets)
+    const [widgetFormActive, setWidgetFormActive] = useState<number | null>(null)
+
     return (
       <>
         <View style={{ flex: 1, flexDirection: 'column' }}>
@@ -131,71 +136,94 @@ export default class GridDashboard extends Dashboard {
             <View key={rowindex} style={{ flex: 1, flexDirection: 'row' }}>
               {row.map((item, index) => (
                 <View key={index} style={{ flex: 1, flexDirection: 'column' }}>
-                  <EditDashboardComponent item={item} setItem={(s) => {
-                    const newWidgets = binding.widgets
-                    newWidgets[rowindex * binding.height + index] = s as DashboardWidget
-                    setSelf({ ...binding, widgets: newWidgets })
-                  }}>
+                  <EditDashboardComponent
+                    onEdit={() => setWidgetFormActive(rowindex * binding.width + index)}
+                    item={item}
+                    setItem={(s) => {
+                      const newWidgets = binding.widgets
+                      newWidgets[rowindex * binding.width + index] = s as DashboardWidget
+                      setSelf({ ...binding, widgets: newWidgets })
+                    }}>
                   </EditDashboardComponent>
                 </View>
               ))}
             </View>
           ))}
         </View>
+
+        {widgetFormActive != null &&
+          <Portal>
+            <WidgetForm visible={widgetFormActive != null} setVisible={(visible) => {
+              if (visible == false) { setWidgetFormActive(null) }
+            }} widget={binding.widgets[widgetFormActive]} submit={(v) => {
+              const newWidgets = binding.widgets
+              newWidgets[widgetFormActive] = v as DashboardWidget
+              setWidgetFormActive(null)
+              setSelf({ ...binding, widgets: newWidgets })
+            }}
+            />
+          </Portal>
+        }
       </>
     )
   }
 
-  public formComponent = ({ self, setSelf }: { self: DashboardWidget; setSelf: (newState: any) => void }) => {
+  public formComponent = ({ self, setSelf }: { self: Dashboard; setSelf: (newState: any) => void }) => {
     const binding = self as unknown as GridDashboard
 
     const { t } = useTranslation()
 
     return (
-      <>
+      <View style={{ gap: 10, flex: 1, flexDirection: 'column' }}>
         <Text variant="labelMedium">{t('Rows')}</Text>
         <View style={{ flexDirection: 'row' }}>
           <SegmentedButtons
-            value={binding.width.toString()}
+            value={binding.height.toString()}
             onValueChange={(value) => {
-              setSelf({...binding, width: +value})
+              const newState = binding
+              newState.height = +value
+              newState.onDimensionChange()
+              setSelf(newState)
             }}
             density="small"
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             buttons={[
-              {value: "1", label: "1", style:{minWidth: 45}},
-              {value: "2", label: "2", style:{minWidth: 45}},
-              {value: "3", label: "3", style:{minWidth: 45}},
-              {value: "4", label: "4", style:{minWidth: 45}},
-              {value: "5", label: "5", style:{minWidth: 45}},
-              {value: "6", label: "6", style:{minWidth: 45}},
-              {value: "7", label: "7", style:{minWidth: 45}},
-              {value: "8", label: "8", style:{minWidth: 45 }}
+              { value: "1", label: "1", style: { minWidth: 45 } },
+              { value: "2", label: "2", style: { minWidth: 45 } },
+              { value: "3", label: "3", style: { minWidth: 45 } },
+              { value: "4", label: "4", style: { minWidth: 45 } },
+              { value: "5", label: "5", style: { minWidth: 45 } },
+              { value: "6", label: "6", style: { minWidth: 45 } },
+              { value: "7", label: "7", style: { minWidth: 45 } },
+              { value: "8", label: "8", style: { minWidth: 45 } }
             ]}
           />
         </View>
         <Text variant="labelMedium">{t('Columns')}</Text>
         <View style={{ flexDirection: 'row' }}>
           <SegmentedButtons
-            value={binding.height.toString()}
+            value={binding.width.toString()}
             onValueChange={(value) => {
-              setSelf({...binding, height: +value})
+              const newState = binding
+              newState.width = +value
+              newState.onDimensionChange()
+              setSelf(newState)
             }}
             density="small"
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             buttons={[
-              {value: "1", label: "1", style:{minWidth: 45}},
-              {value: "2", label: "2", style:{minWidth: 45}},
-              {value: "3", label: "3", style:{minWidth: 45}},
-              {value: "4", label: "4", style:{minWidth: 45}},
-              {value: "5", label: "5", style:{minWidth: 45}},
-              {value: "6", label: "6", style:{minWidth: 45}},
-              {value: "7", label: "7", style:{minWidth: 45}},
-              {value: "8", label: "8", style:{minWidth: 45 }}
+              { value: "1", label: "1", style: { minWidth: 45 } },
+              { value: "2", label: "2", style: { minWidth: 45 } },
+              { value: "3", label: "3", style: { minWidth: 45 } },
+              { value: "4", label: "4", style: { minWidth: 45 } },
+              { value: "5", label: "5", style: { minWidth: 45 } },
+              { value: "6", label: "6", style: { minWidth: 45 } },
+              { value: "7", label: "7", style: { minWidth: 45 } },
+              { value: "8", label: "8", style: { minWidth: 45 } }
             ]}
           />
         </View>
-      </>
+      </View>
     )
   }
 }

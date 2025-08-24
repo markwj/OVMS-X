@@ -334,13 +334,13 @@ const MainLayout = () => {
             }}
           />
           <Stack.Screen
-            name="dashboard/edit/[id]"
+            name="settings/dashboard/[id]"
             options={{
               title: t('Edit Dashboard'),
             }}
           />
           <Stack.Screen
-            name="dashboard/display/[id]"
+            name="dashboard/[id]"
             options={{
               title: t('Dashboard'),
             }}

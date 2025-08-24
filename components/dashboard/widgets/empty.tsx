@@ -1,10 +1,8 @@
-import { JSX, useState } from "react";
 import { DashboardWidget } from "../types"
 import React from "react";
 import { View } from "react-native";
 import { widgetRegistry } from "../registry";
-import { Portal, Text, TouchableRipple } from "react-native-paper";
-import { FormModal } from "../components/FormModal";
+import { TouchableRipple } from "react-native-paper";
 import EditWidgetCapsule from "../components/EditWidgetCapsule";
 
 const ID = "Empty"
@@ -15,29 +13,24 @@ export default class EmptyWidget extends DashboardWidget {
     return (<></>)
   }
 
-  public editComponent = ({ self, setSelf }: { self: DashboardWidget; setSelf: (newSelf: DashboardWidget) => void; }) => {
-    const [formVisible, setFormVisible] = useState(false)
+  public editComponent = ({ self, setSelf, onEdit }: { self: DashboardWidget, setSelf: (newSelf: DashboardWidget) => void, onEdit: () => void }) => {
 
     return (
       <>
         <EditWidgetCapsule
           label={ID}
           onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
-          onEdit={() => setFormVisible(true) }
+          onEdit={onEdit}
         >
-          <TouchableRipple style={{ flex: 1 }} onPress={() => setFormVisible(true)}>
-            <View style={{ flex: 1, margin: 20, borderColor: 'grey', borderStyle: 'dashed' }} />
+          <TouchableRipple style={{ flex: 1 }} onPress={onEdit}>
+            <View style={{ flex: 1, margin: 20, borderColor: 'grey', borderWidth: 2, borderStyle: 'dashed' }} />
           </TouchableRipple>
         </EditWidgetCapsule>
-
-        <Portal>
-          <FormModal visible={formVisible} name={ID} onDismiss={() => setFormVisible(false)}>
-            <Text>WIP</Text>
-          </FormModal>
-        </Portal>
       </>
     )
   }
+
+  public formComponent = undefined;
 }
 
 widgetRegistry.register(ID, EmptyWidget)
