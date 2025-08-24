@@ -6,7 +6,7 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, LogBox } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { IconButton, Text } from 'react-native-paper'
 import { DashboardForm } from "@/components/dashboard/components/DashboardForm";
@@ -26,6 +26,12 @@ export default function EditDashboard() {
   const navigation = useNavigation()
   const dispatch = useDispatch()
   const [dashboardFormVisible, setDashboardFormVisible] = useState(dashboard?.type == "Blank")
+
+
+  //This error occurs when useEffect/useLayoutEffect is used in dashboards/widgets. (i.e. additional useEffect hook called)
+  //As noted in https://github.com/facebook/react/issues/24391
+  //It has 0 reasonable reasons to occur in the first place and ignoring it has 0 observable side effect.
+  LogBox.ignoreLogs(['Warning: Internal React error: Expected static flag was missing. Please notify the React team.'])
 
   useEffect(() => {
     navigation.setOptions({
@@ -54,14 +60,13 @@ export default function EditDashboard() {
         setVisible={setDashboardFormVisible}
         dashboard={dashboard}
         index={index}
-        submit={(s) => 
-          {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: s.stringify({self: s}) }))}
+        submit={(s) => { dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: s.stringify({ self: s }) })) }
         }
       />
 
       <View style={styles.container}>
         <View style={{ flex: 1 }}>
-          <EditDashboardComponent item={dashboard} setItem ={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: (s as Dashboard).stringify({self: s}) }))}} />
+          <EditDashboardComponent item={dashboard} setItem={(s) => { dispatch(dashboardSlice.actions.updateDashboard({ index: index, newValue: (s as Dashboard).stringify({ self: s }) })) }} onEdit={() => setDashboardFormVisible(true)} />
         </View>
       </View>
     </>

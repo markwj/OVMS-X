@@ -8,7 +8,7 @@ import { useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, LogBox } from "react-native";
 import { Text } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -19,7 +19,7 @@ export default function DisplayDashboard() {
   const navigation = useNavigation()
 
   const dashboard = useSelector(selectDashboard(numID))
-  const {t} = useTranslation()
+  const { t } = useTranslation()
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -33,6 +33,11 @@ export default function DisplayDashboard() {
     })
   }, [navigation])
 
+  //This error occurs when useEffect/useLayoutEffect is used in dashboards/widgets. (i.e. additional useEffect hook called)
+  //As noted in https://github.com/facebook/react/issues/24391
+  //It has 0 reasonable reasons to occur in the first place and ignoring it has 0 observable side effect.
+  LogBox.ignoreLogs(['Warning: Internal React error: Expected static flag was missing. Please notify the React team.'])
+
   if (dashboard == null || dashboard == undefined) {
     return (
       <View>
@@ -44,7 +49,7 @@ export default function DisplayDashboard() {
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
-        <DisplayedDashboardComponent item={dashboard} setItem={(s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: (s as Dashboard).stringify({self: s}) }))}} />
+        <DisplayedDashboardComponent item={dashboard} setItem={(s) => { dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: (s as Dashboard).stringify({ self: s }) })) }} />
         {/* {dashboard.displayComponent({
           self: dashboard,
           setSelf: (s) => {dispatch(dashboardSlice.actions.updateDashboard({ index: numID, newValue: JSON.stringify(s) }))}

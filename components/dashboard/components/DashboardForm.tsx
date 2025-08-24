@@ -2,7 +2,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Dashboard } from "../types";
 import { dashboardRegistry } from "../registry";
 import { TextInput, Modal, Portal, useTheme, Text, HelperText } from "react-native-paper";
-import React, { JSX } from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 import { StandardSubmitButton } from "./FormModal";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,6 @@ import { Dropdown } from "react-native-element-dropdown";
 import { FormDashboardComponent } from "../components";
 import { newBlankDashboard, selectDashboardNames } from "@/store/dashboardSlice";
 import { store } from "@/store/root";
-import { useSearchParams } from "expo-router/build/hooks";
 import { useSelector } from "react-redux";
 
 export function DashboardForm({ visible, setVisible, dashboard, index, submit }: { index: number, visible: boolean, setVisible: (visible: boolean) => void, dashboard: Dashboard, submit: (newState: Dashboard) => void }) {
@@ -28,6 +27,9 @@ export function DashboardForm({ visible, setVisible, dashboard, index, submit }:
 
   const dashboardNames = useSelector(selectDashboardNames)
 
+  //Alternates between 1 and 0. Set to change props passed to form (and hence trigger manual rerender).
+  const [rerenderFormFlip, setRerenderFormFlip] = useState(0)
+
   return (
     <Portal>
       <Modal
@@ -42,12 +44,14 @@ export function DashboardForm({ visible, setVisible, dashboard, index, submit }:
           <Controller
             control={control}
             name={"holdingDashboard.name"}
-            rules={{ required: t('Name required'), validate: (v) => {
-              const exists = dashboardNames.indexOf(v)
-              if(exists == -1) { return true }
-              if(exists == index) { return true }
-              return t("Duplicate names are not permitted")
-            } }}
+            rules={{
+              required: t('Name required'), validate: (v) => {
+                const exists = dashboardNames.indexOf(v)
+                if (exists == -1) { return true }
+                if (exists == index) { return true }
+                return t("Duplicate names are not permitted")
+              }
+            }}
             render={({ field: { value, onChange } }) => {
               return (
                 <>
@@ -98,10 +102,8 @@ export function DashboardForm({ visible, setVisible, dashboard, index, submit }:
                       }} />
                   </View>
 
-                  {value.formComponent && <View style={{ flexDirection: 'row', backgroundColor: theme.colors.elevation.level5, padding: 20, borderColor: 'grey', borderWidth: 2, gap: 10 }}>
-                    <View style={{ flex: 1, backgroundColor: theme.colors.elevation.level5, gap: 10 }}>
-                      <FormDashboardComponent item={value} setItem={(v: any) => { console.log(v); onChange(v); }}></FormDashboardComponent>
-                    </View>
+                  {value.formComponent && <View style={{ flexDirection: 'row', backgroundColor: theme.colors.elevation.level5, padding: 20, borderColor: 'grey', borderWidth: 2 }}>
+                    <FormDashboardComponent item={value} key={rerenderFormFlip} setItem={(v: any) => { setRerenderFormFlip(rerenderFormFlip == 0 ? 1 : 0); onChange(v); }}></FormDashboardComponent>
                   </View>}
                 </>
               );

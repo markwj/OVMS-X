@@ -15,6 +15,8 @@ import { getVehicleCount } from "@/store/vehiclesSlice";
 import { ParkingTimer } from "@/components/ui/ParkingTimer";
 import { sendCommand } from "@/lib/platforms/platform";
 import { CommandCode } from "@/lib/platforms/commands";
+import { selectSerializedDashboards } from "@/store/dashboardSlice";
+import { DashboardButton } from "@/components/ui/DashboardButtons";
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -31,6 +33,13 @@ export default function HomeScreen() {
   const vOdometer = useSelector(selectMetricRecord("v.p.odometer"))
   const vHardware = useSelector(selectMetricRecord("m.hardware"))
   const vRangeEst = useSelector(selectMetricRecord("v.b.range.est"))
+
+  const serializedDashboards = useSelector(selectSerializedDashboards)
+  const numberOfDashboards = serializedDashboards.length
+  const dashboardButtonIndexes = []
+  for(let index = 0; index < numberOfDashboards; index++) {
+    dashboardButtonIndexes.push(index)
+  }
   
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -115,13 +124,18 @@ export default function HomeScreen() {
 
             {/* Control main buttons */}
             <View style={{ alignItems: 'center', marginTop: 20 }}>
-              <ControlButton type={controlType.Controls} />
-              <ControlButton type={controlType.Climate} />
-              <ControlButton type={controlType.Charging} />
-              <ControlButton type={controlType.Location} />
-              <ControlButton type={controlType.Messages} />
-              <ControlButton type={controlType.Settings} />
-              <ControlButton type={controlType.Developer} />
+              <ControlButton type={controlType.Controls} key="menu.controls"/>
+              <ControlButton type={controlType.Climate} key="menu.climate"/>
+              <ControlButton type={controlType.Charging} key="menu.charging"/>
+              <ControlButton type={controlType.Location} key="menu.location"/>
+              <ControlButton type={controlType.Messages} key="menu.messages"/>
+
+              {dashboardButtonIndexes.map((index) => (
+                <DashboardButton index={index} key={"dashboard." + index.toString()}></DashboardButton>
+              ))}
+
+              <ControlButton type={controlType.Settings} key="menu.settings"/>
+              <ControlButton type={controlType.Developer} key="menu.developer"/>
             </View>
 
             {/* Vehicle info */}
