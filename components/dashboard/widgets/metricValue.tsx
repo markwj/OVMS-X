@@ -13,8 +13,8 @@ const ID = "Metric"
 
 export default class MetricValueWidget extends DashboardWidget {
   public type: string = ID;
-
   public metricName: string = "v.p.odometer"
+  public metricLabel: string = ""
 
   public displayComponent = ({ self }: { self: DashboardWidget }) => {
     const binding = self as unknown as MetricValueWidget
@@ -23,7 +23,7 @@ export default class MetricValueWidget extends DashboardWidget {
 
     return (
       <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <Text variant="labelMedium">{binding.metricName}</Text>
+        {binding.metricLabel && binding.metricLabel !== "" && <Text variant="labelMedium">{binding.metricLabel}</Text>}
         <MetricVal metricRecord={record}></MetricVal>
       </View>
     )
@@ -42,7 +42,7 @@ export default class MetricValueWidget extends DashboardWidget {
           onEdit={onEdit}
         >
           <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Text variant="labelMedium">{binding.metricName}</Text>
+            {binding.metricLabel && binding.metricLabel !== "" && <Text variant="labelMedium">{binding.metricLabel}</Text>}
             <MetricVal metricRecord={record}></MetricVal>
           </View>
         </EditWidgetCapsule>
@@ -75,6 +75,16 @@ export default class MetricValueWidget extends DashboardWidget {
               {t("Undefined metric")}
             </HelperText>
           )}
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <TextInput
+            label={t("Label")}
+            clearButtonMode="always"
+            value={binding.metricLabel}
+            onChangeText={(t) => { setSelf({ ...binding, metricLabel: t }) }}
+            style={{ flex: 1 }}
+            autoCapitalize="none"
+          />
         </View>
       </View>
     )
