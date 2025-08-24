@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { selectDashboard } from "@/store/dashboardSlice";
 
 export type DashboardButtonProps = Omit<ButtonProps, 'children'> & { index: number, onPress?: () => void }
+
 export function DashboardButton(props: DashboardButtonProps): React.JSX.Element | null {
   const theme = useTheme()
   const dashboard = useSelector(selectDashboard(props.index))
@@ -14,6 +15,7 @@ export function DashboardButton(props: DashboardButtonProps): React.JSX.Element 
 
   return (
     <Button
+      icon={props.icon ?? 'view-dashboard'}
       mode='contained-tonal'
       dark={theme.dark}
       onPress={() => {
