@@ -35,21 +35,12 @@ export default class GearWidget extends DashboardWidget {
     const binding = self as unknown as GearWidget
 
     const record = useSelector(selectMetricRecord("v.e.gear"))
-    const [size, setSize] = useState({ width: 'auto', height: '100%' });
-
-    const onParentViewLayout = (event: LayoutChangeEvent) => {
-      const { width, height } = event.nativeEvent.layout;
-      if (binding.orientation == "landscape") {
-        setSize({ width: (width * 0.9).toString(), height: ((width / 2.5) * 0.9).toString() })
-      } else {
-        setSize({ height: (height * 0.9).toString(), width: ((height / 2.5) * 0.9).toString() })
-      }
-    }
+    const size = binding.orientation == "portrait" ? { width: 'auto', height: '90%' } : { height: 'auto', width: '90%' };
 
     const value = record ? (MapGearMetricToText(+record?.localisedValue) || "") : ""
 
     return (
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }} onLayout={onParentViewLayout}>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
         <GaugeGear orientation={binding.orientation} size={size} currentGear={value}></GaugeGear>
       </View>
     )
@@ -59,28 +50,7 @@ export default class GearWidget extends DashboardWidget {
     const binding = self as unknown as GearWidget
 
     const record = useSelector(selectMetricRecord("v.e.gear"))
-    const [size, setSize] = useState({ width: 'auto', height: '100%' });
-
-    const [parentViewSize, setParentViewSize] = useState<{width: number, height: number} | null>(null)
-
-    const resizeWidget = () => {
-      if(parentViewSize == null) { return }
-      if (binding.orientation == "landscape") {
-        setSize({ width: (parentViewSize.width * 0.9).toString(), height: ((parentViewSize.width / 2.5) * 0.9).toString() })
-      } else {
-        setSize({ height: (parentViewSize.height * 0.9).toString(), width: ((parentViewSize.height / 2.5) * 0.9).toString() })
-      }
-    }
-
-    const onParentViewLayout = (event: LayoutChangeEvent | null) => {
-      if(event == null) {return;}
-      setParentViewSize({width: event.nativeEvent.layout.width, height: event.nativeEvent.layout.height})
-      resizeWidget()
-    }
-
-    useEffect(() => {
-      resizeWidget()
-    }, [binding.orientation])
+    const size = binding.orientation == "portrait" ? { width: 'auto', height: '90%' } : { height: 'auto', width: '90%' };
 
     const value = record ? (MapGearMetricToText(+record?.localisedValue) || "") : ""
 
@@ -91,7 +61,7 @@ export default class GearWidget extends DashboardWidget {
           onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
           onEdit={onEdit}
         >
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }} onLayout={onParentViewLayout}>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
             <GaugeGear orientation={binding.orientation} size={size} currentGear={value}></GaugeGear>
           </View>
         </EditWidgetCapsule>
