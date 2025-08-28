@@ -263,8 +263,10 @@ export const selectMetricRecord = (key: string, toBest?: boolean) => {
       return {
         stale: isStale,
         rawValue: rawValue,
-        localisedValue: formattedLocalisedValue,
-        type: metric.type
+        localisedValueWithUnit: formattedLocalisedValue,
+        type: metric.type,
+        localisedValue: localisedValue,
+        localisedUnit: unit
       } as MetricRecord;
     }
   );

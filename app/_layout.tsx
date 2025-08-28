@@ -28,6 +28,7 @@ import { isRunningInExpoGo } from 'expo';
 import { Drawer } from 'react-native-drawer-layout';
 import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown"
 
 // Conditionally import notifications to avoid warnings in Expo Go
 let Notifications: any = null;
@@ -44,9 +45,11 @@ import { getVehicles } from '@/store/vehiclesSlice';
 import MaterialTheme from "@/assets/MaterialTheme.json"
 import { getColorScheme, getLanguage } from '@/store/preferencesSlice';
 import i18n from '@/i18n';
-import { appForeground, appBackground, appInactive,
+import {
+  appForeground, appBackground, appInactive,
   connectToVehicle,
-  handleNotificationResponse, handleNotificationIncoming, handleNotificationRegistration } from '@/lib/platforms/platform';
+  handleNotificationResponse, handleNotificationIncoming, handleNotificationRegistration
+} from '@/lib/platforms/platform';
 
 const isProduction = !__DEV__ && !process.env.EXPO_PUBLIC_DEVELOPMENT;
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -214,16 +217,16 @@ const MainLayout = () => {
       if (appState.current != nextAppState) {
         console.log('[MainLayout] app state', appState.current, '=>', nextAppState);
         appState.current = nextAppState;
-      switch (appState.current) {
-        case 'active':
-          appForeground();
-          break;
-        case 'background':
-          appBackground();
-          break;
-        case 'inactive':
-          appInactive();
-          break;
+        switch (appState.current) {
+          case 'active':
+            appForeground();
+            break;
+          case 'background':
+            appBackground();
+            break;
+          case 'inactive':
+            appInactive();
+            break;
         }
       }
     });
@@ -437,6 +440,8 @@ export default Sentry.wrap(function RootLayout() {
   const theme = (colorScheme == 'dark') ? { ...MD3DarkTheme, colors: { ...MD3DarkTheme.colors, ...MaterialTheme.dark.colors } } : { ...MD3LightTheme, colors: { ...MD3LightTheme.colors, ...MaterialTheme.light.colors } };
   console.log('[layout] colour scheme', colorScheme, 'theme', theme);
 
+  const headerHeight = useSafeAreaInsets().top
+
   return (
     <GestureHandlerRootView>
       <Provider store={store}>
@@ -447,21 +452,23 @@ export default Sentry.wrap(function RootLayout() {
         }>
           <PaperProvider theme={theme}>
             <PersistGate loading={null} persistor={persistedStore}>
-              <Portal>
-                <Dialog visible={!updateDialogSkipped && isUpdateAvailable}>
-                  <Dialog.Title>{t('Update Available')}</Dialog.Title>
-                  <Dialog.Content>
-                    <Text variant="bodyMedium">
-                      {t('An update for the OVMS-X App is available. We suggest to install the update now, or you can skip it until later.')}
-                    </Text>
-                  </Dialog.Content>
-                  <Dialog.Actions>
-                    <Button onPress={() => { Updates.fetchUpdateAsync() }}>Update now</Button>
-                    <Button onPress={() => { setUpdateDialogSkipped(true) }}>Skip until later</Button>
-                  </Dialog.Actions>
-                </Dialog>
-              </Portal>
-              <MainLayout />
+              <AutocompleteDropdownContextProvider >
+                <Portal>
+                  <Dialog visible={!updateDialogSkipped && isUpdateAvailable}>
+                    <Dialog.Title>{t('Update Available')}</Dialog.Title>
+                    <Dialog.Content>
+                      <Text variant="bodyMedium">
+                        {t('An update for the OVMS-X App is available. We suggest to install the update now, or you can skip it until later.')}
+                      </Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                      <Button onPress={() => { Updates.fetchUpdateAsync() }}>Update now</Button>
+                      <Button onPress={() => { setUpdateDialogSkipped(true) }}>Skip until later</Button>
+                    </Dialog.Actions>
+                  </Dialog>
+                </Portal>
+                <MainLayout />
+              </AutocompleteDropdownContextProvider>
             </PersistGate>
           </PaperProvider>
         </ThemeProvider>

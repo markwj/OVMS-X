@@ -27,7 +27,7 @@ export function MetricVal(props: MetricRecordProps) {
     )
   }
 
-  const { localisedValue, stale } = props.metricRecord
+  const { localisedValueWithUnit: localisedValue, stale } = props.metricRecord
   const showStaleIndicator = props.showStaleIndicator ?? true
 
   return (

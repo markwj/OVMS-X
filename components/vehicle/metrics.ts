@@ -51,6 +51,8 @@ export class Metric {
 export interface MetricRecord {
   stale: boolean
   rawValue: string
-  localisedValue: string
+  localisedValueWithUnit: string
+  localisedValue : string
+  localisedUnit : string
   type: MetricType
 }

@@ -1,3 +1,6 @@
 //Import all widgets
 require("./empty")
 require("./metricValue")
+require("./speedometer")
+require("./tachometer")
+require("./gear")
