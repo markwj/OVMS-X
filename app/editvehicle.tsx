@@ -185,7 +185,7 @@ export default function EditVehicleScreen() {
                 if (image == null) { return }
                 setCroppingImageParams({
                   uri: image,
-                  aspectRatio: 654 / 302,
+                  aspectRatio: 600 / 300,
                   type: "side"
                 })
               }}>
@@ -201,7 +201,7 @@ export default function EditVehicleScreen() {
                   if (image == null) { return }
                   setCroppingImageParams({
                     uri: image,
-                    aspectRatio: 304 / 606,
+                    aspectRatio: 300 / 600,
                     type: "top"
                   })
                 }}>
