@@ -1,13 +1,15 @@
-diff --git a/node_modules/expo-dynamic-image-crop/package.json b/node_modules/expo-dynamic-image-crop/package.json
-index a8f95ce..ec923f2 100644
---- a/node_modules/expo-dynamic-image-crop/package.json
-+++ b/node_modules/expo-dynamic-image-crop/package.json
-@@ -3,7 +3,7 @@
-   "version": "1.4.44",
-   "description": "Dynamic image cropping component for Expo/React Native with free-form and fixed aspect ratio support",
-   "main": "lib/index.js",
--  "module": "lib/index.esm.js",
-+  "module": "lib/index.js",
-   "types": "lib/index.d.ts",
-   "scripts": {
-     "build": "rm -rf lib && tsc",
+diff --git a/node_modules/expo-dynamic-image-crop/lib/hooks/usePerformCrop.js b/node_modules/expo-dynamic-image-crop/lib/hooks/usePerformCrop.js
+index fe84bf2..c3874bc 100644
+--- a/node_modules/expo-dynamic-image-crop/lib/hooks/usePerformCrop.js
++++ b/node_modules/expo-dynamic-image-crop/lib/hooks/usePerformCrop.js
+@@ -20,8 +20,8 @@ export const usePerformCrop = () => {
+             };
+             setProcessing(true);
+             const cropResult = await ImageManipulator.manipulateAsync(imageData.uri, [
+-                { crop: croppingBounds },
+-            ]);
++                { crop: croppingBounds }
++            ], {format : 'png'});
+             const { uri, width, height } = cropResult;
+             setImageData({ uri, width, height });
+             setProcessing(false);
