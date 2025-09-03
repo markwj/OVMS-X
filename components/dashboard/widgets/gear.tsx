@@ -49,10 +49,7 @@ export default class GearWidget extends DashboardWidget {
   public editComponent = ({ self, setSelf, onEdit }: { self: DashboardWidget, setSelf: (newSelf: DashboardWidget) => void, onEdit: () => void }) => {
     const binding = self as unknown as GearWidget
 
-    const record = useSelector(selectMetricRecord("v.e.gear"))
-    const size = binding.orientation == "portrait" ? { width: 'auto', height: '90%' } : { height: 'auto', width: '90%' };
-
-    const value = record ? (MapGearMetricToText(+record?.localisedValue) || "") : ""
+    const C = binding.displayComponent
 
     return (
       <>
@@ -61,9 +58,7 @@ export default class GearWidget extends DashboardWidget {
           onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
           onEdit={onEdit}
         >
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-            <GaugeGear orientation={binding.orientation} size={size} currentGear={value}></GaugeGear>
-          </View>
+          <C self={self} />
         </EditWidgetCapsule>
       </>
     )
@@ -78,7 +73,7 @@ export default class GearWidget extends DashboardWidget {
 
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
-        <Text>{t("Orientation")}</Text>
+        <Text variant="labelMedium">{t("Orientation")}</Text>
         <View style={{ flexDirection: 'row' }}>
           <Dropdown
             data={[
