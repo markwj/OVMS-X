@@ -37,7 +37,9 @@ export default class BatteryWidget extends DashboardWidget {
       }
     }
 
-    if(record == undefined) { return <></> }
+    const {t} = useTranslation()
+
+    if(record?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Could not load widget")}</HelperText></View> }
 
     return (
       <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onLayout={onParentViewLayout}>

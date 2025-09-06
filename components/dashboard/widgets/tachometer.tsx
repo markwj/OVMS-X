@@ -6,6 +6,8 @@ import EditWidgetCapsule from "../components/EditWidgetCapsule";
 import { GaugeSpeedometer, GaugeTachometer } from "react-native-vehicle-gauges"
 import { useSelector } from "react-redux";
 import { selectMetricRecord } from "@/store/metricsSlice";
+import { useTranslation } from "react-i18next";
+import { HelperText } from "react-native-paper";
 
 const ID = "Tachometer"
 
@@ -25,7 +27,9 @@ export default class TachometerWidget extends DashboardWidget {
       }
     }
 
-    if (record == undefined) { return <></> }
+    const {t} = useTranslation()
+
+    if(record?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Could not load widget")}</HelperText></View> }
 
     const value = +record.localisedValue || 0
     const unit = record.localisedUnit

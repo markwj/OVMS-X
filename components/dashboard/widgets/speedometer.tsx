@@ -6,6 +6,8 @@ import EditWidgetCapsule from "../components/EditWidgetCapsule";
 import { GaugeSpeedometer } from "react-native-vehicle-gauges"
 import { useSelector } from "react-redux";
 import { selectMetricRecord } from "@/store/metricsSlice";
+import { useTranslation } from "react-i18next";
+import { HelperText } from "react-native-paper";
 
 const ID = "Speedometer"
 
@@ -24,7 +26,9 @@ export default class SpeedometerWidget extends DashboardWidget {
       }
     }
 
-    if (speedRecord == undefined) { return <></> }
+    const {t} = useTranslation()
+
+    if(speedRecord?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Could not load widget")}</HelperText></View> }
 
     const speedValue = +speedRecord.localisedValue
     const speedUnit = speedRecord.localisedUnit
