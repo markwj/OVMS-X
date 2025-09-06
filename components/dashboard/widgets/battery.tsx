@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { AutocompleteDropdown, AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 import { GaugeBattery } from "react-native-vehicle-gauges";
 import { NumberInput } from "../../ui/NumberInput";
+import { MetricInput } from "@/components/ui/MetricInput";
 
 const ID = "Battery"
 
@@ -68,49 +69,10 @@ export default class BatteryWidget extends DashboardWidget {
   public formComponent = ({ self, setSelf }: { self: DashboardWidget; setSelf: (newState: any) => void }) => {
     const binding = self as unknown as BatteryWidget
 
-    const { t } = useTranslation()
-
-    const theme = useTheme()
-
-    const keys = useSelector(selectMetricsKeys)
-    const filteredKeys = keys.filter((k) => k.includes(binding.metricName))
-
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
         <View style={{ flexDirection: 'row' }}>
-          <View style={{ flex: 1, flexDirection: 'row' }}>
-            <AutocompleteDropdownContextProvider>
-              <AutocompleteDropdown
-                clearOnFocus={false}
-                inputContainerStyle={{ backgroundColor: "transparent" }}
-                dataSet={filteredKeys.map((k) => ({ id: k, title: k }))}
-                onChangeText={(t) => { setSelf({ ...binding, metricName: t }) }}
-                onClear={() => { setSelf({ ...binding, metricName: "" }) }}
-                onSelectItem={(i) => { setSelf({ ...binding, metricName: i?.id ?? "" }) }}
-                direction="down"
-                emptyResultText=""
-                InputComponent={TextInput}
-                suggestionsListContainerStyle={{
-                  backgroundColor: theme.colors.surfaceVariant,
-                  borderWidth: 2,
-                  borderColor: 'black',
-                  position: 'absolute',
-                  left: -45,
-                  top: -5
-                }}
-                textInputProps={{ style: { marginRight: 20 }, autoCapitalize: 'none', autoCorrect: false }}
-                initialValue={binding.metricName}
-              >
-              </AutocompleteDropdown>
-            </AutocompleteDropdownContextProvider>
-          </View>
-        </View>
-        <View style={{ flexDirection: 'row', padding: 0 }}>
-          {!keys.includes(binding.metricName) && (
-            <HelperText type={"error"}>
-              {t("Undefined metric")}
-            </HelperText>
-          )}
+          <MetricInput value={binding.metricName} setValue={(s) => setSelf({...binding, metricName: s}) }></MetricInput>
         </View>
 
         <View style={{ flexDirection: 'row' }}>

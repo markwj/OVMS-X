@@ -51,8 +51,6 @@ export default class GridDashboard extends Dashboard {
   }
 
   public onDimensionChange() {
-    console.log("Widgets to start with: " + this.widgets.map((w) => JSON.stringify(w)))
-
     if (this.widgets.length > (this.width * this.height)) {
       this.widgets.length = (this.width * this.height)
     }
@@ -63,7 +61,6 @@ export default class GridDashboard extends Dashboard {
         this.widgets.push(new constructor)
       }
     }
-    console.log("Widgets to end with: " + this.widgets.map((w) => JSON.stringify(w)))
   }
 
   public stringifyParams = ({ self }: { self: any }) => {
