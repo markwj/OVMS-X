@@ -6,26 +6,26 @@ import EditWidgetCapsule from "../components/EditWidgetCapsule";
 import { useSelector } from "react-redux";
 import { selectMetricRecord, selectMetricUnit, selectMetricValue } from "@/store/metricsSlice";
 import { HelperText, Text } from 'react-native-paper'
-import { GaugeOilPressure, PressureUnits } from "react-native-vehicle-gauges";
+import { GaugeOilPressure, GaugeTemperature, PressureUnits } from "react-native-vehicle-gauges";
 import { NumberInput } from "../../ui/NumberInput";
 import { GetUnitAbbr, numericalUnitConvertor } from "@/components/utils/numericalUnitConverter";
-import { getPressureUnit } from "@/store/preferencesSlice";
+import { getPressureUnit, getTemperatureUnit } from "@/store/preferencesSlice";
 import { useTranslation } from "react-i18next";
 import { MetricInput } from "@/components/ui/MetricInput";
 
-const ID = "Oil Pressure"
-const STORAGE_UNIT = "psi"
+const ID = "Temperature"
+const STORAGE_UNIT = "°C"
 
-export default class OilPressureWidget extends DashboardWidget {
+export default class TemperatureWidget extends DashboardWidget {
   public type: string = ID;
   public metricName: string = ""
-  public minPressure: number = 0
-  public maxPressure: number = 80
-  public lowPressure: number = 15
-  public highPressure: number = 70
+  public minTemperature: number = 0
+  public maxTemperature: number = 100
+  public lowTemperature: number = 15
+  public highTemperature: number = 80
 
   public displayComponent = ({ self }: { self: DashboardWidget }) => {
-    const binding = self as unknown as OilPressureWidget
+    const binding = self as unknown as TemperatureWidget
 
     const record = useSelector(selectMetricRecord(binding.metricName))
 
@@ -44,7 +44,7 @@ export default class OilPressureWidget extends DashboardWidget {
 
     const { t } = useTranslation()
 
-    if (record == undefined) {
+    if(record == undefined) {
       return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><HelperText type={"error"}>{t("Metric")} {binding.metricName} {t("is undefined")}</HelperText></View>
     }
 
@@ -53,27 +53,28 @@ export default class OilPressureWidget extends DashboardWidget {
       //@ts-ignore
       || !numericalUnitConvertor().from(STORAGE_UNIT).possibilities().includes(record.localisedUnit)
     ) {
-      return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><HelperText type={"error"}>{t("Incompatible metric")} {binding.metricName} {t('for Oil Pressure widget')}</HelperText></View>
+      return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><HelperText type={"error"}>{t("Incompatible metric")} {binding.metricName} {t('for Temperature widget')}</HelperText></View>
     }
 
     return (
       <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onLayout={onParentViewLayout}>
-        <GaugeOilPressure
+        <GaugeTemperature
+          temperature={+record.localisedValue}
           size={size}
-          pressure={+record.localisedValue}
-          units={preferredUnit == "kPa" ? "kpa" : preferredUnit as PressureUnits}
-          minPressure={numericalUnitConvertor(binding.minPressure).from(STORAGE_UNIT).to(preferredUnit)}
-          maxPressure={numericalUnitConvertor(binding.maxPressure).from(STORAGE_UNIT).to(preferredUnit)}
-          lowPressure={numericalUnitConvertor(binding.lowPressure).from(STORAGE_UNIT).to(preferredUnit)}
-          highPressure={numericalUnitConvertor(binding.highPressure).from(STORAGE_UNIT).to(preferredUnit)}
+          //@ts-ignore
+          units={preferredUnit}
+          minTemperature={numericalUnitConvertor(binding.minTemperature).from(STORAGE_UNIT).to(preferredUnit)}
+          maxTemperature={numericalUnitConvertor(binding.maxTemperature).from(STORAGE_UNIT).to(preferredUnit)}
+          lowTemperature={numericalUnitConvertor(binding.lowTemperature).from(STORAGE_UNIT).to(preferredUnit)}
+          highTemperature={numericalUnitConvertor(binding.highTemperature).from(STORAGE_UNIT).to(preferredUnit)}
         >
-        </GaugeOilPressure>
+        </GaugeTemperature>
       </View>
     )
   }
 
   public editComponent = ({ self, setSelf, onEdit }: { self: DashboardWidget, setSelf: (newSelf: DashboardWidget) => void, onEdit: () => void }) => {
-    const binding = self as unknown as OilPressureWidget
+    const binding = self as unknown as TemperatureWidget
 
     const C = binding.displayComponent
 
@@ -93,9 +94,9 @@ export default class OilPressureWidget extends DashboardWidget {
   }
 
   public formComponent = ({ self, setSelf }: { self: DashboardWidget; setSelf: (newState: any) => void }) => {
-    const binding = self as unknown as OilPressureWidget
+    const binding = self as unknown as TemperatureWidget
 
-    const preferredUnit = useSelector(getPressureUnit)
+    const preferredUnit = useSelector(getTemperatureUnit)
 
     const { t } = useTranslation()
 
@@ -106,22 +107,22 @@ export default class OilPressureWidget extends DashboardWidget {
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.minPressure).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Minimum Pressure"} setValue={(v) => setSelf({ ...binding, minPressure: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.minTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Minimum Pressure"} setValue={(v) => setSelf({ ...binding, minTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.maxPressure).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Maximum Pressure"} setValue={(v) => setSelf({ ...binding, maxPressure: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.maxTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Maximum Pressure"} setValue={(v) => setSelf({ ...binding, maxTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.lowPressure).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Low Pressure"} setValue={(v) => setSelf({ ...binding, lowPressure: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.lowTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Low Pressure"} setValue={(v) => setSelf({ ...binding, lowTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.highPressure).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"High Pressure"} setValue={(v) => setSelf({ ...binding, highPressure: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.highTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"High Pressure"} setValue={(v) => setSelf({ ...binding, highTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
@@ -130,4 +131,4 @@ export default class OilPressureWidget extends DashboardWidget {
   }
 }
 
-widgetRegistry.register(ID, OilPressureWidget)
+widgetRegistry.register(ID, TemperatureWidget)
