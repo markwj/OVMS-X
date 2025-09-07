@@ -6,7 +6,7 @@ import { MetricDefined, Metric, MetricType, MetricRecord } from '@/components/ve
 import { GetUnitAbbr, numericalUnitConvertor } from '@/components/utils/numericalUnitConverter';
 import { GetCurrentUTCTimeStamp } from '@/components/utils/datetime';
 import { useDispatch } from 'react-redux';
-import { getDistancePreference, getPressureUnit, getTemperatureUnit } from './preferencesSlice';
+import { getDistancePreference, getPressureUnit, getTemperatureUnit, getVolumeUnit } from './preferencesSlice';
 
 export interface Metrics {
   metricsList: {}
@@ -212,6 +212,9 @@ export const selectMetricRecord = (key: string, toBest?: boolean) => {
               break;
             case "pressure":
               targetUnit = getPressureUnit(store.getState());
+              break;
+            case "volume":
+              targetUnit = getVolumeUnit(store.getState());
               break;
             default:
               targetUnit = "system";

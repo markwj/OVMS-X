@@ -24,10 +24,17 @@ export enum PressureChoiceType {
   kPa = "kPa"
 }
 
+export enum VolumeChoiceType {
+  SYSTEM = "system",
+  GALLONS = "gal",
+  LITRES = "l" 
+}
+
 interface PreferencesState {
   temperatureChoice: TemperatureChoiceType,
   distanceChoice: DistanceChoiceType,
   pressureChoice: PressureChoiceType,
+  volumeChoice : VolumeChoiceType,
   colorMode: "light" | "dark" | "null",
   language: TSupportedLanguages | null
 }
@@ -36,6 +43,7 @@ const initialState: PreferencesState = {
   temperatureChoice: TemperatureChoiceType.SYSTEM,
   distanceChoice: DistanceChoiceType.SYSTEM,
   pressureChoice: PressureChoiceType.SYSTEM,
+  volumeChoice : VolumeChoiceType.SYSTEM,
   colorMode: "null",
   language: null
 }
@@ -52,6 +60,9 @@ export const preferencesSlice = createSlice({
     },
     setPressurePreference: (state, action: PayloadAction<PressureChoiceType>) => {
       state.pressureChoice = action.payload
+    },
+    setVolumePreference: (state, action: PayloadAction<VolumeChoiceType>) => {
+      state.volumeChoice = action.payload
     },
     setColorScheme: (state, action : PayloadAction<"light" | "dark" | "null">) => {
       state.colorMode = action.payload
@@ -113,6 +124,23 @@ export const getPressureUnit = (state: RootState) => {
   }
 }
 
+export const getVolumePreference = (state: RootState) => {
+  return state.preferences.volumeChoice
+}
+
+export const getVolumeUnit = (state: RootState) => {
+  const locales = getLocales()
+  if (state.preferences.volumeChoice === VolumeChoiceType.SYSTEM) {
+    if (locales[0].measurementSystem === 'metric') {
+      return 'l'
+    } else {
+      return 'gal'
+    }
+  } else {
+    return state.preferences.volumeChoice.toString();
+  }
+}
+
 export const getColorScheme = (state : RootState) => {
   return state.preferences.colorMode
 }
@@ -121,6 +149,6 @@ export const getLanguage = (state : RootState) => {
   return state.preferences.language
 }
 
-export const { setTemperaturePreference, setDistancePreference, setPressurePreference, setColorScheme, setLanguage } = preferencesSlice.actions
+export const { setTemperaturePreference, setDistancePreference, setPressurePreference, setVolumePreference, setColorScheme, setLanguage  } = preferencesSlice.actions
 
 export default preferencesSlice.reducer

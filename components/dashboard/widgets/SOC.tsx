@@ -31,7 +31,8 @@ export default class SOCWidget extends DashboardWidget {
     if(socRecord?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Could not load widget")}</HelperText></View> }
 
     return (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }} onLayout={onParentViewLayout}>
-      <GaugeFuel size={size} fuelLevel={+socRecord.localisedValue} lowFuelThreshold={20} label={t("SOC")}></GaugeFuel>
+      {/** @ts-ignore */}
+      <GaugeFuel size={size} fuelLevel={+socRecord.localisedValue} lowFuelThreshold={20} label={t("SOC")} units="%"></GaugeFuel>
     </View>)
   }
 

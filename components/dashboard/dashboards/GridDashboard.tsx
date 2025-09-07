@@ -37,7 +37,7 @@ export default class GridDashboard extends Dashboard {
 
     if (params["widgets"]) {
       const deserializedWidgets: DashboardWidget[] = params["widgets"].map((w: any) => {
-        const widgetData = JSON.parse(w)
+        const widgetData = w
         const widgetConstructor = widgetRegistry.get(widgetData.type)
         if (widgetConstructor == undefined) { return null }
 
@@ -68,12 +68,12 @@ export default class GridDashboard extends Dashboard {
   }
 
   public stringifyParams = ({ self }: { self: any }) => {
-    return JSON.stringify({
+    return {
       width: self.width,
       height: self.height,
       border: self.border,
-      widgets: self.widgets.map((v: DashboardWidget) => JSON.stringify(v))
-    })
+      widgets: self.widgets
+    }
   };
 
   private reorganise<T>(widgets: T[]): T[][] {
