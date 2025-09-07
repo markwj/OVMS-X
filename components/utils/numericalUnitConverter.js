@@ -10,6 +10,7 @@ import energy from 'convert-units/definitions/energy'
 import acceleration from 'convert-units/definitions/acceleration'
 import pressure from 'convert-units/definitions/pressure'
 import power from 'convert-units/definitions/power'
+import volume from 'convert-units/definitions/volume'
 
 import charge from 'convert-units/definitions/charge'
 
@@ -200,7 +201,8 @@ export const numericalUnitConvertor = configureMeasurements({
   current,
   energy,
   acceleration,
-  pressure
+  pressure,
+  volume
 });
 
 export function GetUnitAbbr(name) {
