@@ -6,6 +6,8 @@ import EditWidgetCapsule from "../components/EditWidgetCapsule";
 import { GaugeSpeedometer } from "react-native-vehicle-gauges"
 import { useSelector } from "react-redux";
 import { selectMetricRecord } from "@/store/metricsSlice";
+import { useTranslation } from "react-i18next";
+import { HelperText } from "react-native-paper";
 
 const ID = "Speedometer"
 
@@ -15,16 +17,18 @@ export default class SpeedometerWidget extends DashboardWidget {
     const speedRecord = useSelector(selectMetricRecord("v.p.speed"))
     const [size, setSize] = useState({ width: 'auto', height: '100%' });
 
-    const onParentViewLayout = (event : LayoutChangeEvent) => {
+    const onParentViewLayout = (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      if(width > height) {
-        setSize({ width: 'auto', height: '100%' })
+      if (width > height) {
+        setSize({ width: 'auto', height: '90%' })
       } else {
-        setSize({ height: 'auto', width: '100%' })
+        setSize({ height: 'auto', width: '90%' })
       }
     }
 
-    if (speedRecord == undefined) { return <></> }
+    const {t} = useTranslation()
+
+    if(speedRecord?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Could not load widget")}</HelperText></View> }
 
     const speedValue = +speedRecord.localisedValue
     const speedUnit = speedRecord.localisedUnit
@@ -36,30 +40,9 @@ export default class SpeedometerWidget extends DashboardWidget {
   }
 
   public editComponent = ({ self, setSelf, onEdit }: { self: DashboardWidget, setSelf: (newSelf: DashboardWidget) => void, onEdit: () => void }) => {
-    const speedRecord = useSelector(selectMetricRecord("v.p.speed"))
-    const [size, setSize] = useState({ width: 'auto', height: '100%' });
+    const binding = self as unknown as SpeedometerWidget
 
-    const onParentViewLayout = (event : LayoutChangeEvent) => {
-      const { width, height } = event.nativeEvent.layout;
-      if(width > height) {
-        setSize({ width: 'auto', height: '100%' })
-      } else {
-        setSize({ height: 'auto', width: '100%' })
-      }
-    }
-
-    if (speedRecord == undefined) {
-      return <EditWidgetCapsule
-        label={ID}
-        onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
-        onEdit={onEdit}
-      >
-        <></>
-      </EditWidgetCapsule>
-    }
-
-    const speedValue = +speedRecord.localisedValue
-    const speedUnit = speedRecord.localisedUnit
+    const C = binding.displayComponent
 
     return (
       <>
@@ -68,10 +51,7 @@ export default class SpeedometerWidget extends DashboardWidget {
           onDelete={() => setSelf(new (widgetRegistry.getEmptyWidget()))}
           onEdit={onEdit}
         >
-          <View onLayout={onParentViewLayout} style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }}>
-            {/* @ts-ignore */}
-            <GaugeSpeedometer speed={speedValue} units={speedUnit} size={size}></GaugeSpeedometer>
-          </View>
+          <C self={self} />
         </EditWidgetCapsule>
       </>
     )

@@ -2,7 +2,7 @@ import { JSX, useState } from "react";
 import { Dashboard, DashboardConfig, DashboardWidget, IDashboardItem } from "../types"
 import { View } from "react-native";
 import React from "react";
-import { Modal, Portal, SegmentedButtons, Text, TextInput } from "react-native-paper";
+import { Checkbox, Modal, Portal, SegmentedButtons, Text, TextInput, useTheme } from "react-native-paper";
 import { dashboardRegistry, widgetRegistry } from "../registry";
 import { useTranslation } from "react-i18next";
 import { DisplayedDashboardComponent, EditDashboardComponent } from "../components";
@@ -22,6 +22,8 @@ export default class GridDashboard extends Dashboard {
     this.widgets.push(widget)
   }
 
+  public border: boolean
+
   public constructor(data: DashboardConfig) {
     super(data)
     const params = typeof data.params == "string" ? JSON.parse(data.params) : data.params
@@ -31,9 +33,11 @@ export default class GridDashboard extends Dashboard {
     this.height = +params["height"]
     if (isNaN(this.height)) { this.height = 1 }
 
+    this.border = params["border"] ?? false
+
     if (params["widgets"]) {
       const deserializedWidgets: DashboardWidget[] = params["widgets"].map((w: any) => {
-        const widgetData = JSON.parse(w)
+        const widgetData = w
         const widgetConstructor = widgetRegistry.get(widgetData.type)
         if (widgetConstructor == undefined) { return null }
 
@@ -51,8 +55,6 @@ export default class GridDashboard extends Dashboard {
   }
 
   public onDimensionChange() {
-    console.log("Widgets to start with: " + this.widgets.map((w) => JSON.stringify(w)))
-
     if (this.widgets.length > (this.width * this.height)) {
       this.widgets.length = (this.width * this.height)
     }
@@ -63,15 +65,15 @@ export default class GridDashboard extends Dashboard {
         this.widgets.push(new constructor)
       }
     }
-    console.log("Widgets to end with: " + this.widgets.map((w) => JSON.stringify(w)))
   }
 
   public stringifyParams = ({ self }: { self: any }) => {
-    return JSON.stringify({
+    return {
       width: self.width,
       height: self.height,
-      widgets: self.widgets.map((v: DashboardWidget) => JSON.stringify(v))
-    })
+      border: self.border,
+      widgets: self.widgets
+    }
   };
 
   private reorganise<T>(widgets: T[]): T[][] {
@@ -114,7 +116,7 @@ export default class GridDashboard extends Dashboard {
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
         {renderedWidgets.map((row, rowindex) => (
-          <View style={{ flex: 1, flexDirection: 'row' }} key={rowindex}>
+          <View style={[{ flex: 1, flexDirection: 'row' }, binding.border ? { borderColor: 'grey', borderWidth: 2 } : {}]} key={rowindex}>
             {row.map((item) => (item))}
           </View>
         ))}
@@ -172,9 +174,21 @@ export default class GridDashboard extends Dashboard {
     const binding = self as unknown as GridDashboard
 
     const { t } = useTranslation()
+    const theme = useTheme()
 
     return (
       <View style={{ gap: 10, flex: 1, flexDirection: 'column' }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text variant="labelMedium">{t('Bordered')}</Text>
+          <View style={{ borderWidth: 2, borderColor: theme.colors.primary, borderRadius: 5 }}>
+            <Checkbox status={binding.border ? "checked" : 'unchecked'} onPress={() => {
+              const newState = binding
+              newState.border = !binding.border
+              setSelf(newState)
+            }}></Checkbox>
+          </View>
+        </View>
+
         <Text variant="labelMedium">{t('Rows')}</Text>
         <View style={{ flexDirection: 'row' }}>
           <SegmentedButtons

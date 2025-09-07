@@ -10,7 +10,10 @@ import {
   getColorScheme,
   getLanguage,
   setLanguage,
-  setColorScheme
+  setColorScheme,
+  VolumeChoiceType,
+  getVolumePreference,
+  setVolumePreference
 } from "@/store/preferencesSlice";
 import { useForm, Controller } from "react-hook-form";
 import { useHeaderHeight } from '@react-navigation/elements'
@@ -37,6 +40,7 @@ interface FormData {
   temperaturePreference: TemperatureChoiceType;
   distancePreference: DistanceChoiceType;
   pressurePreference: PressureChoiceType;
+  volumePreference : VolumeChoiceType;
   colorMode: "light" | "dark" | "null",
   language: TSupportedLanguages | null
 }
@@ -60,6 +64,12 @@ const PRESSURE_BUTTONS = [
   { value: PressureChoiceType.kPa, label: 'kPa' }
 ]
 
+const VOLUME_BUTTONS = [
+  { value: VolumeChoiceType.SYSTEM, label: 'System' },
+  { value: VolumeChoiceType.LITRES, label: 'Litres' },
+  { value: VolumeChoiceType.GALLONS, label: 'Gallons' }
+]
+
 export default function SettingsScreen() {
   const height = useHeaderHeight()
   const { t, i18n } = useTranslation();
@@ -77,6 +87,7 @@ export default function SettingsScreen() {
   const temperaturePreference = useSelector(getTemperaturePreference)
   const distancePreference = useSelector(getDistancePreference)
   const pressurePreference = useSelector(getPressurePreference)
+  const volumePreference = useSelector(getVolumePreference)
   const colorMode = useSelector(getColorScheme)
   const language = useSelector(getLanguage)
 
@@ -87,6 +98,7 @@ export default function SettingsScreen() {
       temperaturePreference: temperaturePreference,
       distancePreference: distancePreference,
       pressurePreference: pressurePreference,
+      volumePreference : volumePreference,
       language: language,
       colorMode: colorMode ?? (useTheme().dark ? "dark" : "light")
     }
@@ -330,6 +342,22 @@ export default function SettingsScreen() {
                   dispatch(setPressurePreference(value))
                 }}
                 buttons={PRESSURE_BUTTONS}
+              />
+            )}
+          />
+
+          <Text variant="labelMedium">{t('Volume')}</Text>
+          <Controller
+            control={control}
+            name="volumePreference"
+            render={({ field: { value } }) => (
+              <SegmentedButtons
+                value={value}
+                onValueChange={(value) => {
+                  setValue('volumePreference', value)
+                  dispatch(setVolumePreference(value))
+                }}
+                buttons={VOLUME_BUTTONS}
               />
             )}
           />
