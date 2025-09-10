@@ -14,12 +14,11 @@ const ID = "Tachometer"
 export default class TachometerWidget extends DashboardWidget {
   public type: string = ID;
   public displayComponent = ({ self }: { self: DashboardWidget }) => {
-    const record = useSelector(selectMetricRecord("v.p.rpm"))
+    const record = useSelector(selectMetricRecord("v.m.rpm"))
     const [size, setSize] = useState({ width: 'auto', height: '100%' });
 
     const onParentViewLayout = (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      console.log()
       if (width > height) {
         setSize({ width: 'auto', height: '90%' })
       } else {
@@ -29,14 +28,14 @@ export default class TachometerWidget extends DashboardWidget {
 
     const {t} = useTranslation()
 
-    if(record?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Could not load widget")}</HelperText></View> }
+    if(record?.localisedValue == undefined) { return <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}><HelperText type={"error"}>{t("Metric")} v.m.rpm {t("is undefined")}</HelperText></View> }
 
     const value = +record.localisedValue || 0
     const unit = record.localisedUnit
 
     return (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }} onLayout={onParentViewLayout}>
       {/* @ts-ignore */}
-      <GaugeSpeedometer rpm={value} units={unit} size={size}></GaugeSpeedometer>
+      <GaugeTachometer rpm={value} units={unit} size={size}></GaugeTachometer>
     </View>)
   }
 

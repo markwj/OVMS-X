@@ -102,7 +102,7 @@ export default class GridDashboard extends Dashboard {
     const binding = self as unknown as GridDashboard
 
     const renderedWidgets: JSX.Element[][] = binding.reorganise<JSX.Element>(binding.widgets.map((w, i) => (
-      <View style={{ flex: 1 }} key={i}>
+      <View style={[{ flex: 1 }, binding.border ? { borderColor: 'grey', borderWidth: 2 } : {}]} key={i}>
         <DisplayedDashboardComponent item={w} key={i} setItem={(s) => {
           const newWidgets = binding.widgets
           //@ts-ignore
@@ -116,7 +116,7 @@ export default class GridDashboard extends Dashboard {
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
         {renderedWidgets.map((row, rowindex) => (
-          <View style={[{ flex: 1, flexDirection: 'row' }, binding.border ? { borderColor: 'grey', borderWidth: 2 } : {}]} key={rowindex}>
+          <View style={{ flex: 1, flexDirection: 'row' }} key={rowindex}>
             {row.map((item) => (item))}
           </View>
         ))}
