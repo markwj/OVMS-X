@@ -19,7 +19,6 @@ export default class TachometerWidget extends DashboardWidget {
 
     const onParentViewLayout = (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
-      console.log()
       if (width > height) {
         setSize({ width: 'auto', height: '90%' })
       } else {
@@ -36,7 +35,7 @@ export default class TachometerWidget extends DashboardWidget {
 
     return (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center' }} onLayout={onParentViewLayout}>
       {/* @ts-ignore */}
-      <GaugeSpeedometer rpm={value} units={unit} size={size}></GaugeSpeedometer>
+      <GaugeTachometer rpm={value} units={unit} size={size}></GaugeTachometer>
     </View>)
   }
 
