@@ -107,22 +107,22 @@ export default class TemperatureWidget extends DashboardWidget {
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.minTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Minimum Pressure"} setValue={(v) => setSelf({ ...binding, minTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.minTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Minimum Temperature"} setValue={(v) => setSelf({ ...binding, minTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.maxTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Maximum Pressure"} setValue={(v) => setSelf({ ...binding, maxTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.maxTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Maximum Temperature"} setValue={(v) => setSelf({ ...binding, maxTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.lowTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Low Pressure"} setValue={(v) => setSelf({ ...binding, lowTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.lowTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"Low Temperature"} setValue={(v) => setSelf({ ...binding, lowTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <NumberInput value={numericalUnitConvertor(binding.highTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"High Pressure"} setValue={(v) => setSelf({ ...binding, highTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
+          <NumberInput value={numericalUnitConvertor(binding.highTemperature).from(STORAGE_UNIT).to(preferredUnit).toString()} label={"High Temperature"} setValue={(v) => setSelf({ ...binding, highTemperature: numericalUnitConvertor(v).from(preferredUnit).to(STORAGE_UNIT) })}></NumberInput>
           <Text variant="labelMedium">{t(preferredUnit)}</Text>
         </View>
 
