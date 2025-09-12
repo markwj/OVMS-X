@@ -1,4 +1,4 @@
-{ 
+{
   "expo": {
     "name": "OVMS-X",
     "slug": "ovms",
@@ -11,8 +11,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.openvehicles.ovmsx",
-      "associatedDomains": ["applinks:ovmsx.openvehicles.com"],
-      "entitlements": { "aps-environment": "production" },
+      "associatedDomains": [
+        "applinks:ovmsx.openvehicles.com"
+      ],
+      "entitlements": {
+        "aps-environment": "production"
+      },
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -39,7 +43,10 @@
               "host": "ovmsx.openvehicles.com"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -79,7 +86,8 @@
           "project": "ovms-x",
           "organization": "open-vehicles-ltd"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
