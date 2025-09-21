@@ -289,15 +289,21 @@ const MainLayout = () => {
             }}
           />
           <Stack.Screen
-            name="newplatform/ovmsv2"
+            name="newplatform/ovmsv2user"
             options={{
-              title: t('OVMS v2 API'),
+              title: t('OVMS v2 User Authentication'),
             }}
           />
           <Stack.Screen
-            name="newplatform/tesla"
+            name="newplatform/ovmsv2demo"
             options={{
-              title: t('TESLA API'),
+              title: t('OVMS v2 Demo'),
+            }}
+          />
+          <Stack.Screen
+            name="newplatform/teslafleet"
+            options={{
+              title: t('TESLA FleetAPI'),
             }}
           />
           <Stack.Screen
