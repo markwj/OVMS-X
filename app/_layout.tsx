@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { use, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import 'react-native-reanimated';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
@@ -270,7 +270,7 @@ const MainLayout = () => {
             headerBackTitle: t('Back'),
             headerLeft: ({ canGoBack }) =>
               canGoBack ? undefined : (
-                <IconButton icon='menu' onPress={() => setDrawerOpen(true)} />
+                <IconButton style={{ alignItems: 'center', justifyContent: 'center', width: 35, height: 35 }} icon='menu' onPress={() => setDrawerOpen(true)} />
               ),
             headerRight: () => <ConnectionDisplay />,
           }}

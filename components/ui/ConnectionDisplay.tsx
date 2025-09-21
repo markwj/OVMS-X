@@ -6,6 +6,7 @@ import { Icon, Text, useTheme } from "react-native-paper"
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated"
 import { useSelector } from "react-redux"
 import { numericalUnitConvertor } from "../utils/numericalUnitConverter"
+import { View } from "react-native"
 
 const GREEN = "#00ff00ff"
 const ORANGE = "#ff8000ff"
@@ -24,6 +25,10 @@ export function ConnectionDisplay(): React.JSX.Element {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: 35,
+      height: 35
     };
   });
 
@@ -61,7 +66,13 @@ export function ConnectionDisplay(): React.JSX.Element {
       </Animated.View>
     )
   }
-  return <Icon source={source} size={20} color={color} />
+  else {
+    return (
+      <View style={{ alignItems: 'center', justifyContent: 'center', width: 35, height: 35 }}>
+        <Icon source={source} size={20} color={color} />
+      </View>
+    )
+  }
 }
 
 export function ConnectionText() {
